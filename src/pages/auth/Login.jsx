@@ -49,7 +49,7 @@ const Login = () => {
 
       const token = await user.getIdToken();
 
-      const res = await api.post("/api/auth/login", { token });
+      const res = await api.post("/api/auth/login");
 
       if (rememberMe) {
         localStorage.setItem("rememberedEmail", email);
@@ -83,7 +83,7 @@ const handleGoogleSignIn = async () => {
 
     const token = await user.getIdToken();
 
-    const res = await api.post("/api/auth/login", { token });
+    const res = await api.post("/api/auth/login");
 
     redirectByRole(res.data.user.role);
   } catch (err) {
