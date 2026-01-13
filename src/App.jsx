@@ -1,0 +1,117 @@
+import React from "react";
+import {
+  BrowserRouter as Router,
+  Routes,
+  Route,
+  Navigate,
+} from "react-router-dom";
+import { AuthProvider } from "./auth/AuthContext";
+import ProtectedRoute from "./auth/ProtectedRoute";
+
+import Login from "./pages/auth/Login";
+import Register from "./pages/auth/Register";
+
+//import StudentRegister from './pages/auth/StudentRegister';
+import ForgotPassword from "./pages/auth/ForgotPassword";
+
+import AdminLayout from "./components/layout/AdminLayout";
+import InstructorLayout from "./components/layout/InstructorLayout";
+import StudentLayout from "./components/layout/StudentLayout";
+
+import AdminDashboard from "./pages/admin/AdminDashboard";
+import ApproveUsers from "./pages/admin/ApproveUsers";
+
+import ProfileManagement from "./pages/admin/ProfileManagement";
+import ApproveCourses from "./pages/admin/ApproveCourses";
+import AssignCourse from "./pages/admin/AssignCourse";
+import CertificateConfig from "./pages/admin/CertificateConfig";
+import AddInstructor from "./pages/admin/AddInstructor";
+
+import InstructorDashboard from "./pages/instructor/InstructorDashboard";
+import AddCourse from "./pages/instructor/AddCourse";
+import CourseList from "./pages/instructor/CourseList";
+import ExamBuilder from "./pages/instructor/ExamBuilder";
+import InstructorSettings from "./pages/instructor/InstructorSettings";
+
+import StudentDashboard from "./pages/student/StudentDashboard";
+import CoursePlayer from "./pages/student/CoursePlayer";
+import ExamRunner from "./pages/student/ExamRunner";
+import MyCertificates from "./pages/student/MyCertificates";
+import StudentCourses from "./pages/student/StudentCourses";
+// import Leaderboard from './pages/student/Leaderboard';
+
+
+function App() {
+  return (
+    <Router>
+      <AuthProvider>
+        <Routes>
+          <Route path="/" element={<Login />} />
+          <Route path="/login" element={<Login />} />
+          <Route path="/register" element={<Register />} />
+
+          {/* <Route path="/student/signup" element={<StudentRegister />} /> */}
+          <Route path="/forgot-password" element={<ForgotPassword />} />
+
+          <Route
+            path="/admin"
+            element={
+              <ProtectedRoute allowedRoles="admin">
+                <AdminLayout />
+              </ProtectedRoute>
+            }
+          >
+            <Route index element={<Navigate to="dashboard" replace />} />
+            <Route path="dashboard" element={<AdminDashboard />} />
+
+            <Route path="add-instructor" element={<AddInstructor />} />
+            <Route path="approve-users" element={<ApproveUsers />} />
+            <Route path="approve-courses" element={<ApproveCourses />} />
+            <Route path="assign-course" element={<AssignCourse />} />
+            <Route path="certificates" element={<CertificateConfig />} />
+
+            <Route path="profile-management" element={<ProfileManagement />} />
+          </Route>
+
+          <Route
+            path="/instructor"
+            element={
+              <ProtectedRoute allowedRoles={["instructor", "company"]}>
+                <InstructorLayout />
+              </ProtectedRoute>
+            }
+          >
+            <Route index element={<Navigate to="dashboard" replace />} />
+            <Route path="dashboard" element={<InstructorDashboard />} />
+            <Route path="add-course" element={<AddCourse />} />
+            <Route path="courses" element={<CourseList />} />
+            <Route path="exams" element={<ExamBuilder />} />
+            <Route path="settings" element={<InstructorSettings />} />
+          </Route>
+
+          <Route
+            path="/student"
+            element={
+              <ProtectedRoute allowedRoles={["student", "learner"]}>
+                <StudentLayout />
+              </ProtectedRoute>
+            }
+          >
+            <Route index element={<Navigate to="dashboard" replace />} />
+            <Route path="dashboard" element={<StudentDashboard />} />
+            <Route path="courses" element={<StudentCourses/>} />
+            <Route path="course/:courseId" element={<CoursePlayer />} />
+            <Route path="exam/:examId" element={<ExamRunner />} />
+            <Route path="certificate" element={<MyCertificates />} />
+            {/* <Route path="leaderboard" element={<Leaderboard />} /> */}
+
+          </Route>
+
+          <Route path="*" element={<Navigate to="/" replace />} />
+        </Routes>
+      </AuthProvider>
+    </Router>
+  );
+}
+
+export default App;
