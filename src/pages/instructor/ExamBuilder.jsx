@@ -145,8 +145,8 @@ const ExamBuilder = () => {
             `/api/exams/${examId}/questions/mcq`,
             {
               questionText: q.text,
-              options: q.options, 
-              correctOption: q.correctAnswer, 
+              options: q.options,
+              correctOption: q.correctAnswer,
               marks: q.marks || 1,
               order: i + 1,
             },
@@ -157,16 +157,21 @@ const ExamBuilder = () => {
         }
 
         if (q.type === "coding") {
+          if (!q.testCases || q.testCases.length === 0) {
+            alert("Coding questions must have at least one test case");
+            return; // ⛔ stops API call and prevents 400 error
+          }
+
           await api.post(
             `/api/exams/${examId}/questions/coding`,
             {
               title: q.title,
               description: q.text,
               language: q.language,
-              starterCode: q.starterCode,
+              starter_code: q.starterCode,
               marks: q.marks,
               order: i + 1,
-              testCases: q.testCases || [],
+              testcases: q.testCases,
             },
             {
               headers: { Authorization: `Bearer ${token}` },
