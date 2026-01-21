@@ -10,6 +10,7 @@ import {
   FaArrowRight,
 } from "react-icons/fa";
 import api from "../../api/axios";
+import { auth } from "../../auth/firebase";
 import "../../styles/Dashboard.css";
 
 const InstructorDashboard = () => {
