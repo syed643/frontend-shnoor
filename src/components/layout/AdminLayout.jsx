@@ -11,6 +11,8 @@ import {
   FaChalkboardTeacher,
   FaCheckCircle,
   FaUserGraduate,
+  FaUsers,
+  FaBars,
 } from "react-icons/fa";
 import markLogo from "../../assets/just_logo.jpeg";
 import "../../styles/Dashboard.css";
