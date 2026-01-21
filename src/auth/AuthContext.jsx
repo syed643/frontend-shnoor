@@ -12,56 +12,61 @@ export function useAuth() {
 export function AuthProvider({ children }) {
   const [currentUser, setCurrentUser] = useState(null);
   const [userRole, setUserRole] = useState(null);
+  const [userStatus, setUserStatus] = useState(null);
   const [loading, setLoading] = useState(true);
 
-useEffect(() => {
-  const unsubscribe = onAuthStateChanged(auth, async (user) => {
-    try {
-      if (!user) {
+  useEffect(() => {
+    const unsubscribe = onAuthStateChanged(auth, async (user) => {
+      try {
+        if (!user) {
+          setCurrentUser(null);
+          setUserRole(null);
+          setLoading(false);
+          setUserStatus(null);
+          return;
+        }
+
+        // 🔴 ALWAYS get token directly from user
+        const token = await user.getIdToken(true);
+
+        // 🔴 SEND TOKEN IN HEADER (NOT BODY)
+        const res = await api.post(
+          "/api/auth/login",
+          {},
+          {
+            headers: {
+              Authorization: `Bearer ${token}`,
+            },
+          },
+        );
+
+        setCurrentUser(user);
+        setUserRole(res.data.user.role);
+        setUserStatus(res.data.user.status);
+      } catch (error) {
+        console.error("AuthContext backend sync failed:", error);
         setCurrentUser(null);
         setUserRole(null);
+        setUserStatus(null);
+      } finally {
         setLoading(false);
-        return;
       }
+    });
 
-      // 🔴 ALWAYS get token directly from user
-      const token = await user.getIdToken(true);
-
-      // 🔴 SEND TOKEN IN HEADER (NOT BODY)
-      const res = await api.post(
-        "/api/auth/login",
-        {},
-        {
-          headers: {
-            Authorization: `Bearer ${token}`,
-          },
-        }
-      );
-
-      setCurrentUser(user);
-      setUserRole(res.data.user.role);
-    } catch (error) {
-      console.error("AuthContext backend sync failed:", error);
-      setCurrentUser(null);
-      setUserRole(null);
-    } finally {
-      setLoading(false);
-    }
-  });
-
-  return () => unsubscribe();
-}, []);
-
+    return () => unsubscribe();
+  }, []);
 
   const logout = async () => {
     await signOut(auth);
     setCurrentUser(null);
     setUserRole(null);
+    setUserStatus(null);
   };
 
   const value = {
     currentUser,
     userRole,
+    userStatus,
     loading,
     logout,
   };

@@ -39,6 +39,9 @@ import ExamRunner from "./pages/student/ExamRunner";
 import MyCertificates from "./pages/student/MyCertificates";
 import StudentCourses from "./pages/student/StudentCourses";
 import StudentPerformance from "./pages/instructor/StudentPerformance";
+import CourseDetail from "./pages/student/CourseDetail";
+import ManageUsers from "./pages/admin/ManageUsers";
+import Suspended from "./pages/auth/Suspended";
 // import Leaderboard from './pages/student/Leaderboard';
 
 function App() {
@@ -69,7 +72,7 @@ function App() {
             <Route path="approve-courses" element={<ApproveCourses />} />
             <Route path="assign-course" element={<AssignCourse />} />
             <Route path="certificates" element={<CertificateConfig />} />
-
+    <Route path="manage-users" element={<ManageUsers />} />
             <Route path="profile-management" element={<ProfileManagement />} />
           </Route>
 
@@ -101,13 +104,16 @@ function App() {
             <Route index element={<Navigate to="dashboard" replace />} />
             <Route path="dashboard" element={<StudentDashboard />} />
             <Route path="courses" element={<StudentCourses />} />
-            <Route path="course/:courseId" element={<CoursePlayer />} />
+            <Route path="course/:courseId" element={<CourseDetail />} />
+            <Route path="course/:courseId/learn" element={<CoursePlayer />} />
             <Route path="exam/:examId" element={<ExamRunner />} />
             <Route path="certificate" element={<MyCertificates />} />
             {/* <Route path="leaderboard" element={<Leaderboard />} /> */}
           </Route>
 
           <Route path="*" element={<Navigate to="/" replace />} />
+          <Route path="/suspended" element={<Suspended />} />
+
         </Routes>
       </AuthProvider>
     </Router>

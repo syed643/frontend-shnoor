@@ -7,6 +7,8 @@ import { FaEye, FaEyeSlash, FaSignInAlt, FaGoogle } from "react-icons/fa";
 import "../../styles/Auth.css";
 import brandLogo from "../../assets/SHnoor_logo_1.jpg";
 import markLogo from "../../assets/just_logo.jpeg";
+import { signOut } from "firebase/auth";
+
 
 const Login = () => {
   const [email, setEmail] = useState("");
@@ -68,6 +70,7 @@ const Login = () => {
       console.error("Login error:", err);
 
       if (err.response?.status === 403) {
+        await signOut(auth);
         setError(err.response.data.message); // pending / blocked
       } else if (err.response?.status === 404) {
         setError("Account not found. Please register first.");
@@ -103,6 +106,7 @@ const Login = () => {
       console.error(err);
 
       if (err.response?.status === 403) {
+        await signOut(auth);
         setError(err.response.data.message);
       } else if (err.response?.status === 404) {
         setError("Account not found. Please register first.");
