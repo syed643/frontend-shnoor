@@ -38,8 +38,8 @@ import CoursePlayer from "./pages/student/CoursePlayer";
 import ExamRunner from "./pages/student/ExamRunner";
 import MyCertificates from "./pages/student/MyCertificates";
 import StudentCourses from "./pages/student/StudentCourses";
+import StudentPerformance from "./pages/instructor/StudentPerformance";
 // import Leaderboard from './pages/student/Leaderboard';
-
 
 function App() {
   return (
@@ -86,6 +86,7 @@ function App() {
             <Route path="add-course" element={<AddCourse />} />
             <Route path="courses" element={<CourseList />} />
             <Route path="exams" element={<ExamBuilder />} />
+            <Route path="performance" element={<StudentPerformance />} />
             <Route path="settings" element={<InstructorSettings />} />
           </Route>
 
@@ -99,12 +100,11 @@ function App() {
           >
             <Route index element={<Navigate to="dashboard" replace />} />
             <Route path="dashboard" element={<StudentDashboard />} />
-            <Route path="courses" element={<StudentCourses/>} />
+            <Route path="courses" element={<StudentCourses />} />
             <Route path="course/:courseId" element={<CoursePlayer />} />
             <Route path="exam/:examId" element={<ExamRunner />} />
             <Route path="certificate" element={<MyCertificates />} />
             {/* <Route path="leaderboard" element={<Leaderboard />} /> */}
-
           </Route>
 
           <Route path="*" element={<Navigate to="/" replace />} />
