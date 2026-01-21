@@ -21,13 +21,36 @@ const ExamBuilder = () => {
   const navigate = useNavigate();
   const [step, setStep] = useState(1);
   const [loading, setLoading] = useState(false);
+  const [courses, setCourses] = useState([]);
+  const [loadingCourses, setLoadingCourses] = useState(false);
+  useEffect(() => {
+    const fetchApprovedCourses = async () => {
+      try {
+        setLoadingCourses(true);
 
+        const token = await auth.currentUser.getIdToken(true);
+
+        const res = await api.get("/api/courses/instructor/approved", {
+          headers: { Authorization: `Bearer ${token}` },
+        });
+
+        setCourses(res.data);
+      } catch (err) {
+        console.error("Failed to fetch approved courses", err);
+      } finally {
+        setLoadingCourses(false);
+      }
+    };
+
+    fetchApprovedCourses();
+  }, []);
   const [formData, setFormData] = useState({
     title: "",
     description: "",
     type: "Exam",
     duration: 60,
     passPercentage: 70,
+    courseId: null,
     questions: [],
   });
 
@@ -258,6 +281,38 @@ const ExamBuilder = () => {
                 rows={3}
               />
             </div>
+
+            <div className="form-group full-width">
+              <label>Link to Course (Optional)</label>
+              <select
+                name="courseId"
+                value={formData.courseId || ""}
+                onChange={handleInputChange}
+                className="select-input"
+                style={{
+                  width: "100%",
+                  padding: "10px",
+                  borderRadius: "5px",
+                  border: "1px solid #ddd",
+                }}
+              >
+                <option value="">
+                  -- No Linked Course (Standalone Exam) --
+                </option>
+                {instructorCourses.map((course) => (
+                  <option key={course.courses_id} value={course.courses_id}>
+                    {course.title}
+                  </option>
+                ))}
+              </select>
+              <small
+                style={{ color: "#666", marginTop: "5px", display: "block" }}
+              >
+                If selected, students must complete this course before taking
+                the exam.
+              </small>
+            </div>
+
             <div className="form-group">
               <label>Duration (minutes)</label>
               <input
