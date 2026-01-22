@@ -101,7 +101,6 @@ const ManageUsersView = ({
             <option value="all">All Roles</option>
             <option value="student">Students</option>
             <option value="instructor">Instructors</option>
-            <option value="company">Companies</option>
             <option value="admin">Admins</option>
           </select>
         </div>
