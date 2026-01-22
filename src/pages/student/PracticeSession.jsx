@@ -3,7 +3,6 @@ import axios from 'axios';
 import { useParams, useNavigate } from 'react-router-dom';
 import ProblemDescription from '../../components/exam/ProblemDescription';
 import CodeEditorPanel from '../../components/exam/CodeEditorPanel';
-import { getStudentData } from '../../utils/studentData';
 
 
 const PracticeSession = ({ question: propQuestion, value, onChange, onComplete }) => {
