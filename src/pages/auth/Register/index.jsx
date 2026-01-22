@@ -1,9 +1,9 @@
 import React, { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { createUserWithEmailAndPassword } from "firebase/auth";
-import api from "../../api/axios";
-import { auth } from "../../auth/firebase";
-import RegisterView from "./RegisterView";
+import api from "../../../api/axios";
+import { auth } from "../../../auth/firebase";
+import RegisterView from "./view.jsx";
 
 const Register = () => {
   const [formData, setFormData] = useState({
