@@ -27,7 +27,7 @@ const StudentCourses = () => {
         const token = await auth.currentUser.getIdToken(true);
 
         // ✅ My Learning (enrolled courses)
-        const myRes = await api.get("/api/student-courses/my-courses", {
+        const myRes = await api.get("/api/student/my-courses", {
           headers: { Authorization: `Bearer ${token}` },
         });
 
