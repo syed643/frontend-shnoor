@@ -106,7 +106,7 @@ function App() {
             <Route path="courses" element={<StudentCourses />} />
             <Route path="course/:courseId" element={<CourseDetail />} />
             <Route path="course/:courseId/learn" element={<CoursePlayer />} />
-            <Route path="exam/:examId" element={<ExamRunner />} />
+              <Route path="exam/:examId" element={<ExamRunner />} />
             <Route path="certificate" element={<MyCertificates />} />
             {/* <Route path="leaderboard" element={<Leaderboard />} /> */}
           </Route>
