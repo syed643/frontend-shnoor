@@ -126,7 +126,7 @@ const CourseDetail = () => {
             </div>
             <div>
               <div className="text-sm text-gray-300">Created by</div>
-              <div className="font-semibold">{course.instructor_name?.name}</div>
+              <div className="font-semibold">{course.instructor?.name}</div>
             </div>
           </div>
         </div>
@@ -219,7 +219,7 @@ const CourseDetail = () => {
                 <FaUserTie size={30} />
               </div>
               <div>
-                <h4 className="instructor-name">{course.instructor_name?.name}</h4>
+                <h4 className="instructor-name">{course.instructor?.name}</h4>
                 <p className="instructor-title">Senior Instructor</p>
               </div>
             </div>
