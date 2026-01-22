@@ -22,18 +22,20 @@ const LoginView = ({
       {/* LEFT BRAND SECTION */}
       <div className="hidden md:flex flex-col justify-between w-5/12 bg-(--color-primary-900) p-12 text-white relative overflow-hidden">
         <div className="relative z-10">
-          <img
-            src={brandLogo}
-            alt="Shnoor Logo"
-            className="max-w-37.5 mb-6 rounded-lg"
-          />
+          <div className="w-[160px] h-[160px] mb-6 flex items-center justify-center bg-white rounded-xl">
+            <img
+              src={brandLogo}
+              alt="Shnoor Logo"
+              className="w-full h-full object-contain"
+            />
+          </div>
 
           <h2 className="text-4xl font-bold mb-6 leading-tight">
             Empower your institution with system-level control.
           </h2>
           <p className="text-slate-400 text-lg max-w-sm">
-            Streamline administration, enhance learning, and drive results with a
-            world-class Learning Management System.
+            Streamline administration, enhance learning, and drive results with
+            a world-class Learning Management System.
           </p>
         </div>
 
@@ -60,11 +62,14 @@ const LoginView = ({
         <div className="w-full max-w-[400px]">
           <div className="mb-10">
             <div className="flex items-center mb-5">
-              <img
-                src={markLogo}
-                alt="Shnoor International"
-                className="w-[70px] h-[55px]"
-              />
+              <div className="w-[48px] h-[48px] mr-3 flex items-center justify-center">
+                <img
+                  src={markLogo}
+                  alt="Shnoor International"
+                  className="w-full h-full object-contain"
+                />
+              </div>
+
               <div>
                 <h1 className="text-xl md:text-2xl font-semibold">
                   SHNOOR International
@@ -95,7 +100,10 @@ const LoginView = ({
                 Email Address
               </label>
               <div className="relative">
-                <Mail className="absolute left-4 top-1/2 -translate-y-1/2 text-slate-400" size={18} />
+                <Mail
+                  className="absolute left-4 top-1/2 -translate-y-1/2 text-slate-400"
+                  size={18}
+                />
                 <input
                   type="email"
                   value={email}
@@ -112,13 +120,19 @@ const LoginView = ({
                 <label className="block text-[11px] font-black text-slate-500 uppercase tracking-[0.2em]">
                   Password
                 </label>
-                <Link to="/forgot-password" className="text-xs font-bold text-indigo-600">
+                <Link
+                  to="/forgot-password"
+                  className="text-xs font-bold text-indigo-600"
+                >
                   Forgot Password?
                 </Link>
               </div>
 
               <div className="relative">
-                <Lock className="absolute left-4 top-1/2 -translate-y-1/2 text-slate-400" size={18} />
+                <Lock
+                  className="absolute left-4 top-1/2 -translate-y-1/2 text-slate-400"
+                  size={18}
+                />
                 <input
                   type={showPassword ? "text" : "password"}
                   value={password}
