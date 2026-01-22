@@ -1,10 +1,9 @@
 import React from "react";
 import { Link } from "react-router-dom";
 import { FaEye, FaEyeSlash, FaSignInAlt, FaGoogle } from "react-icons/fa";
-import "../../styles/Auth.css";
-import brandLogo from "../../assets/SHnoor_logo_1.jpg";
-import markLogo from "../../assets/just_logo.jpeg";
-
+import "../../../styles/Auth.css";
+import brandLogo from "../../../assets/SHnoor_logo_1.jpg";
+import markLogo from "../../../assets/just_logo.jpeg";
 const LoginView = ({
   formData,
   setFormData,
