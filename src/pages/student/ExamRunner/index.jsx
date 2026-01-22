@@ -94,7 +94,7 @@ const ExamRunner = () => {
       const token = await auth.currentUser.getIdToken(true);
 
       const res = await api.post(
-        `/api/student/exams/${examId}/submit`,
+        `/api/exam/${examId}/submit`,
         { answers },
         { headers: { Authorization: `Bearer ${token}` } }
       );
