@@ -82,7 +82,7 @@ const ApproveCoursesView = ({ loading, pendingCourses, selectedCourse, setSelect
                                                 </span>
                                             </td>
                                             <td className="py-4 px-6 text-right">
-                                                <button className={`text-xs font-bold border px-3 py-1.5 rounded-lg shadow-sm transition-all ${selectedCourse?.id === course.id
+                                                <button className={`text-xs font-bold border px-3 py-1.5 rounded-lg shadow-sm transition-all ${selectedCourse?.courses_id === course.courses_id
                                                     ? 'bg-white border-[var(--color-indigo-600)] text-[var(--color-indigo-600)]'
                                                     : 'bg-white border-slate-200 text-slate-500 hover:border-slate-300'
                                                     }`}>
@@ -168,7 +168,7 @@ const ApproveCoursesView = ({ loading, pendingCourses, selectedCourse, setSelect
                             </button>
                             <button
                                 className="flex-1 flex items-center justify-center gap-2 px-4 py-3 bg-[var(--color-primary)] text-white rounded-xl font-bold shadow-lg shadow-slate-900/10 hover:bg-slate-800 transition-all text-sm"
-                                onClick={() => handleAction(selectedCourse.id, 'published')}
+                                onClick={() => handleAction(selectedCourse.courses_id, 'approved')}
                             >
                                 <CheckCircle2 size={18} /> Approve
                             </button>
