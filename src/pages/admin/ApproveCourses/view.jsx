@@ -61,15 +61,15 @@ const ApproveCoursesView = ({ loading, pendingCourses, selectedCourse, setSelect
                                 ) : (
                                     pendingCourses.map(course => (
                                         <tr
-                                            key={course.id}
+                                            key={course.courses_id}
                                             onClick={() => setSelectedCourse(course)}
-                                            className={`cursor-pointer transition-all hover:bg-slate-50 group border-l-4 ${selectedCourse?.id === course.id
+                                            className={`cursor-pointer transition-all hover:bg-slate-50 group border-l-4 ${selectedCourse?.courses_id === course.courses_id
                                                 ? 'bg-indigo-50/50 border-[var(--color-indigo-600)]'
                                                 : 'border-transparent hover:border-slate-300'
                                                 }`}
                                         >
                                             <td className="py-4 px-6">
-                                                <div className={`font-bold text-base transition-colors ${selectedCourse?.id === course.id ? 'text-[var(--color-indigo-600)]' : 'text-slate-800'}`}>
+                                                <div className={`font-bold text-base transition-colors ${selectedCourse?.courses_id === course.courses_id ? 'text-[var(--color-indigo-600)]' : 'text-slate-800'}`}>
                                                     {course.title}
                                                 </div>
                                             </td>
@@ -162,7 +162,7 @@ const ApproveCoursesView = ({ loading, pendingCourses, selectedCourse, setSelect
                         <div className="p-4 border-t border-slate-100 bg-slate-50 flex gap-3">
                             <button
                                 className="flex-1 flex items-center justify-center gap-2 px-4 py-3 bg-white text-red-600 rounded-xl font-bold border border-red-100 hover:bg-red-50 transition-colors text-sm shadow-sm"
-                                onClick={() => handleAction(selectedCourse.id, 'rejected')}
+                                onClick={() => handleAction(selectedCourse.courses_id, 'rejected')}
                             >
                                 <XCircle size={18} /> Reject
                             </button>

@@ -62,9 +62,7 @@ const CourseList = () => {
     }
   };
 
-  /* =========================
-     COURSE DETAILS VIEW
-  ========================= */
+
   if (selectedCourse) {
     return (
       <div>

@@ -12,7 +12,7 @@ import {
   FaArrowUp,
   FaArrowDown,
 } from "react-icons/fa";
-import { auth } from "../../auth/firebase";
+import { auth  } from "../../auth/firebase";
 import "../../styles/Dashboard.css";
 import api from "../../api/axios";
 
