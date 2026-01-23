@@ -36,7 +36,7 @@ const AssignCourseView = ({
   return (
     <div className="p-2 h-[calc(100vh-6rem)] flex flex-col font-sans w-full">
       <div className="bg-white rounded-2xl shadow-sm border border-slate-200 flex-1 flex flex-col overflow-hidden w-full">
-        <form onSubmit={handleAssign} className="flex-1 flex flex-col h-full">
+        <form onSubmit={(e) => {e.preventDefault(); handleAssign()}} className="flex-1 flex flex-col h-full">
           <div className="flex flex-1 overflow-hidden divide-x divide-slate-200">
             {}
             <div className="flex-1 flex flex-col min-w-0 bg-slate-50/50">
@@ -66,7 +66,7 @@ const AssignCourseView = ({
               </div>
 
               <div className="flex-1 overflow-y-auto p-4 space-y-2 custom-scrollbar">
-                {filteredStudents.map((s) => (
+                {students.map((s) => (
                   <div
                     key={s.user_id}
                     onClick={() => toggleStudent(s.user_id)}
@@ -97,7 +97,7 @@ const AssignCourseView = ({
                     </div>
                   </div>
                 ))}
-                {filteredStudents.length === 0 && (
+                {students.length === 0 && (
                   <div className="text-center py-12 text-slate-400 border-2 border-dashed border-slate-200 rounded-xl bg-slate-50 mx-4">
                     <p className="text-sm font-medium">
                       No students found matching "{searchStudent}"
@@ -143,17 +143,17 @@ const AssignCourseView = ({
 
                 {courses.map((c) => (
                   <div
-                    key={c.id}
-                    onClick={() => toggleCourse(c.id)}
+                    key={c.courses_id}
+                    onClick={() => toggleCourse(c.courses_id)}
                     className={`flex items-center gap-3 p-3 rounded-xl border cursor-pointer transition-all group ${
-                      selectedCourses.includes(c.id)
+                      selectedCourses.includes(c.courses_id)
                         ? "bg-indigo-50 border-[var(--color-indigo-600)] shadow-sm"
                         : "bg-white border-slate-200 hover:border-indigo-300 hover:shadow-sm"
                     }`}
                   >
                     <div
                       className={`w-10 h-10 rounded-lg flex items-center justify-center transition-colors shrink-0 ${
-                        selectedCourses.includes(c.id)
+                        selectedCourses.includes(c.courses_id)
                           ? "bg-indigo-100 text-[var(--color-indigo-600)]"
                           : "bg-slate-100 text-slate-400 group-hover:bg-indigo-50 group-hover:text-indigo-500"
                       }`}
@@ -162,17 +162,17 @@ const AssignCourseView = ({
                     </div>
                     <div className="flex-1 min-w-0">
                       <div
-                        className={`font-bold text-base truncate ${selectedCourses.includes(c.id) ? "text-[var(--color-indigo-600)]" : "text-slate-700"}`}
+                        className={`font-bold text-base truncate ${selectedCourses.includes(c.courses_id) ? "text-[var(--color-indigo-600)]" : "text-slate-700"}`}
                       >
                         {c.title}
                       </div>
                       <div className="text-sm text-slate-500 truncate font-medium">
-                        Instructor: {c.instructor}
+                        Instructor: {c.instructor_name}
                       </div>
                     </div>
                     <div
                       className={`w-6 h-6 rounded-full flex items-center justify-center transition-colors ${
-                        selectedCourses.includes(c.id)
+                        selectedCourses.includes(c.courses_id)
                           ? "text-[var(--color-indigo-600)]"
                           : "text-slate-200 group-hover:text-indigo-300"
                       }`}
