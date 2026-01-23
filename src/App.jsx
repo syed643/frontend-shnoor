@@ -11,7 +11,7 @@ import ProtectedRoute from "./auth/ProtectedRoute";
 import Login from "./pages/auth/Login";
 import Register from "./pages/auth/Register";
 import ForgotPassword from "./pages/auth/ForgotPassword";
-import AdminLayout from "./components/layout/AdminLayout";
+//import AdminLayout from "./components/layout/AdminLayout";
 import InstructorLayout from "./components/layout/InstructorLayout";
 import StudentLayout from "./components/layout/StudentLayout";
 
@@ -40,6 +40,7 @@ import CourseDetail from "./pages/student/CourseDetail";
 import ManageUsers from "./pages/admin/ManageUsers";
 import Suspended from "./pages/auth/Suspended";
 import PracticeSession from "./pages/student/PracticeSession";
+import AdminLayout from "./components/layout/AdminLayout";
 // import Leaderboard from './pages/student/Leaderboard';
 
 function App() {
