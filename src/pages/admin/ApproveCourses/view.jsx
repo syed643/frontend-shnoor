@@ -130,7 +130,7 @@ const ApproveCoursesView = ({ loading, pendingCourses, selectedCourse, setSelect
                                     Content ({modules.length} Modules)
                                 </h4>
                                 <div className="space-y-2">
-                                    {modules && modules.map((m, idx) => (
+                                    {modules.map((m, idx) => (
                                         <div key={idx} className="flex items-center gap-3 p-3 bg-white border border-slate-200 rounded-xl shadow-sm hover:shadow-md transition-shadow group">
                                             <div className={`w-10 h-10 rounded-lg flex items-center justify-center shrink-0 ${m.type === 'video' ? 'bg-rose-50 text-rose-500' : 'bg-indigo-50 text-[var(--color-indigo-600)]'
                                                 }`}>
