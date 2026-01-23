@@ -101,42 +101,42 @@ const StudentCoursesView = ({
                 </div>
             ) : (
                 <div className="grid grid-cols-1 md:grid-cols-3 lg:grid-cols-4 gap-6">
-                    {displayCourses.map((course) => {
-                        const isEnrolled = enrolledIds.includes(course.id);
+                    {displayCourses.map((courses) => {
+                        const isEnrolled = enrolledIds.includes(courses.courses_id);
                         return (
-                            <div key={course.id} className="bg-white rounded-lg border border-slate-200 hover:border-indigo-300 hover:shadow-sm transition-all flex flex-col h-full group">
+                            <div key={courses.courses_id} className="bg-white rounded-lg border border-slate-200 hover:border-indigo-300 hover:shadow-sm transition-all flex flex-col h-full group">
                                 {/* Thumbnail (Placeholder) */}
                                 <div className="h-40 bg-slate-100 border-b border-slate-100 p-6 flex items-center justify-center relative overflow-hidden group-hover:bg-slate-50 transition-colors">
                                     <BookOpen className="text-slate-300 w-16 h-16 group-hover:text-indigo-200 transition-colors" strokeWidth={1} />
                                     <div className="absolute top-3 left-3 bg-white/90 backdrop-blur-sm px-2 py-0.5 rounded border border-slate-200 text-[10px] font-bold uppercase tracking-wide text-slate-800">
-                                        {course.category}
+                                        {courses.category}
                                     </div>
                                     <div className="absolute top-3 right-3 bg-slate-800 text-white px-2 py-0.5 rounded text-[10px] font-bold uppercase">
-                                        {course.level || 'General'}
+                                        {courses.level || 'General'}
                                     </div>
                                 </div>
 
                                 {/* Content */}
                                 <div className="p-5 flex-1 flex flex-col">
                                     <h4 className="text-base font-bold text-primary-900 mb-2 line-clamp-2 leading-snug group-hover:text-indigo-600 transition-colors">
-                                        {course.title}
+                                        {courses.title}
                                     </h4>
                                     <p className="text-xs text-slate-600 mb-4 font-bold flex items-center gap-1">
-                                        By <span className="text-slate-800">{course.instructorName || 'Instructor'}</span>
+                                        By <span className="text-slate-800">{courses.instructor_name || 'Instructor'}</span>
                                     </p>
 
                                     <div className="mt-auto pt-4 border-t border-slate-100">
                                         {isEnrolled ? (
                                             <button
                                                 className="w-full bg-primary-900 hover:bg-slate-800 text-white font-bold py-2 px-4 rounded text-sm transition-colors flex items-center justify-center gap-2"
-                                                onClick={() => navigate(`/student/course/${course.id}`)}
+                                                onClick={() => navigate(`/student/course/${courses.courses_id}`)}
                                             >
                                                 Resume <ArrowRight size={14} />
                                             </button>
                                         ) : (
                                             <button
                                                 className="w-full bg-white border border-slate-200 text-slate-600 hover:border-indigo-500 hover:text-indigo-600 font-bold py-2 px-4 rounded text-sm transition-all flex items-center justify-center gap-2"
-                                                onClick={() => handleEnroll(course.id)}
+                                                onClick={() => handleEnroll(courses.courses_id)}
                                             >
                                                 Enroll Now
                                             </button>
