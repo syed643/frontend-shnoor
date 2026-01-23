@@ -74,7 +74,7 @@ const ApproveCoursesView = ({ loading, pendingCourses, selectedCourse, setSelect
                                                 </div>
                                             </td>
                                             <td className="py-4 px-6 text-slate-600 text-sm font-medium md:table-cell hidden">
-                                                {course.instructorName || course.instructorId}
+                                                {course.instructor_name || course.instructor_id}
                                             </td>
                                             <td className="py-4 px-6">
                                                 <span className="px-2.5 py-1 rounded-lg text-xs font-bold bg-slate-100 text-slate-600 border border-slate-200 uppercase tracking-wide">
@@ -105,7 +105,7 @@ const ApproveCoursesView = ({ loading, pendingCourses, selectedCourse, setSelect
                             <div>
                                 <h3 className="text-xl font-bold text-slate-900 leading-tight mb-2 tracking-tight">{selectedCourse.title}</h3>
                                 <p className="text-xs text-slate-500 font-bold uppercase tracking-wide">
-                                    <span className="text-[var(--color-indigo-600)]">{selectedCourse.category}</span> • {selectedCourse.instructorName || 'Unknown'}
+                                    <span className="text-[var(--color-indigo-600)]">{selectedCourse.category}</span> • {selectedCourse.instructor_name || 'Unknown'}
                                 </p>
                             </div>
                             <button
@@ -127,10 +127,10 @@ const ApproveCoursesView = ({ loading, pendingCourses, selectedCourse, setSelect
 
                             <div>
                                 <h4 className="text-xs font-black text-slate-400 uppercase tracking-[0.2em] mb-3">
-                                    Content ({selectedCourse.modules ? selectedCourse.modules.length : 0} Modules)
+                                    Content ({modules.length} Modules)
                                 </h4>
                                 <div className="space-y-2">
-                                    {selectedCourse.modules && selectedCourse.modules.map((m, idx) => (
+                                    {modules && modules.map((m, idx) => (
                                         <div key={idx} className="flex items-center gap-3 p-3 bg-white border border-slate-200 rounded-xl shadow-sm hover:shadow-md transition-shadow group">
                                             <div className={`w-10 h-10 rounded-lg flex items-center justify-center shrink-0 ${m.type === 'video' ? 'bg-rose-50 text-rose-500' : 'bg-indigo-50 text-[var(--color-indigo-600)]'
                                                 }`}>
