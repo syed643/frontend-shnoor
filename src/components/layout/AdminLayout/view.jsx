@@ -3,7 +3,7 @@ import { Outlet } from 'react-router-dom';
 import { UserCircle, LayoutGrid, LogOut, Settings, GraduationCap, CheckCircle, UserPlus, Users, Menu, Award } from 'lucide-react';
 import markLogo from '../../../assets/just_logo.jpeg';
 
-const AdminLayoutView = ({ isSidebarOpen, setIsSidebarOpen, handleLogout, adminName, navigate, location, photoURL }) => {
+const AdminLayoutView = ({ isSidebarOpen, setIsSidebarOpen, handleLogout, adminName, handleNavigate, location, photoURL }) => {
 
     const NavItem = ({ path, icon: Icon, label }) => {
         const isActive = location.pathname.includes(path);
@@ -14,7 +14,7 @@ const AdminLayoutView = ({ isSidebarOpen, setIsSidebarOpen, handleLogout, adminN
                         ? 'bg-primary-900 text-white shadow-md'
                         : 'text-slate-600 hover:bg-slate-100'
                     }`}
-                onClick={() => { navigate(`/admin/${path}`); setIsSidebarOpen(false); }}
+                onClick={() => { handleNavigate(`/admin/${path}`); setIsSidebarOpen(false); }}
             >
                 <Icon className={isActive ? 'text-white' : 'text-slate-500'} />
                 <span className="font-medium">{label}</span>
