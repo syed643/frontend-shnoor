@@ -142,9 +142,9 @@ const ApproveCoursesView = ({ loading, pendingCourses, selectedCourse, setSelect
                                                     {m.type} • <Clock size={10} /> {m.duration} mins
                                                 </div>
                                             </div>
-                                            {m.url && (
+                                            {m.content_url && (
                                                 <a
-                                                    href={m.url}
+                                                    href={m.content_url}
                                                     target="_blank"
                                                     rel="noopener noreferrer"
                                                     className="text-xs font-bold text-[var(--color-indigo-600)] hover:underline px-3 bg-indigo-50 py-1.5 rounded-md"
