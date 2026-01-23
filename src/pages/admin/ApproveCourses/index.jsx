@@ -25,7 +25,7 @@ const ApproveCourses = () => {
 
   const fetchModules = async (courses_id) => {
     try {
-      const res = await api.get(`/api/courses/${course.courses_id}/modules`);
+      const res = await api.get(`/api/courses/${courses_id}/modules`);
       setModules(res.data);
     } catch (err) {
       console.error("Failed to load modules", err);
@@ -43,19 +43,19 @@ const ApproveCourses = () => {
     setModules([]);
   };
 
-  const updateStatus = async (status) => {
-    if (!selectedCourse) return;
+  const updateStatus = async (courseId, status) => {
     if (!window.confirm(`Are you sure you want to ${status}?`)) return;
 
     try {
       await api.patch(
-        `/api/admin/courses/${selectedCourse.courses_id}/status`,
+        `/api/admin/courses/${courseId}/status`,
         { status }
       );
 
       setPendingCourses((prev) =>
-        prev.filter((c) => c.courses_id !== selectedCourse.courses_id)
+        prev.filter((c) => c.courses_id !== courseId)
       );
+
       closeDetails();
     } catch (err) {
       console.error("Status update failed", err);
@@ -68,13 +68,12 @@ const ApproveCourses = () => {
       loading={loading}
       pendingCourses={pendingCourses}
       selectedCourse={selectedCourse}
-      setSelectedCourse={setSelectedCourse}
+      setSelectedCourse={selectCourse}   
       modules={modules}
-      selectCourse={selectCourse}
-      closeDetails={closeDetails}
-      handleAction={updateStatus}
+      handleAction={updateStatus}       
     />
   );
 };
+
 
 export default ApproveCourses;
