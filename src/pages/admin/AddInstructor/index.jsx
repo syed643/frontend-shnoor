@@ -1,8 +1,8 @@
 import { useState } from "react";
 import { useNavigate } from "react-router-dom";
-import { auth } from "../../auth/firebase";
-import api from "../../api/axios";
-import AddInstructorView from "./AddInstructorView";
+import { auth } from "../../../auth/firebase";
+import api from "../../../api/axios";
+import AddInstructorView from "./view";
 
 const AddInstructor = () => {
   const navigate = useNavigate();
