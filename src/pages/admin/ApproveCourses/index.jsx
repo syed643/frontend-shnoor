@@ -68,10 +68,11 @@ const ApproveCourses = () => {
       loading={loading}
       pendingCourses={pendingCourses}
       selectedCourse={selectedCourse}
+      setSelectedCourse={setSelectedCourse}
       modules={modules}
       selectCourse={selectCourse}
       closeDetails={closeDetails}
-      updateStatus={updateStatus}
+      handleAction={updateStatus}
     />
   );
 };
