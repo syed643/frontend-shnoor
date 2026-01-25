@@ -5,40 +5,34 @@ import StudentExamsView from './view';
 
 const StudentExams = () => {
     const navigate = useNavigate();
-    // TODO: [Backend] Fetch available exams from /api/student/exams
-    // Expected JSON Shape: 
-    // [{ 
-    //   id: string, 
-    //   title: string, 
-    //   duration: number, 
-    //   passScore: number, 
-    //   linkedCourseId: string,
-    //   questions: Array,
-    //   totalMarks: number 
-    // }]
+
     const [exams, setExams] = useState([]);
 
-    // TODO: [Backend] Fetch user's passed exams from /api/student/exams/passed
-    // Expected JSON Shape: string[] (list of passed exam IDs)
+
     const [passedExams, setPassedExams] = useState([]);
 
-    // TODO: [Backend] Fetch access status (unlocked/locked) for exams
-    // Expected JSON Shape: { [examId: string]: boolean }
     const [accessStatus, setAccessStatus] = useState({});
     const [loading, setLoading] = useState(true);
 
     const [courseNames, setCourseNames] = useState({});
 
-    useEffect(() => {
-        const initExams = async () => {
-            // TODO: [Backend] Fetch exams and status here
-            // setExams(...);
-            // setPassedExams(...);
-            setLoading(false);
-        };
+useEffect(() => {
+  const initExams = async () => {
+    try {
+      const res = await api.get("/api/student/exams");
+      setExams(res.data.exams);
+      setPassedExams(res.data.passedExams);
+      setAccessStatus(res.data.accessStatus);
+    } catch (err) {
+      console.error("Failed to load exams", err);
+    } finally {
+      setLoading(false);
+    }
+  };
 
-        initExams();
-    }, []);
+  initExams();
+}, []);
+
 
     const isPassed = (examId) => passedExams.includes(examId);
 
