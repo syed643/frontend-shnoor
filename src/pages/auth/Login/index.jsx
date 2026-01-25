@@ -142,58 +142,34 @@ const Login = () => {
      EMAIL + PASSWORD LOGIN
   ========================= */
   const handleLogin = async (e) => {
-    e.preventDefault();
-    setError("");
-    setLoading(true);
+  e.preventDefault();
+  setError("");
+  setLoading(true);
 
-    try {
-      const userCredential = await signInWithEmailAndPassword(
-        auth,
-        email,
-        password
-      );
+  try {
+    await signInWithEmailAndPassword(auth, email, password);
 
-      const token = await userCredential.user.getIdToken(true);
+    if (rememberMe) localStorage.setItem("rememberedEmail", email);
+    else localStorage.removeItem("rememberedEmail");
 
-      // 🔐 Sync with backend
-      await api.post(
-        "/api/auth/login",
-        {},
-        {
-          headers: {
-            Authorization: `Bearer ${token}`,
-          },
-        }
-      );
+    // 🚫 DO NOT navigate here
+    // 🚫 DO NOT call backend here
 
-      if (rememberMe) {
-        localStorage.setItem("rememberedEmail", email);
-      } else {
-        localStorage.removeItem("rememberedEmail");
-      }
+  } catch (err) {
+    console.error("Login error:", err);
 
-      // ❌ DO NOT navigate here
-      // ProtectedRoute handles routing
-
-    } catch (err) {
-      console.error("Login error:", err);
-
-      if (err.response?.status === 403) {
-        await signOut(auth);
-        setError(err.response.data.message);
-      } else if (err.response?.status === 404) {
-        setError("Account not found. Please register first.");
-      } else if (err.code === "auth/wrong-password") {
-        setError("Incorrect password.");
-      } else if (err.code === "auth/user-not-found") {
-        setError("User not found.");
-      } else {
-        setError("Login failed. Please try again.");
-      }
-    } finally {
-      setLoading(false);
+    if (err.code === "auth/wrong-password") {
+      setError("Incorrect password.");
+    } else if (err.code === "auth/user-not-found") {
+      setError("Account not found.");
+    } else {
+      setError("Login failed.");
     }
-  };
+  } finally {
+    setLoading(false);
+  }
+};
+
 
   /* =========================
      GOOGLE LOGIN

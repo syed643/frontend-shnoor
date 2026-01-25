@@ -1,4 +1,5 @@
-{/*import React, { createContext, useContext, useEffect, useState } from "react";
+{
+  /*import React, { createContext, useContext, useEffect, useState } from "react";
 import { onAuthStateChanged, signOut } from "firebase/auth";
 import { auth } from "./firebase";
 import api from "../api/axios"; // axios instance with baseURL
@@ -77,7 +78,8 @@ export function AuthProvider({ children }) {
     </AuthContext.Provider>
   );
 }
-*/}
+*/
+}
 
 import React, { createContext, useContext, useEffect, useState } from "react";
 import { onAuthStateChanged, signOut } from "firebase/auth";
@@ -98,17 +100,16 @@ export function AuthProvider({ children }) {
 
   useEffect(() => {
     const unsubscribe = onAuthStateChanged(auth, async (user) => {
-      setLoading(true); // 🔐 IMPORTANT
-
       try {
         if (!user) {
           setCurrentUser(null);
           setUserRole(null);
           setUserStatus(null);
+          setLoading(false);
           return;
         }
 
-        const token = await user.getIdToken(true);
+        const token = await user.getIdToken(); // ❗ no force refresh
 
         const res = await api.post(
           "/api/auth/login",
@@ -117,19 +118,19 @@ export function AuthProvider({ children }) {
             headers: {
               Authorization: `Bearer ${token}`,
             },
-          }
+          },
         );
 
         setCurrentUser(user);
         setUserRole(res.data.user.role.toLowerCase());
         setUserStatus(res.data.user.status.toLowerCase());
-      } catch (error) {
-        console.error("AuthContext backend sync failed:", error);
+      } catch (err) {
+        console.error("Auth sync failed:", err);
         setCurrentUser(null);
         setUserRole(null);
         setUserStatus(null);
       } finally {
-        setLoading(false); // ✅ ONLY here
+        setLoading(false);
       }
     });
 
