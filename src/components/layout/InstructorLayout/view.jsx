@@ -4,7 +4,7 @@ import { UserCircle, Book, LogOut, LayoutGrid, List, Settings, Upload, Menu, Mes
 import markLogo from '../../../assets/just_logo.jpeg';
 
 const InstructorLayoutView = ({
-    userName,
+    InstructorName,
     isSidebarOpen, setIsSidebarOpen,
     handleLogout, totalUnread,
     navigate, location, photoURL
@@ -104,7 +104,7 @@ const InstructorLayoutView = ({
                     <div className="flex items-center gap-4">
                         <div className="flex items-center gap-3 pl-4 border-l border-slate-200">
                             <div className="text-right hidden md:block">
-                                <div className="text-sm font-semibold text-primary-900">{userName}</div>
+                                <div className="text-sm font-semibold text-primary-900">{InstructorName}</div>
                                 <div className="text-xs text-slate-500 font-medium">Instructor</div>
                             </div>
                             <div className="w-10 h-10 rounded-full bg-slate-100 flex items-center justify-center text-slate-400 border border-slate-200 overflow-hidden">

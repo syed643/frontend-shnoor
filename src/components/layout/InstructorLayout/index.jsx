@@ -40,7 +40,7 @@ const InstructorLayout = () => {
       location={location}
       isSidebarOpen={isSidebarOpen}
       setIsSidebarOpen={setIsSidebarOpen}
-      adminName={adminName}
+      InstructorName={InstructorName}
       handleLogout={handleLogout}
       handleNavigate={handleNavigate}
     />
