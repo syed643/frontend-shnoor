@@ -22,6 +22,12 @@ const Login = () => {
       setRememberMe(true);
     }
   }, []);
+  
+    const redirectByRole = (role) => {
+    if (role === "admin") navigate("/admin/dashboard");
+    else if (role === "instructor") navigate("/instructor/dashboard");
+    else navigate("/student/dashboard");
+  };
 
   const handleLogin = async (e) => {
     e.preventDefault();
