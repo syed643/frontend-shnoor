@@ -87,10 +87,10 @@ function App() {
             <Route index element={<Navigate to="dashboard" replace />} />
             <Route path="dashboard" element={<InstructorDashboard />} />
             <Route path="add-course" element={<AddCourse />} />
-            <Route path="courses" element={<CourseList />} />
+            <Route path="courses" element={<CourseList />} /> 
             <Route path="exams" element={<ExamBuilder />} />
             <Route path="performance" element={<StudentPerformance />} />
-            <Route path="settings" element={<InstructorSettings />} />
+            <Route path="settings" element={<ProfileSettings />} />
           </Route>
 
           <Route
