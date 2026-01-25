@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { db } from '../../../auth/firebase';
 import StudentExamsView from './view';
+import api from '../../../api/axios';
 
 const StudentExams = () => {
     const navigate = useNavigate();
