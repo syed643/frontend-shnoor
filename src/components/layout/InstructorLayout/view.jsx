@@ -118,7 +118,7 @@ const InstructorLayoutView = ({
             </div>
             <ul className="mb-8">
               <NavItem
-                path="profile-settings"
+                path="settings"
                 icon={Settings}
                 label="Settings"
               />
