@@ -41,17 +41,17 @@ const ProfileSettings = () => {
       });
 
       setUserData({
-        displayName: res.data.displayName || "",
+        displayName: res.data.name || "",
         email: res.data.email || auth.currentUser.email || "",
         role: res.data.role || "User",
         bio: res.data.bio || "",
         headline: res.data.headline || "",
         linkedin: res.data.linkedin || "",
         github: res.data.github || "",
-        photoURL: res.data.photoURL || auth.currentUser.photoURL || "",
+        photoURL: res.data.photo_url || auth.currentUser.photoURL || "",
       });
 
-      setPreviewUrl(res.data.photoURL || auth.currentUser.photoURL || "");
+      setPreviewUrl(res.data.photo_url || auth.currentUser.photoURL || "");
     } catch (error) {
       console.error("Error loading profile:", error);
     } finally {
@@ -79,13 +79,12 @@ const ProfileSettings = () => {
     setUploading(true);
 
     try {
-      const { ref, uploadBytes, getDownloadURL } = await import(
-        "firebase/storage"
-      );
+      const { ref, uploadBytes, getDownloadURL } =
+        await import("firebase/storage");
 
       const storageRef = ref(
         storage,
-        `profile_pictures/${auth.currentUser.uid}`
+        `profile_pictures/${auth.currentUser.uid}`,
       );
 
       await uploadBytes(storageRef, file);
@@ -129,7 +128,7 @@ const ProfileSettings = () => {
           headers: {
             Authorization: `Bearer ${token}`,
           },
-        }
+        },
       );
 
       // Sync Firebase Auth display name

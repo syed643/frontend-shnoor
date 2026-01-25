@@ -41,6 +41,7 @@ import ManageUsers from "./pages/admin/ManageUsers";
 import Suspended from "./pages/auth/Suspended";
 import PracticeSession from "./pages/student/PracticeSession";
 import Landing from "./pages/Landing";
+import ProfileSettings from "./pages/shared/ProfileSettings";
 // import Leaderboard from './pages/student/Leaderboard';
 
 function App() {
@@ -70,6 +71,7 @@ function App() {
             <Route path="assign-course" element={<AssignCourse />} />
             <Route path="certificates" element={<CertificateConfig />} />
             <Route path="manage-users" element={<ManageUsers />} />
+            <Route path="settings" element={<ProfileSettings />} />
             <Route path="profile-management" element={<ProfileManagement />} />
           </Route>
 
@@ -103,7 +105,10 @@ function App() {
             <Route path="courses" element={<StudentCourses />} />
             <Route path="course/:courseId" element={<CourseDetail />} />
             <Route path="course/:courseId/learn" element={<CoursePlayer />} />
-            <Route path="practice/session/:challengeId" element={<PracticeSession />} />
+            <Route
+              path="practice/session/:challengeId"
+              element={<PracticeSession />}
+            />
             <Route path="exam/:examId" element={<ExamRunner />} />
             <Route path="certificate" element={<MyCertificates />} />
             {/* <Route path="leaderboard" element={<Leaderboard />} /> */}
@@ -111,7 +116,6 @@ function App() {
 
           <Route path="*" element={<Navigate to="/" replace />} />
           <Route path="/suspended" element={<Suspended />} />
-
         </Routes>
       </AuthProvider>
     </Router>
