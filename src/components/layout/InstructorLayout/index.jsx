@@ -1,0 +1,50 @@
+import { useState, useEffect } from "react";
+import { useNavigate, useLocation } from "react-router-dom";
+import { useAuth } from "../../../auth/AuthContext";
+import api from "../../../api/axios";
+import InstructorLayoutView from "./view.jsx";
+
+const InstructorLayout = () => {
+  const navigate = useNavigate();
+  const location = useLocation();
+  const { logout } = useAuth();
+
+  const [isSidebarOpen, setIsSidebarOpen] = useState(false);
+  const [InstructorName, setInstructorName] = useState("");
+
+  const handleLogout = async () => {
+    await logout();
+    navigate("/");
+  };
+
+  // Fetch admin profile from DB
+  useEffect(() => {
+    const fetchProfile = async () => {
+      try {
+        const res = await api.get("/api/users/me");
+        setInstructorName(res.data.displayName);
+      } catch (err) {
+        console.error("Failed to fetch instructor profile");
+      }
+    };
+    fetchProfile();
+  }, []);
+
+  const handleNavigate = (path) => {
+    navigate(path);
+    setIsSidebarOpen(false);
+  };
+
+  return (
+    <InstructorLayoutView
+      location={location}
+      isSidebarOpen={isSidebarOpen}
+      setIsSidebarOpen={setIsSidebarOpen}
+      adminName={adminName}
+      handleLogout={handleLogout}
+      handleNavigate={handleNavigate}
+    />
+  );
+};
+
+export default InstructorLayout;
