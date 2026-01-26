@@ -41,40 +41,44 @@ const CourseListView = ({
         </button>
 
         <h2 className="text-xl font-bold mb-4">{selectedCourse.title}</h2>
-
         {selectedCourse.modules.length === 0 ? (
-          <p className="text-slate-500">No modules added yet.</p>
+          <div className="empty-state-container">No modules added yet.</div>
         ) : (
-          <div className="space-y-2">
-            {selectedCourse.modules.map((m, idx) => (
+          selectedCourse.modules.map((m, idx) => (
+            <div key={m.module_id} className="mb-3">
+              {/* CLICKABLE ROW */}
               <div
-                key={m.module_id}
-                className="p-3 border rounded-md flex justify-between"
+                className="file-list-item clickable"
+                onClick={() => {
+                  if (m.type !== "video") {
+                    window.open(m.content_url, "_blank");
+                  }
+                }}
               >
-                <span>
-                  {idx + 1}. {m.title}
-                </span>
-                <span className="text-xs text-slate-500">
+                <div className="file-index-circle">{idx + 1}</div>
+
+                <div className="file-info">
                   {m.type === "video" ? (
-                    <video
-                      controls
-                      className="w-full max-w-3xl rounded-md border"
-                      src={m.content_url}
-                    />
+                    <FaVideo className="file-icon-sm video" />
                   ) : (
-                    <a
-                      href={m.content_url}
-                      target="_blank"
-                      rel="noreferrer"
-                      className="text-indigo-600 underline"
-                    >
-                      Open PDF
-                    </a>
+                    <FaFileAlt className="file-icon-sm pdf" />
                   )}
-                </span>
+                  <span className="file-name-row">{m.title}</span>
+                </div>
               </div>
-            ))}
-          </div>
+
+              {/* INLINE VIDEO PLAYER */}
+              {m.type === "video" && (
+                <div className="mt-2 pl-10">
+                  <video
+                    controls
+                    className="w-full max-w-4xl rounded-md border"
+                    src={m.content_url}
+                  />
+                </div>
+              )}
+            </div>
+          ))
         )}
       </div>
     );
