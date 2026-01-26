@@ -127,6 +127,31 @@ export const AddCourse = () => {
     });
   };
 
+  const handleFileUpload = async (file, fieldName) => {
+  if (!file) return;
+
+  // OPTIONAL: size check
+  if (file.size > 100 * 1024 * 1024) {
+    alert("File too large (max 100MB)");
+    return;
+  }
+
+  // TEMP: if you're not uploading yet, just simulate
+  // (prevents crash and keeps flow working)
+  setUploading(true);
+
+  setTimeout(() => {
+    const fakeUrl = URL.createObjectURL(file);
+    setModuleForm((prev) => ({
+      ...prev,
+      [fieldName]: fakeUrl,
+    }));
+    setUploading(false);
+    setUploadProgress(100);
+  }, 800);
+};
+
+
   /* =========================
      SUBMIT COURSE
      ========================= */
