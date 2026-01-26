@@ -144,8 +144,8 @@ const ExamBuilder = () => {
           duration: formData.duration,
           passPercentage: formData.passPercentage,
           courseId: formData.courseId || null,
-          validity_value: formData.courseId ? null : formData.validityPeriod,
-          validity_unit: formData.courseId ? null : formData.validityUnit,
+          validity_value: formData.courseId ? null : formData.validity_value,
+          validity_unit: formData.courseId ? null : formData.validity_unit,
           questions: formData.questions,
         },
         {
