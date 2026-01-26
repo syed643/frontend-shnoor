@@ -210,15 +210,15 @@ const ExamBuilderView = ({
                                             <div className="flex gap-2">
                                                 <input
                                                     type="number"
-                                                    name="validityPeriod"
-                                                    value={formData.validityPeriod}
+                                                    name="validity_value"
+                                                    value={formData.validity_value}
                                                     onChange={handleInputChange}
                                                     disabled={!!formData.courseId}
                                                     className={`w-20 px-3 py-2 border border-slate-200 rounded-md focus:border-indigo-500 outline-none text-sm ${formData.courseId ? 'bg-slate-100 text-slate-400' : 'bg-white'}`}
                                                 />
                                                 <select
-                                                    name="validityUnit"
-                                                    value={formData.validityUnit}
+                                                    name="validity_unit"
+                                                    value={formData.validity_unit}
                                                     onChange={handleInputChange}
                                                     disabled={!!formData.courseId}
                                                     className={`flex-1 px-3 py-2 border border-slate-200 rounded-md focus:border-indigo-500 outline-none text-sm ${formData.courseId ? 'bg-slate-100 text-slate-400' : 'bg-white'}`}
