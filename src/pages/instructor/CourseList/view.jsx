@@ -46,38 +46,24 @@ const CourseListView = ({
           <div className="empty-state-container">No modules added yet.</div>
         ) : (
           selectedCourse.modules.map((m, idx) => (
-            <div key={m.module_id} className="mb-3">
-              {/* CLICKABLE ROW */}
-              <div
-                className="file-list-item clickable"
-                onClick={() => {
-                  if (m.type !== "video") {
-                    window.open(m.content_url, "_blank");
-                  }
-                }}
-              >
-                <div className="file-index-circle">{idx + 1}</div>
+            <div
+              key={m.module_id}
+              className="file-list-item clickable"
+              onClick={() =>
+                window.open(m.content_url, "_blank", "noopener,noreferrer")
+              }
+            >
+              <div className="file-index-circle">{idx + 1}</div>
 
-                <div className="file-info">
-                  {m.type === "video" ? (
-                    <FaVideo className="file-icon-sm video" />
-                  ) : (
-                    <FaFileAlt className="file-icon-sm pdf" />
-                  )}
-                  <span className="file-name-row">{m.title}</span>
-                </div>
+              <div className="file-info">
+                {m.type === "video" ? (
+                  <FaVideo className="file-icon-sm video" />
+                ) : (
+                  <FaFileAlt className="file-icon-sm pdf" />
+                )}
+
+                <span className="file-name-row">{m.title}</span>
               </div>
-
-              {/* INLINE VIDEO PLAYER */}
-              {m.type === "video" && (
-                <div className="mt-2 pl-10">
-                  <video
-                    controls
-                    className="w-full max-w-4xl rounded-md border"
-                    src={m.content_url}
-                  />
-                </div>
-              )}
             </div>
           ))
         )}
