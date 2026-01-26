@@ -4,7 +4,7 @@ import { auth } from '../../../auth/firebase';
 import api from '../../../api/axios';
 import InstructorDashboardView from './view';
 
-const InstructorDashboard = () => {
+export const InstructorDashboard = () => {
     const navigate = useNavigate();
     const [stats, setStats] = useState({
         myCourses: 0,

@@ -24,7 +24,7 @@ import AssignCourse from "./pages/admin/AssignCourse";
 import CertificateConfig from "./pages/admin/CertificateConfig";
 import AddInstructor from "./pages/admin/AddInstructor";
 
-import InstructorDashboard from "../../InstructorDashboard";
+import InstructorDashboard from "./pages/instructor/InstructorDashboard";
 import AddCourse from "./pages/instructor/AddCourse";
 import CourseList from "./pages/instructor/CourseList";
 import ExamBuilder from "./pages/instructor/ExamBuilder";
