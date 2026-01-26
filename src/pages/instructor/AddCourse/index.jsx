@@ -209,6 +209,7 @@ export const AddCourse = () => {
       setPdfInputType={setPdfInputType}
       handleCourseChange={handleCourseChange}
       handleModuleChange={handleModuleChange}
+      handleFileUpload={handleFileUpload}
       addModule={addModule}
       removeModule={removeModule}
       moveModule={moveModule}
