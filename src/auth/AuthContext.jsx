@@ -16,41 +16,18 @@ export function AuthProvider({ children }) {
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
-    const unsubscribe = onAuthStateChanged(auth, async (user) => {
-      try {
-        if (!user) {
-          setCurrentUser(null);
-          setUserRole(null);
-          setLoading(false);
-          setUserStatus(null);
-          return;
-        }
-
-        // 🔴 ALWAYS get token directly from user
-        const token = await user.getIdToken(true);
-
-        // 🔴 SEND TOKEN IN HEADER (NOT BODY)
-        const res = await api.post(
-          "/api/auth/login",
-          {},
-          {
-            headers: {
-              Authorization: `Bearer ${token}`,
-            },
-          },
-        );
-
-        setCurrentUser(user);
-        setUserRole(res.data.user.role.toLowerCase());
-        setUserStatus(res.data.user.status.toLowerCase());
-      } catch (error) {
-        console.error("AuthContext backend sync failed:", error);
-        setCurrentUser(user);
+    const unsubscribe = onAuthStateChanged(auth, (user) => {
+      if (!user) {
+        setCurrentUser(null);
         setUserRole(null);
         setUserStatus(null);
-      } finally {
         setLoading(false);
+        return;
       }
+
+      // ✅ ONLY trust Firebase here
+      setCurrentUser(user);
+      setLoading(false);
     });
 
     return () => unsubscribe();
@@ -63,13 +40,11 @@ export function AuthProvider({ children }) {
     setUserStatus(null);
   };
 
-  const value = {
-    currentUser,
-    userRole,
-    userStatus,
-    loading,
-    logout,
-  };
-
-  return <AuthContext.Provider value={value}>{children}</AuthContext.Provider>;
+  return (
+    <AuthContext.Provider
+      value={{ currentUser, userRole, userStatus, loading, logout, setUserRole, setUserStatus }}
+    >
+      {children}
+    </AuthContext.Provider>
+  );
 }

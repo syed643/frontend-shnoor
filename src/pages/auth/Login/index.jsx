@@ -1,12 +1,12 @@
 import React, { useState, useEffect } from "react";
-import { useNavigate } from "react-router-dom";
-import { signInWithEmailAndPassword, signInWithPopup, signOut } from "firebase/auth";
-import api from "../../../api/axios.js";
+import { signInWithEmailAndPassword, signInWithPopup } from "firebase/auth";
 import { auth, googleProvider } from "../../../auth/firebase.js";
-import LoginView from "./view.jsx";   
+import api from "../../../api/axios.js";
+import { useAuth } from "../../../auth/AuthContext";
+import LoginView from "./view.jsx";
 
 const Login = () => {
-  const navigate = useNavigate();
+  const { setUserRole, setUserStatus } = useAuth();
 
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
@@ -22,50 +22,38 @@ const Login = () => {
       setRememberMe(true);
     }
   }, []);
-  
-   {/* const redirectByRole = (role) => {
-    if (role === "admin") navigate("/admin/dashboard");
-    else if (role === "instructor") navigate("/instructor/dashboard");
-    else navigate("/student/dashboard");
-  };*/}
 
   const handleLogin = async (e) => {
-    if (e && e.preventDefault) {
-      e.preventDefault();
-      e.stopPropagation();
-    }
+    e?.preventDefault();
     setError("");
     setLoading(true);
 
     try {
-      {/*const userCredential =*/} await signInWithEmailAndPassword(auth, email, password);
-      {/*const token = await userCredential.user.getIdToken(true);
+      // 1️⃣ Firebase login
+      const userCredential = await signInWithEmailAndPassword(
+        auth,
+        email,
+        password
+      );
+
+      // 2️⃣ Backend login (ONCE)
+      const token = await userCredential.user.getIdToken(true);
 
       const res = await api.post(
         "/api/auth/login",
         {},
-        {
-          headers: { Authorization: `Bearer ${token}` },
-        }
-      );*/}
+        { headers: { Authorization: `Bearer ${token}` } }
+      );
+
+      // 3️⃣ Store role & status in context
+      setUserRole(res.data.user.role.toLowerCase());
+      setUserStatus(res.data.user.status.toLowerCase());
 
       if (rememberMe) localStorage.setItem("rememberedEmail", email);
       else localStorage.removeItem("rememberedEmail");
-
-      //redirectByRole(res.data.user.role);
     } catch (err) {
       console.error("Login error:", err);
-
-      if (err.response?.status === 403) {
-        await signOut(auth);
-        setError(err.response.data.message);
-      } else if (err.response?.status === 404) {
-        setError("Account not found. Please register first.");
-      } else if (err.code === "auth/wrong-password") {
-        setError("Incorrect password.");
-      } else {
-        setError("Login failed. Please try again.");
-      }
+      setError("Login failed. Please try again.");
     } finally {
       setLoading(false);
     }
@@ -75,29 +63,19 @@ const Login = () => {
     try {
       setLoading(true);
 
-      {/*const result =*/} await signInWithPopup(auth, googleProvider);
-      {/*const token = await result.user.getIdToken(true);
+      const result = await signInWithPopup(auth, googleProvider);
+      const token = await result.user.getIdToken(true);
 
       const res = await api.post(
         "/api/auth/login",
         {},
-        {
-          headers: { Authorization: `Bearer ${token}` },
-        }
-      );*/}
+        { headers: { Authorization: `Bearer ${token}` } }
+      );
 
-      //redirectByRole(res.data.user.role);
-    } catch (err) {
-      console.error(err);
-
-      if (err.response?.status === 403) {
-        await signOut(auth);
-        setError(err.response.data.message);
-      } else if (err.response?.status === 404) {
-        setError("Account not found. Please register first.");
-      } else {
-        setError("Google Sign-In failed.");
-      }
+      setUserRole(res.data.user.role.toLowerCase());
+      setUserStatus(res.data.user.status.toLowerCase());
+    } catch {
+      setError("Google Sign-In failed.");
     } finally {
       setLoading(false);
     }
@@ -118,7 +96,3 @@ const Login = () => {
 };
 
 export default Login;
-
-
- 
-
