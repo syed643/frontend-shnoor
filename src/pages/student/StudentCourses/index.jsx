@@ -58,9 +58,9 @@ const StudentCourses = () => {
       case "explore":
         return allCourses;
       case "free-courses":
-        return allCourses.filter(c => c.is_paid === false || c.is_paid === 'false' || !c.is_paid);
+        return allCourses.filter(c => c.price_type === false || c.price_type === 'false' || !c.price_type);
       case "paid-courses":
-        return allCourses.filter(c => c.is_paid === true || c.is_paid === 'true');
+        return allCourses.filter(c => c.price_type === true || c.price_type === 'true');
       case "recommended":
         return recommendedCourses;
       case "upcoming":
