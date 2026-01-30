@@ -66,15 +66,14 @@ const StudentCourses = () => {
         return allCourses.filter((c) => c.price_type === "paid");
 
       case "recommended":
-        return allCourses.filter(
-          (c) => c.category?.toLowerCase() === "recommended",
+         const userCategories = myCourses.map(c => c.category);
+        return allCourses.filter(c =>
+          userCategories.includes(c.category) &&
+          !enrolledIds.includes(c.courses_id || c.id)
         );
 
       case "upcoming":
-        return allCourses.filter(
-          (c) =>
-            c.schedule_start_at && new Date(c.schedule_start_at) > new Date(),
-        );
+        return upcomingCourses
 
       default:
         return allCourses;
