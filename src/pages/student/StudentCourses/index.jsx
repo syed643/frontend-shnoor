@@ -21,6 +21,16 @@ const StudentCourses = () => {
   // 🔑 derive enrolledIds for the VIEW
   const enrolledIds = myCourses.map((c) => c.courses_id || c.id);
 
+  // Filter upcoming courses (scheduled for future)
+  useEffect(() => {
+    const now = new Date();
+    const upcoming = allCourses.filter((course) => {
+      if (!course.schedule_start_at) return false;
+      return new Date(course.schedule_start_at) > now;
+    });
+    setUpcomingCourses(upcoming);
+  }, [allCourses]);
+
   // Fetch courses (My Learning + Explore)
   useEffect(() => {
     const fetchCourses = async () => {
@@ -73,7 +83,7 @@ const StudentCourses = () => {
         );
 
       case "upcoming":
-        return upcomingCourses
+        return upcomingCourses;
 
       default:
         return allCourses;
