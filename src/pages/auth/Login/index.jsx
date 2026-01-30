@@ -23,11 +23,11 @@ const Login = () => {
     }
   }, []);
   
-    const redirectByRole = (role) => {
+   {/* const redirectByRole = (role) => {
     if (role === "admin") navigate("/admin/dashboard");
     else if (role === "instructor") navigate("/instructor/dashboard");
     else navigate("/student/dashboard");
-  };
+  };*/}
 
   const handleLogin = async (e) => {
     if (e && e.preventDefault) {
@@ -38,8 +38,8 @@ const Login = () => {
     setLoading(true);
 
     try {
-      const userCredential = await signInWithEmailAndPassword(auth, email, password);
-      const token = await userCredential.user.getIdToken(true);
+      {/*const userCredential =*/} await signInWithEmailAndPassword(auth, email, password);
+      {/*const token = await userCredential.user.getIdToken(true);
 
       const res = await api.post(
         "/api/auth/login",
@@ -47,12 +47,12 @@ const Login = () => {
         {
           headers: { Authorization: `Bearer ${token}` },
         }
-      );
+      );*/}
 
       if (rememberMe) localStorage.setItem("rememberedEmail", email);
       else localStorage.removeItem("rememberedEmail");
 
-      redirectByRole(res.data.user.role);
+      //redirectByRole(res.data.user.role);
     } catch (err) {
       console.error("Login error:", err);
 
@@ -75,8 +75,8 @@ const Login = () => {
     try {
       setLoading(true);
 
-      const result = await signInWithPopup(auth, googleProvider);
-      const token = await result.user.getIdToken(true);
+      {/*const result =*/} await signInWithPopup(auth, googleProvider);
+      {/*const token = await result.user.getIdToken(true);
 
       const res = await api.post(
         "/api/auth/login",
@@ -84,9 +84,9 @@ const Login = () => {
         {
           headers: { Authorization: `Bearer ${token}` },
         }
-      );
+      );*/}
 
-      redirectByRole(res.data.user.role);
+      //redirectByRole(res.data.user.role);
     } catch (err) {
       console.error(err);
 

@@ -45,7 +45,7 @@ export function AuthProvider({ children }) {
         setUserStatus(res.data.user.status.toLowerCase());
       } catch (error) {
         console.error("AuthContext backend sync failed:", error);
-        setCurrentUser(null);
+        setCurrentUser(user);
         setUserRole(null);
         setUserStatus(null);
       } finally {
@@ -71,10 +71,5 @@ export function AuthProvider({ children }) {
     logout,
   };
 
-  return (
-    <AuthContext.Provider value={value}>
-      {!loading && children}
-    </AuthContext.Provider>
-  );
+  return <AuthContext.Provider value={value}>{children}</AuthContext.Provider>;
 }
-
