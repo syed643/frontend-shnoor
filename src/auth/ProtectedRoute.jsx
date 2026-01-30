@@ -37,7 +37,13 @@ if (userStatus !== "active") {
   const roles = Array.isArray(allowedRoles)
     ? allowedRoles
     : [allowedRoles];
-
+if (allowedRoles && userRole === null) {
+  return (
+    <div className="flex h-screen items-center justify-center">
+      Loading...
+    </div>
+  );
+}
   if (allowedRoles && !roles.includes(userRole)) {
     if (userRole === "admin")
       return <Navigate to="/admin/dashboard" replace />;
