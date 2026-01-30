@@ -160,13 +160,13 @@ const StudentCoursesView = ({
                                         {courses.category}
                                     </div>
                                     <div className="absolute top-3 right-3 bg-slate-800 text-white px-2 py-0.5 rounded text-[10px] font-bold uppercase">
-                                        {courses.level || 'General'}
+                                        {courses.difficulty || 'General'}
                                     </div>
-                                    <div className={`absolute bottom-3 right-3 px-2 py-0.5 rounded text-[10px] font-bold uppercase shadow-sm ${courses.is_paid
+                                    <div className={`absolute bottom-3 right-3 px-2 py-0.5 rounded text-[10px] font-bold uppercase shadow-sm ${courses.price_type
                                         ? 'bg-amber-400 text-slate-900 border border-amber-500'
                                         : 'bg-emerald-500 text-white border border-emerald-600'
                                         }`}>
-                                        {courses.is_paid ? `₹${courses.price}` : 'FREE'}
+                                        {courses.price_type ? `₹${courses.price_amount}` : 'FREE'}
                                     </div>
                                 </div>
 
