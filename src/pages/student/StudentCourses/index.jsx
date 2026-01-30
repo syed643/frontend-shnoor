@@ -11,7 +11,8 @@ const StudentCourses = () => {
   const [myCourses, setMyCourses] = useState([]);
   const [allCourses, setAllCourses] = useState([]);
   const [loading, setLoading] = useState(true);
-
+  const [upcomingCourses, setUpcomingCourses] = useState([]);
+  const [recommendedCourses, setRecommendedCourses] = useState([]);
   const [searchTerm, setSearchTerm] = useState("");
   const [selectedCategory, setSelectedCategory] = useState("All");
   const [selectedLevel, setSelectedLevel] = useState("All");
@@ -50,8 +51,28 @@ const StudentCourses = () => {
     fetchCourses();
   }, []);
 
+    const getDisplayCourses = () => {
+    switch (activeTab) {
+      case "my-learning":
+        return myCourses;
+      case "explore":
+        return allCourses;
+      case "free-courses":
+        return allCourses.filter(c => c.is_paid === false || c.is_paid === 'false' || !c.is_paid);
+      case "paid-courses":
+        return allCourses.filter(c => c.is_paid === true || c.is_paid === 'true');
+      case "recommended":
+        return recommendedCourses;
+      case "upcoming":
+        return upcomingCourses;
+      default:
+        return allCourses;
+    }
+  };
+
+
   // Pick active list
-  const displayCourses = activeTab === "my-learning" ? myCourses : allCourses;
+  const displayCourses = getDisplayCourses();
 
   // Apply filters
   const filteredCourses = displayCourses.filter((course) => {
@@ -137,7 +158,7 @@ const StudentCourses = () => {
       handleEnroll={handleEnroll}
       navigate={navigate}
       isFreeOnly={isFreeOnly} // NEW
-      setIsFreeOnly={setIsFreeOnly} // NEW  
+      setIsFreeOnly={setIsFreeOnly} // NEW
     />
   );
 };
