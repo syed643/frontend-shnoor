@@ -13,37 +13,21 @@ const ProtectedRoute = ({ allowedRoles, children }) => {
     );
   }
 
+  // 🔴 Not logged in
   if (!currentUser) {
     return <Navigate to="/login" replace />;
   }
 
   // 🔴 Account suspended / inactive
-// ⏳ Wait until backend status is resolved
-if (userStatus === null) {
-  return (
-    <div className="flex h-screen items-center justify-center">
-      Loading...
-    </div>
-  );
-}
-
-// 🚫 Suspended users
-if (userStatus !== "active") {
-  return <Navigate to="/suspended" replace />;
-}
-
+  if (userStatus !== "active") {
+    return <Navigate to="/suspended" replace />;
+  }
 
   // 🔐 Role-based access
   const roles = Array.isArray(allowedRoles)
     ? allowedRoles
     : [allowedRoles];
-if (allowedRoles && userRole === null) {
-  return (
-    <div className="flex h-screen items-center justify-center">
-      Loading...
-    </div>
-  );
-}
+
   if (allowedRoles && !roles.includes(userRole)) {
     if (userRole === "admin")
       return <Navigate to="/admin/dashboard" replace />;
