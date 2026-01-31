@@ -43,6 +43,7 @@ import PracticeSession from "./pages/student/PracticeSession";
 import Landing from "./pages/Landing";
 import ProfileSettings from "./pages/shared/ProfileSettings";
 import StudentExams from "./pages/student/StudentExams";
+import StudentChat from "./pages/student/StudentChat";
 // import Leaderboard from './pages/student/Leaderboard';
 
 function App() {
@@ -87,7 +88,7 @@ function App() {
             <Route index element={<Navigate to="dashboard" replace />} />
             <Route path="dashboard" element={<InstructorDashboard />} />
             <Route path="add-course" element={<AddCourse />} />
-            <Route path="courses" element={<CourseList />} /> 
+            <Route path="courses" element={<CourseList />} />
             <Route path="exams" element={<ExamBuilder />} />
             <Route path="performance" element={<StudentPerformance />} />
             <Route path="settings" element={<ProfileSettings />} />
@@ -114,6 +115,8 @@ function App() {
             <Route path="exam/:examId" element={<ExamRunner />} />
             <Route path="settings" element={<ProfileSettings />} />
             <Route path="certificate" element={<MyCertificates />} />
+            <Route path="chat" element={<StudentChat />} />
+
             {/* <Route path="leaderboard" element={<Leaderboard />} /> */}
           </Route>
 
