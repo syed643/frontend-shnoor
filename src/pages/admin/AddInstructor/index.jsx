@@ -46,8 +46,6 @@ const AddInstructor = () => {
         },
       );
       setShowSuccessPopup(true); // NEW
-
-      alert(`Instructor "${data.fullName}" added successfully.`);
       navigate("/admin/dashboard");
     } catch (err) {
       console.error("Error adding instructor:", err);
