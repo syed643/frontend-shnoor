@@ -10,6 +10,7 @@ const StudentDashboard = () => {
   const [lastCourse, setLastCourse] = useState(null);
   const [assignmentsCount, setAssignmentsCount] = useState(0);
   const [studentName, setStudentName] = useState("");
+  const [deadlines, setDeadlines] = useState([]);
 
   const [gamification, setGamification] = useState({
     xp: 0,
@@ -49,6 +50,29 @@ const StudentDashboard = () => {
     fetchDashboard();
   }, []);
 
+  useEffect(() => {
+    const fetchRecommendations = async () => {
+      try {
+        const res = await api.get("/api/student/recommendations");
+        const freeCourses = res.data.filter((c) => c.price_type === "free");
+
+        const mapped = freeCourses.map((c) => ({
+          id: c.courses_id || c.courses_id,
+          title: c.title,
+          course: c.category || c.description || "",
+          due: c.created_at ? new Date(c.created_at).toLocaleDateString() : "Available now",
+          isUrgent: false,
+        }));
+
+        setDeadlines(mapped);
+      } catch (err) {
+        console.error("Failed to fetch recommendations:", err);
+      }
+    };
+
+    fetchRecommendations();
+  }, []);
+
   // Fetch student profile
   useEffect(() => {
     const fetchProfile = async () => {
@@ -71,6 +95,7 @@ const StudentDashboard = () => {
       assignmentsCount={assignmentsCount}
       studentName={studentName}
       gamification={gamification}
+      deadlines={deadlines}
     />
   );
 };
