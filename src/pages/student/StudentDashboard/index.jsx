@@ -67,7 +67,7 @@ const StudentDashboard = () => {
     <StudentDashboardView
       navigate={navigate}
       enrolledCount={enrolledcount}
-      lastCourse={lastCourse}
+      courseId={lastCourse}
       assignmentsCount={assignmentsCount}
       studentName={studentName}
       gamification={gamification}
