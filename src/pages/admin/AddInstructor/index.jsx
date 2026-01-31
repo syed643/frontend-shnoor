@@ -45,14 +45,18 @@ const AddInstructor = () => {
           },
         },
       );
-      setShowSuccessPopup(true); // NEW
-      navigate("/admin/dashboard");
+      setShowSuccessPopup(true);
     } catch (err) {
       console.error("Error adding instructor:", err);
       setError(err.response?.data?.message || "Failed to add instructor");
     } finally {
       setLoading(false);
     }
+  };
+
+  const handleSuccessClose = () => {
+    setShowSuccessPopup(false);
+    navigate("/admin/dashboard");
   };
 
   const handleCancel = () => {
@@ -68,7 +72,7 @@ const AddInstructor = () => {
       handleSubmit={handleSubmit}
       handleCancel={handleCancel}
       showSuccessPopup={showSuccessPopup}
-      setShowSuccessPopup={setShowSuccessPopup}
+      setShowSuccessPopup={handleSuccessClose}
     />
   );
 };

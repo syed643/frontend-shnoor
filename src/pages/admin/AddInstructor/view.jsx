@@ -129,16 +129,16 @@ const AddInstructorView = ({ loading, data, handleChange, handleSubmit, navigate
               <CheckCircle2 size={32} />
             </div>
             <h3 className="text-xl font-bold text-slate-900 mb-2">
-              Assignment Complete!
+              Instructor Added Successfully!
             </h3>
             <p className="text-slate-500 mb-6">
-              Courses have been successfully assigned to the selected students.
+              The instructor has been created and an invite email has been sent.
             </p>
             <button
-              onClick={() => setShowSuccessPopup(false)}
+              onClick={() => setShowSuccessPopup()}
               className="w-full bg-[var(--color-primary)] hover:bg-slate-800 text-white font-bold py-3 rounded-xl transition-all shadow-lg shadow-indigo-500/20"
             >
-              Continue
+              Continue to Dashboard
             </button>
           </div>
         </div>
