@@ -1,7 +1,7 @@
 import React from 'react';
 import { User, Mail, BookOpen, Phone, Info, GraduationCap } from 'lucide-react';
 
-const AddInstructorView = ({ loading, data, handleChange, handleSubmit, navigate }) => {
+const AddInstructorView = ({ loading, data, handleChange, handleSubmit, navigate,showSuccessPopup, setShowSuccessPopup }) => {
 
     if (loading) return (
         <div className="flex items-center justify-center min-h-[400px]">
@@ -122,6 +122,27 @@ const AddInstructorView = ({ loading, data, handleChange, handleSubmit, navigate
                     </div>
                 </form>
             </div>
+            {showSuccessPopup && (
+        <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/50 backdrop-blur-sm animate-in fade-in">
+          <div className="bg-white rounded-2xl shadow-2xl w-full max-w-sm p-6 text-center scale-100 animate-in zoom-in-95 duration-200">
+            <div className="w-16 h-16 bg-green-100 text-green-600 rounded-full flex items-center justify-center mx-auto mb-4">
+              <CheckCircle2 size={32} />
+            </div>
+            <h3 className="text-xl font-bold text-slate-900 mb-2">
+              Assignment Complete!
+            </h3>
+            <p className="text-slate-500 mb-6">
+              Courses have been successfully assigned to the selected students.
+            </p>
+            <button
+              onClick={() => setShowSuccessPopup(false)}
+              className="w-full bg-[var(--color-primary)] hover:bg-slate-800 text-white font-bold py-3 rounded-xl transition-all shadow-lg shadow-indigo-500/20"
+            >
+              Continue
+            </button>
+          </div>
+        </div>
+      )}
         </div>
     );
 };

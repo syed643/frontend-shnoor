@@ -8,6 +8,7 @@ const AddInstructor = () => {
   const navigate = useNavigate();
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState("");
+  const [showSuccessPopup, setShowSuccessPopup] = useState(false); // NEW
 
   const [data, setData] = useState({
     fullName: "",
@@ -42,8 +43,9 @@ const AddInstructor = () => {
           headers: {
             Authorization: `Bearer ${token}`,
           },
-        }
+        },
       );
+      setShowSuccessPopup(true); // NEW
 
       alert(`Instructor "${data.fullName}" added successfully.`);
       navigate("/admin/dashboard");
@@ -67,6 +69,8 @@ const AddInstructor = () => {
       handleChange={handleChange}
       handleSubmit={handleSubmit}
       handleCancel={handleCancel}
+      showSuccessPopup={showSuccessPopup}
+      setShowSuccessPopup={setShowSuccessPopup}
     />
   );
 };
