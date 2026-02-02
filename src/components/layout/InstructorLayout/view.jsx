@@ -11,6 +11,7 @@ import {
   Menu,
   MessageSquare,
   Trophy,
+  Code,
 } from "lucide-react";
 import markLogo from "../../../assets/just_logo.jpeg";
 import { useNavigate } from "react-router-dom";
