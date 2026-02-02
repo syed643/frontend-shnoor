@@ -105,6 +105,7 @@ const InstructorLayoutView = ({
             <ul className="mb-8">
               <NavItem path="courses" icon={List} label="My Courses" handleNavigate={handleNavigate} location={location} setIsSidebarOpen={setIsSidebarOpen} />
               <NavItem path="contests" icon={Trophy} label="Manage Contests" handleNavigate={handleNavigate} location={location} setIsSidebarOpen={setIsSidebarOpen} />
+              <NavItem path="practice" icon={Code} label="Practice Arena" handleNavigate={handleNavigate} location={location} setIsSidebarOpen={setIsSidebarOpen} />
               <NavItem path="exams" icon={Book} label="Exams" handleNavigate={handleNavigate} location={location} setIsSidebarOpen={setIsSidebarOpen} />
               <NavItem
                 path="chat"
