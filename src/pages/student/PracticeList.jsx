@@ -48,9 +48,9 @@ const PracticeList = () => {
             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
                 {challenges.map(challenge => (
                     <div
-                        key={challenge.challenge_id || challenge.id}
+                        key={challenge.challenge_id}
                         className="bg-white rounded-xl shadow-sm border border-slate-200 hover:shadow-md transition-all p-6 cursor-pointer group"
-                        onClick={() => navigate(`/student/practice/session/${challenge.challenge_id || challenge.id}`)}
+                        onClick={() => navigate(`/student/practice/session/${challenge.challenge_id}`)}
                     >
                         <div className="flex justify-between items-start mb-4">
                             <div className="w-10 h-10 rounded-lg bg-indigo-50 flex items-center justify-center text-indigo-600 group-hover:bg-indigo-600 group-hover:text-white transition-colors">

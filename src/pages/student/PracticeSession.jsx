@@ -6,7 +6,7 @@ import CodeEditorPanel from '../../components/exam/CodeEditorPanel';
 import api from '../../api/axios';
 
 const PracticeSession = ({ question: propQuestion, value, onChange }) => {
-    const { id } = useParams();
+    const { challengeId } = useParams();
     const navigate = useNavigate();
 
     const isEmbedded = !!propQuestion;
@@ -29,27 +29,40 @@ const PracticeSession = ({ question: propQuestion, value, onChange }) => {
     };
 
     // ✅ Fetch question from backend
-    useEffect(() => {
-        if (isEmbedded) {
-            setCode(value || propQuestion.starterCode || languageTemplates.javascript);
-            setLoading(false);
-            return;
+useEffect(() => {
+    if (isEmbedded) {
+        setCode(value || propQuestion.starterCode || languageTemplates.javascript);
+        setLoading(false);
+        return;
+    }
+
+    const fetchQuestion = async () => {
+        try {
+            const res = await api.get(`/api/practice/${challengeId}`);
+
+            const data = res.data;
+
+            // 🔥 map DB → frontend
+            const mapped = {
+                id: data.challenge_id,
+                title: data.title,
+                description: data.description,
+                starterCode: data.starter_code,
+                testCases: data.test_cases
+            };
+
+            setFetchedQuestion(mapped);
+            setCode(mapped.starterCode || languageTemplates.javascript);
+
+        } catch (err) {
+            console.error("Failed to fetch challenge:", err);
         }
+        setLoading(false);
+    };
 
-        const fetchQuestion = async () => {
-            try {
-                const res = await api.get(`/api/practice/${id}`);
+    fetchQuestion();
+}, [challengeId, isEmbedded, propQuestion, value]);
 
-                setFetchedQuestion(res.data);
-                setCode(res.data.starterCode || languageTemplates.javascript);
-            } catch (err) {
-                console.error("Failed to fetch challenge:", err);
-            }
-            setLoading(false);
-        };
-
-        fetchQuestion();
-    }, [id, isEmbedded, propQuestion, value]);
 
     const handleLanguageChange = (lang) => {
         setSelectedLanguage(lang);
@@ -64,32 +77,27 @@ const PracticeSession = ({ question: propQuestion, value, onChange }) => {
     };
 
     // ✅ Send code to backend instead of Piston
-    const handleRun = async () => {
-        setIsRunning(true);
-        setConsoleOutput([]);
+ const handleRun = async () => {
+    setIsRunning(true);
+    setConsoleOutput([]);
 
-        try {
-            const res = await axios.post(
-                `${process.env.REACT_APP_API_URL}/api/code/run`,
-                {
-                    code,
-                    language: selectedLanguage,
-                    challengeId: id
-                }
-            );
+    try {
+        const res = await api.post('/api/practice/run', {
+            code,
+            language: selectedLanguage,
+            challengeId
+        });
 
-            setConsoleOutput(res.data.results);
-        } catch (err) {
-            setConsoleOutput([
-                {
-                    type: 'error',
-                    msg: err.response?.data?.message || err.message
-                }
-            ]);
-        }
+        setConsoleOutput(res.data.results);
+    } catch (err) {
+        setConsoleOutput([
+            { type: 'error', msg: err.response?.data?.message || err.message }
+        ]);
+    }
 
-        setIsRunning(false);
-    };
+    setIsRunning(false);
+};
+
 
     if (loading) {
         return <div className="p-8 text-center text-slate-500">Loading challenge...</div>;
