@@ -152,13 +152,13 @@ const AddPracticeView = ({
                                         <button
                                             onClick={() => toggleTestCaseVisibility(index)}
                                             className={`p-1.5 rounded transition-colors flex items-center justify-center gap-1 text-[10px] font-bold uppercase w-20 
-                                                ${tc.is_hidden
-                                                    ? 'bg-amber-100 text-amber-700 border border-amber-200'
-                                                    : 'bg-emerald-100 text-emerald-700 border border-emerald-200'
+                                                ${tc.isPublic
+                                                    ? 'bg-emerald-100 text-emerald-700 border border-emerald-200'
+                                                    : 'bg-amber-100 text-amber-700 border border-amber-200'
                                                 }`}
-                                            title={tc.is_hidden ? "Hidden from students" : "Visible to students"}
+                                            title={tc.isPublic ? "Visible to students" : "Hidden from students"}
                                         >
-                                            {tc.is_hidden ? <><Code size={12} /> Hidden</> : <><CheckCircle size={12} /> Public</>}
+                                            {tc.isPublic ? <><CheckCircle size={12} /> Public</> : <><Code size={12} /> Hidden</>}
                                         </button>
                                         <button
                                             onClick={() => removeTestCase(index)}

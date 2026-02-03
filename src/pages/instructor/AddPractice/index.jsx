@@ -15,7 +15,7 @@ const AddPractice = () => {
     description: "",
     difficulty: "Easy",
     starter_code: "function solution() {\n  // Write your code here\n}",
-    test_cases: [{ input: "", output: "", is_hidden: false }],
+    test_cases: [{ input: "", output: "", isPublic: true }],
   });
 
   const handleChange = (e) => {
@@ -37,7 +37,7 @@ const AddPractice = () => {
       ...formData,
       test_cases: [
         ...formData.test_cases,
-        { input: "", output: "", is_hidden: true },
+        { input: "", output: "", isPublic: true },
       ],
     });
   };
@@ -49,7 +49,7 @@ const AddPractice = () => {
 
   const toggleTestCaseVisibility = (index) => {
     const newTestCases = [...formData.test_cases];
-    newTestCases[index].is_hidden = !newTestCases[index].is_hidden;
+    newTestCases[index].isPublic = !newTestCases[index].isPublic;
     setFormData({ ...formData, test_cases: newTestCases });
   };
 
