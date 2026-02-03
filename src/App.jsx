@@ -49,7 +49,7 @@ import InstructorChat from "./pages/instructor/InstructorChat";
 import Leaderboard from "./pages/student/Leaderboard";
 import AddPractice from "./pages/instructor/AddPractice";
 import InstructorPracticeList from "./pages/instructor/PracticeList";
-import PracticeList from "./pages/instructor/PracticeList";
+import PracticeList from "./pages/student/PracticeList";
 // import Leaderboard from './pages/student/Leaderboard';
 
 function App() {
