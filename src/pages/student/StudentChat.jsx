@@ -4,6 +4,7 @@ import { useSocket } from '../../context/SocketContext';
 import { useAuth } from '../../auth/AuthContext';
 import ChatList from '../../components/chat/ChatList';
 import ChatWindow from '../../components/chat/ChatWindow';
+import '../../styles/Chat.css';
 
 const StudentChat = () => {
     const { socket, dbUser, unreadCounts, handleSetActiveChat, markChatRead } = useSocket();
@@ -13,8 +14,55 @@ const StudentChat = () => {
     const [messages, setMessages] = useState([]);
     const [loadingMessages, setLoadingMessages] = useState(false);
 
+    // Fetch Chats + Available Instructors
     useEffect(() => {
         const fetchData = async () => {
+            try {
+                // Get existing chats
+                const chatsRes = await api.get('/api/chats');
+                const existingChats = chatsRes.data.map(c => ({
+                    id: c.chat_id,
+                    recipientName: c.recipient_name,
+                    recipientId: c.recipient_id,
+                    lastMessage: c.last_message || 'No messages yet',
+                    unread: c.unread_count,
+                    exists: true
+                }));
+
+                // Get all instructors
+                const instructorsRes = await api.get('/api/chats/available-instructors');
+                const allInstructors = instructorsRes.data;
+
+                // Merge: existing chats + instructors without chats
+                const mergedChats = [...existingChats];
+                allInstructors.forEach(instructor => {
+                    const alreadyExists = existingChats.some(c => c.recipientId === instructor.user_id);
+                    if (!alreadyExists) {
+                        mergedChats.push({
+                            id: `new_${instructor.user_id}`,
+                            recipientName: instructor.full_name,
+                            recipientId: instructor.user_id,
+                            lastMessage: 'Start a conversation',
+                            unread: 0,
+                            exists: false
+                        });
+                    }
+                });
+
+                setChats(mergedChats);
+            } catch (err) {
+                console.error("Init Student Chat Error:", err);
+            }
+        };
+        fetchData();
+    }, [unreadCounts]);
+
+    // Listen for global new_notification to refresh chat list
+    useEffect(() => {
+        if (!socket) return;
+
+        const handleGlobalNotification = async () => {
+            // Refresh chat list to update last message
             try {
                 const chatsRes = await api.get('/api/chats');
                 const existingChats = chatsRes.data.map(c => ({
@@ -22,7 +70,6 @@ const StudentChat = () => {
                     recipientName: c.recipient_name,
                     recipientId: c.recipient_id,
                     lastMessage: c.last_message || 'No messages yet',
-                    lastMessageTime: c.updated_at,
                     unread: c.unread_count,
                     exists: true
                 }));
@@ -47,23 +94,22 @@ const StudentChat = () => {
 
                 setChats(mergedChats);
             } catch (err) {
-                console.error("Init Student Chat Error:", err);
+                console.error("Refresh chats error:", err);
             }
         };
-        fetchData();
-    }, []);
 
+        socket.on('new_notification', handleGlobalNotification);
+        return () => socket.off('new_notification', handleGlobalNotification);
+    }, [socket]);
+
+    // Handle Message Receive
     useEffect(() => {
         if (!socket) return;
         const handleReceive = (msg) => {
             if (activeChat && msg.chat_id === activeChat.id) {
-                if (msg.sender_id === dbUser?.id) {
-                    console.log('Skipping own message from receive_message');
-                    return;
-                }
                 setMessages(prev => [...prev, {
                     ...msg,
-                    isMyMessage: false
+                    isMyMessage: msg.sender_id === dbUser?.id
                 }]);
                 api.put('/api/chats/read', { chatId: msg.chat_id });
             }
@@ -72,12 +118,14 @@ const StudentChat = () => {
         return () => socket.off('receive_message', handleReceive);
     }, [socket, activeChat, dbUser]);
 
+    // Select Chat
     const handleSelectChat = async (chat) => {
         handleSetActiveChat(chat.id);
         markChatRead(chat.id);
 
         let chatId = chat.id;
 
+        // If new chat, create it first
         if (!chat.exists) {
             try {
                 const res = await api.post('/api/chats', { recipientId: chat.recipientId });
@@ -106,6 +154,7 @@ const StudentChat = () => {
         }
     };
 
+    // Send Message
     const handleSendMessage = async (text, file) => {
         let attachmentFileId = null;
         let attachmentName = null;
@@ -155,9 +204,9 @@ const StudentChat = () => {
     };
 
     return (
-        <div className="p-6 h-full flex flex-col">
-            <h2 className="text-2xl font-bold text-slate-800 mb-6">Student Chat</h2>
-            <div className="flex bg-white rounded-2xl shadow-sm border border-slate-200 overflow-hidden h-[calc(100vh-180px)]">
+        <div className="student-chat-page p-4">
+            <h2 className="text-2xl font-bold mb-4">Student Chat</h2>
+            <div className="chat-container">
                 <ChatList
                     chats={chats}
                     activeChat={activeChat}
