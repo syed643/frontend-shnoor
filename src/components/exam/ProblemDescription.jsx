@@ -45,7 +45,7 @@ const ProblemDescription = ({ question }) => {
         </div>
 
         {(question.testCases || [])
-          .filter((tc) => tc.isPublic)
+          .filter((tc) => tc.isPublic===true)
           .map((tc, idx) => (
             <div
               key={idx}
