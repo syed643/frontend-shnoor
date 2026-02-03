@@ -28,7 +28,10 @@ const AddPractice = () => {
 
   const handleTestCaseChange = (index, field, value) => {
     const newTestCases = [...formData.test_cases];
-    newTestCases[index][field] = value;
+    newTestCases[index] = {
+      ...newTestCases[index],
+      [field]: value,
+    };
     setFormData({ ...formData, test_cases: newTestCases });
   };
 
