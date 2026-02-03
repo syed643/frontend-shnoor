@@ -1,246 +1,220 @@
-import React, { useState, useEffect, useRef } from 'react';
-import axios from 'axios';
+import React, { useState, useEffect } from 'react';
+import api from '../../api/axios';
+import { useSocket } from '../../context/SocketContext';
+import { useAuth } from '../../auth/AuthContext';
 import ChatList from '../../components/chat/ChatList';
 import ChatWindow from '../../components/chat/ChatWindow';
-import { auth } from '../../auth/firebase';
-import { useSocket } from '../../context/SocketContext';
 import '../../styles/Chat.css';
 
 const InstructorChat = () => {
+    const { socket, dbUser, unreadCounts, handleSetActiveChat, markChatRead } = useSocket();
+    const { userRole } = useAuth();
+
     const [chats, setChats] = useState([]);
     const [activeChat, setActiveChat] = useState(null);
-    const currentUser = auth.currentUser;
-    const { socket, unreadCounts, markChatRead, handleSetActiveChat } = useSocket();
+    const [messages, setMessages] = useState([]);
+    const [loadingMessages, setLoadingMessages] = useState(false);
 
-    const activeChatRef = useRef(null);
-    const chatsRef = useRef([]);
-
+    // ✅ Fetch Chats + Available Students (same pattern as student)
     useEffect(() => {
-        activeChatRef.current = activeChat;
-        // Sync with context to prevent notification counts
-        if (handleSetActiveChat) handleSetActiveChat(activeChat ? activeChat.id : null);
-    }, [activeChat, handleSetActiveChat]);
-    useEffect(() => { chatsRef.current = chats; }, [chats]);
-
-    useEffect(() => {
-        if (!currentUser) return;
-        const fetchChats = async () => {
+        const fetchData = async () => {
             try {
-                const API_URL = import.meta.env.VITE_API_URL || 'http://localhost:3001';
-                const res = await axios.get(`${API_URL}/api/chats`, {
-                    params: { firebase_uid: currentUser.uid }
-                });
-                const formattedChats = res.data.map(c => ({
+                const chatsRes = await api.get('/api/chats');
+                const existingChats = chatsRes.data.map(c => ({
                     id: c.chat_id,
                     recipientName: c.recipient_name,
-                    recipientId: c.recipient_uid,
-                    participants: [currentUser.uid, c.recipient_uid],
-                    lastMessage: 'View conversation',
-                    updatedAt: c.created_at,
-                    messages: [],
-                    unreadCount: unreadCounts[c.chat_id] || 0
+                    recipientId: c.recipient_id,
+                    lastMessage: c.last_message || 'No messages yet',
+                    unread: c.unread_count,
+                    exists: true
                 }));
-                setChats(formattedChats);
+
+                const studentsRes = await api.get('/api/chats/available-students');
+                const allStudents = studentsRes.data;
+
+                const mergedChats = [...existingChats];
+                allStudents.forEach(student => {
+                    const alreadyExists = existingChats.some(c => c.recipientId === student.user_id);
+                    if (!alreadyExists) {
+                        mergedChats.push({
+                            id: `new_${student.user_id}`,
+                            recipientName: student.full_name,
+                            recipientId: student.user_id,
+                            lastMessage: 'Start a conversation',
+                            unread: 0,
+                            exists: false
+                        });
+                    }
+                });
+
+                setChats(mergedChats);
             } catch (err) {
-                console.error("Error fetching chats:", err);
+                console.error("Init Instructor Chat Error:", err);
             }
         };
-        fetchChats();
-    }, [currentUser]);
+        fetchData();
+    }, [unreadCounts]);
 
-    const [notification, setNotification] = useState(null);
-
-    // Find this useEffect in StudentChat.jsx and replace the logic inside
+    // ✅ Refresh on global notification
     useEffect(() => {
         if (!socket) return;
 
-        const handleReceiveMessage = (newMsg) => {
-            // A. NOTIFICATION LOGIC (Keep existing)
-            if (newMsg.sender_uid !== currentUser.uid) {
-                playNotificationSound();
-                const currentChatId = activeChatRef.current ? String(activeChatRef.current.id) : null;
-                const messageChatId = String(newMsg.chat_id);
+        const refreshChats = async () => {
+            try {
+                const chatsRes = await api.get('/api/chats');
+                const existingChats = chatsRes.data.map(c => ({
+                    id: c.chat_id,
+                    recipientName: c.recipient_name,
+                    recipientId: c.recipient_id,
+                    lastMessage: c.last_message || 'No messages yet',
+                    unread: c.unread_count,
+                    exists: true
+                }));
 
-                if (currentChatId !== messageChatId) {
-                    const senderChat = chatsRef.current.find(c => String(c.id) === messageChatId);
-                    const senderName = senderChat ? senderChat.recipientName : "New Message";
-                    setNotification({
-                        sender: senderName,
-                        message: newMsg.text || 'Sent an attachment',
-                        visible: true
-                    });
-                    setTimeout(() => setNotification(prev => prev ? { ...prev, visible: false } : null), 4000);
-                }
-            }
+                const studentsRes = await api.get('/api/chats/available-students');
+                const allStudents = studentsRes.data;
 
-            // B. UI UPDATE LOGIC
-            const currentActive = activeChatRef.current;
-            if (currentActive && String(newMsg.chat_id) === String(currentActive.id)) {
-                setActiveChat(prev => {
-                    // ✅ FIX: Improved Deduplication Logic
-                    // Match if ID is same OR if it's an optimistic message with same content from me
-                    const existsIndex = prev.messages.findIndex(m =>
-                        m.id === newMsg.message_id ||
-                        (
-                            m.isOptimistic &&
-                            m.senderId === newMsg.sender_uid &&
-                            m.text === newMsg.text &&
-                            // Allow loose match for attachment name or ignore if both are null
-                            (m.attachment_name === newMsg.attachment_name || (!m.attachment_name && !newMsg.attachment_name))
-                        )
-                    );
-
-                    if (existsIndex !== -1) {
-                        const updatedMessages = [...prev.messages];
-                        // Update the optimistic message with real server data (ID, final URL, timestamp)
-                        updatedMessages[existsIndex] = {
-                            ...newMsg,
-                            id: newMsg.message_id,
-                            senderId: newMsg.sender_uid,
-                            timestamp: newMsg.created_at, // Use server timestamp now
-                            isOptimistic: false
-                        };
-                        return { ...prev, messages: updatedMessages };
+                const mergedChats = [...existingChats];
+                allStudents.forEach(student => {
+                    const alreadyExists = existingChats.some(c => c.recipientId === student.user_id);
+                    if (!alreadyExists) {
+                        mergedChats.push({
+                            id: `new_${student.user_id}`,
+                            recipientName: student.full_name,
+                            recipientId: student.user_id,
+                            lastMessage: 'Start a conversation',
+                            unread: 0,
+                            exists: false
+                        });
                     }
-                    return {
-                        ...prev, messages: [...prev.messages, {
-                            ...newMsg,
-                            id: newMsg.message_id,
-                            senderId: newMsg.sender_uid,
-                            timestamp: newMsg.created_at
-                        }]
-                    };
                 });
 
-                // Mark read logic...
-                const API_URL = import.meta.env.VITE_API_URL || 'http://localhost:3001';
-                axios.put(`${API_URL}/api/messages/mark-read`, {
-                    chat_id: newMsg.chat_id,
-                    user_firebase_uid: currentUser.uid
-                }).catch(console.error);
-
-                if (markChatRead) markChatRead(newMsg.chat_id);
+                setChats(mergedChats);
+            } catch (err) {
+                console.error(err);
             }
         };
 
-        socket.on('receive_message', handleReceiveMessage);
-        return () => socket.off('receive_message', handleReceiveMessage);
-    }, [socket, currentUser, markChatRead]);
+        socket.on('new_notification', refreshChats);
+        return () => socket.off('new_notification', refreshChats);
+    }, [socket]);
 
-    const playNotificationSound = () => {
-        try {
-            const audio = new Audio("https://assets.mixkit.co/active_storage/sfx/2869/2869-preview.mp3");
-            audio.play().catch(e => console.warn("Audio blocked:", e));
-        } catch (error) { console.error("Audio error:", error); }
-    };
+    // ✅ Receive message
+    useEffect(() => {
+        if (!socket) return;
 
+        const handleReceive = (msg) => {
+            if (activeChat && msg.chat_id === activeChat.id) {
+                setMessages(prev => [...prev, {
+                    ...msg,
+                    isMyMessage: msg.sender_id === dbUser?.id
+                }]);
+                api.put('/api/chats/read', { chatId: msg.chat_id });
+            }
+        };
+
+        socket.on('receive_message', handleReceive);
+        return () => socket.off('receive_message', handleReceive);
+    }, [socket, activeChat, dbUser]);
+
+    // ✅ Select chat
     const handleSelectChat = async (chat) => {
+        handleSetActiveChat(chat.id);
+        markChatRead(chat.id);
+
+        let chatId = chat.id;
+
+        if (!chat.exists) {
+            try {
+                const res = await api.post('/api/chats', { recipientId: chat.recipientId });
+                chatId = res.data.chat_id;
+                chat.id = chatId;
+                chat.exists = true;
+            } catch (err) {
+                console.error("Create chat error:", err);
+                return;
+            }
+        }
+
+        setActiveChat(chat);
+        socket.emit('join_chat', chatId);
+
+        setLoadingMessages(true);
         try {
-            if (socket) socket.emit('join_chat', chat.id);
-            const API_URL = import.meta.env.VITE_API_URL || 'http://localhost:3001';
-            await axios.put(`${API_URL}/api/messages/mark-read`, {
-                chat_id: chat.id,
-                user_firebase_uid: currentUser.uid
-            });
-            if (markChatRead) markChatRead(chat.id);
-            const res = await axios.get(`${API_URL}/api/messages/${chat.id}`);
-            const messages = res.data.map(msg => ({
-                ...msg,
-                id: msg.message_id,
-                senderId: msg.sender_uid,
-                timestamp: msg.created_at
-            }));
-            setActiveChat({ ...chat, messages: messages });
-        } catch (err) {
-            console.error("Error loading messages:", err);
+            const res = await api.get(`/api/chats/messages/${chatId}`);
+            setMessages(res.data.map(m => ({
+                ...m,
+                isMyMessage: m.sender_id === dbUser?.id
+            })));
+            await api.put('/api/chats/read', { chatId: chatId });
+        } finally {
+            setLoadingMessages(false);
         }
     };
 
-    // ✅ FILE UPLOAD LOGIC
+    // ✅ Send message (same as student)
     const handleSendMessage = async (text, file) => {
-        if (!activeChat || (!text.trim() && !file)) return;
-
         let attachmentFileId = null;
         let attachmentName = null;
         let attachmentType = null;
-        let attachmentPreviewUrl = null;
+        let attachmentUrl = null;
 
         if (file) {
             try {
                 const formData = new FormData();
                 formData.append('file', file);
-
-                const API_URL = import.meta.env.VITE_API_URL || 'http://localhost:3001';
-                const res = await axios.post(`${API_URL}/api/upload`, formData, {
+                const res = await api.post('/api/chats/upload', formData, {
                     headers: { 'Content-Type': 'multipart/form-data' }
                 });
-
                 attachmentFileId = res.data.file_id;
                 attachmentName = file.name;
                 attachmentType = file.type;
-                attachmentPreviewUrl = URL.createObjectURL(file);
+                attachmentUrl = URL.createObjectURL(file);
             } catch (err) {
                 console.error("Upload failed:", err);
-                alert("Failed to upload file.");
                 return;
             }
         }
 
-        const optimisticMsg = {
-            id: 'temp_' + Date.now(),
-            text: text,
-            senderId: currentUser.uid,
-            timestamp: new Date().toISOString(),
-            isOptimistic: true,
-            attachment_url: attachmentPreviewUrl,
+        setMessages(prev => [...prev, {
+            message_id: Date.now(),
+            text,
+            isMyMessage: true,
+            created_at: new Date().toISOString(),
+            attachment_file_id: attachmentFileId,
+            attachment_name: attachmentName,
             attachment_type: attachmentType,
-            attachment_name: attachmentName
-        };
+            attachment_url: attachmentUrl
+        }]);
 
-        setActiveChat(prev => ({
-            ...prev,
-            messages: [...prev.messages, optimisticMsg]
-        }));
-
-        if (socket) {
-            socket.emit('send_message', {
-                chat_id: activeChat.id,
-                text: text,
-                sender_firebase_uid: currentUser.uid,
-                receiver_firebase_uid: activeChat.recipientId,
-                attachment_file_id: attachmentFileId
-            });
-        }
+        socket.emit('send_message', {
+            chatId: activeChat.id,
+            text,
+            senderId: dbUser.id,
+            senderUid: dbUser.firebase_uid,
+            senderName: dbUser.fullName,
+            recipientId: activeChat.recipientId,
+            attachment_file_id: attachmentFileId,
+            attachment_name: attachmentName,
+            attachment_type: attachmentType
+        });
     };
 
     return (
-        <div className="instructor-chat-page student-chat-page">
-            {notification && notification.visible && (
-                <div className="notification-alert">
-                    <div className="notification-icon">🔔</div>
-                    <div className="notification-content">
-                        <strong>{notification.sender}</strong>
-                        <p>{notification.message}</p>
-                    </div>
-                    <button className="notification-close" onClick={() => setNotification({ ...notification, visible: false })}>×</button>
-                </div>
-            )}
-            <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '20px' }}>
-                <h2 style={{ margin: 0 }}>Instructor Messages</h2>
-            </div>
-            <div className={`chat-container ${activeChat ? 'view-chat' : 'view-list'}`}>
+        <div className="instructor-chat-page p-4">
+            <h2 className="text-2xl font-bold mb-4">Instructor Chat</h2>
+            <div className="chat-container">
                 <ChatList
                     chats={chats}
                     activeChat={activeChat}
                     onSelectChat={handleSelectChat}
-                    currentUser={currentUser}
                     unreadCounts={unreadCounts}
                 />
                 <ChatWindow
                     activeChat={activeChat}
-                    currentUser={currentUser}
+                    messages={messages}
                     onSendMessage={handleSendMessage}
-                    onBack={() => setActiveChat(null)}
+                    loadingMessages={loadingMessages}
                 />
             </div>
         </div>
