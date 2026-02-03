@@ -1,12 +1,13 @@
 import React, { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import { signInWithEmailAndPassword, signInWithPopup, signOut } from "firebase/auth";
-import api from "../../../api/axios.js";
-import { auth, googleProvider } from "../../../auth/firebase.js";
-import LoginView from "./view.jsx";   
+import { auth, googleProvider } from "../../../auth/firebase";
+import { useAuth } from "../../../auth/AuthContext";
+import LoginView from "./view";
 
 const Login = () => {
   const navigate = useNavigate();
+  const { userData, loading: authLoading, isSyncing } = useAuth();
 
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
@@ -22,12 +23,23 @@ const Login = () => {
       setRememberMe(true);
     }
   }, []);
-  
-    const redirectByRole = (role) => {
-    if (role === "admin") navigate("/admin/dashboard");
-    else if (role === "instructor") navigate("/instructor/dashboard");
-    else navigate("/student/dashboard");
-  };
+
+  // Navigate after successful authentication
+  useEffect(() => {
+    if (!authLoading && userData?.role) {
+      const role = userData.role.toLowerCase();
+      if (role === "admin") navigate("/admin/dashboard");
+      else if (role === "instructor") navigate("/instructor/dashboard");
+      else navigate("/student/dashboard");
+    }
+  }, [userData, authLoading, navigate]);
+
+  // Reset loading state when AuthContext finishes processing (using isSyncing)
+  useEffect(() => {
+    if (!isSyncing) {
+      setLoading(false);
+    }
+  }, [isSyncing]);
 
   const handleLogin = async (e) => {
     if (e && e.preventDefault) {
@@ -38,70 +50,58 @@ const Login = () => {
     setLoading(true);
 
     try {
-      const userCredential = await signInWithEmailAndPassword(auth, email, password);
-      const token = await userCredential.user.getIdToken(true);
+      // Firebase Auth - AuthContext will handle backend sync via onAuthStateChanged
+      await signInWithEmailAndPassword(auth, email, password);
 
-      const res = await api.post(
-        "/api/auth/login",
-        {},
-        {
-          headers: { Authorization: `Bearer ${token}` },
-        }
-      );
-
+      // Handle Remember Me
       if (rememberMe) localStorage.setItem("rememberedEmail", email);
       else localStorage.removeItem("rememberedEmail");
 
-      redirectByRole(res.data.user.role);
+      // Navigation will happen via useEffect when userData updates
+
     } catch (err) {
       console.error("Login error:", err);
 
-      if (err.response?.status === 403) {
-        await signOut(auth);
-        setError(err.response.data.message);
-      } else if (err.response?.status === 404) {
-        setError("Account not found. Please register first.");
-      } else if (err.code === "auth/wrong-password") {
-        setError("Incorrect password.");
+      // Handle Firebase auth errors
+      if (err.code === "auth/wrong-password" || err.code === "auth/user-not-found") {
+        setError("Invalid email or password.");
+      } else if (err.code === "auth/invalid-email") {
+        setError("Invalid email address.");
+      } else if (err.code === "auth/user-disabled") {
+        setError("This account has been disabled.");
+      } else if (err.code === "auth/too-many-requests") {
+        setError("Too many failed attempts. Please try again later.");
       } else {
         setError("Login failed. Please try again.");
       }
-    } finally {
       setLoading(false);
     }
   };
 
   const handleGoogleSignIn = async () => {
+    setError("");
+    setLoading(true);
+
     try {
-      setLoading(true);
+      // Firebase Google Sign In - AuthContext will handle backend sync
+      await signInWithPopup(auth, googleProvider);
 
-      const result = await signInWithPopup(auth, googleProvider);
-      const token = await result.user.getIdToken(true);
+      // Navigation will happen via useEffect when userData updates
 
-      const res = await api.post(
-        "/api/auth/login",
-        {},
-        {
-          headers: { Authorization: `Bearer ${token}` },
-        }
-      );
-
-      redirectByRole(res.data.user.role);
     } catch (err) {
-      console.error(err);
+      console.error("Google Sign-In error:", err);
 
-      if (err.response?.status === 403) {
-        await signOut(auth);
-        setError(err.response.data.message);
-      } else if (err.response?.status === 404) {
-        setError("Account not found. Please register first.");
+      if (err.code === "auth/popup-closed-by-user") {
+        setError("Sign-in cancelled.");
+      } else if (err.code === "auth/popup-blocked") {
+        setError("Pop-up blocked. Please allow pop-ups and try again.");
       } else {
-        setError("Google Sign-In failed.");
+        setError("Google Sign-In failed. Please try again.");
       }
-    } finally {
       setLoading(false);
     }
   };
+
 
   return (
     <LoginView
