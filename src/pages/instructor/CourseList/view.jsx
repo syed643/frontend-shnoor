@@ -202,8 +202,8 @@ const CourseListView = ({
                               e.stopPropagation();
                               onDelete(course.courses_id);
                             }}
-                            disabled={course.status === "approved"}
-                            className={`p-1.5 rounded transition-colors ${course.status === "approved" ? "text-slate-200 cursor-not-allowed" : "text-slate-400 hover:text-rose-600 hover:bg-rose-50"}`}
+                            disabled={false}
+                            className="p-1.5 text-slate-400 hover:text-rose-600 hover:bg-rose-50 rounded transition-colors"
                             title="Delete"
                           >
                             <Trash2 size={16} />
