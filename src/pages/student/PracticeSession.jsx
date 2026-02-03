@@ -38,7 +38,7 @@ const PracticeSession = ({ question: propQuestion, value, onChange }) => {
 
         const fetchQuestion = async () => {
             try {
-                const res = await api.get(`/api/practice/challenges/${id}`);
+                const res = await api.get(`/api/practice/${id}`);
 
                 setFetchedQuestion(res.data);
                 setCode(res.data.starterCode || languageTemplates.javascript);
