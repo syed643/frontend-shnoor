@@ -50,6 +50,10 @@ import Leaderboard from "./pages/student/Leaderboard";
 import AddPractice from "./pages/instructor/AddPractice";
 import InstructorPracticeList from "./pages/instructor/PracticeList";
 import PracticeList from "./pages/student/PracticeList";
+import Groups from "./pages/admin/Groups";
+import CreateGroup from "./pages/admin/Groups/create";
+import EditGroup from "./pages/admin/Groups/edit";
+import GroupUsers from "./pages/admin/Groups/users";
 // import Leaderboard from './pages/student/Leaderboard';
 
 function App() {
