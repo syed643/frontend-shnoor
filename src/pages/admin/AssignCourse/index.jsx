@@ -5,6 +5,7 @@ import AssignCourseView from "./view";
 
 const AssignCourse = () => {
   const [students, setStudents] = useState([]);
+  const [groups, setGroups] = useState([]);
   const [courses, setCourses] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState("");
