@@ -120,6 +120,7 @@ const AssignCourse = () => {
       loading={loading}
       error={error}
       groups={filteredGroups}
+      selectedGroups={selectedGroups}
       searchGroup={searchGroup}
       setSearchGroup={setSearchGroup}
       toggleGroup={toggleGroup}
