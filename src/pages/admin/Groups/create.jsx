@@ -64,9 +64,9 @@ const CreateGroup = () => {
   return (
     <form onSubmit={handleSubmit} className="max-w-lg space-y-4">
       <h1 className="text-2xl font-semibold">Create Group</h1>
-      <p className="text-sm text-gray-600">Timestamp Group: Create a group based on student registration dates.</p>
+      <p className="text-sm text-gray-600">Timestamp Group: Create a group based on student registration dates. Dates are required for auto-assignment.</p>
 
-      {error && <div className="text-red-600">{error}</div>}
+      {error && <div className="text-red-600 bg-red-50 p-3 rounded">{error}</div>}
 
       <div>
         <label className="flex items-center">
@@ -76,13 +76,14 @@ const CreateGroup = () => {
             onChange={(e) => setIsManual(e.target.checked)}
             className="mr-2"
           />
-          Manual student selection
+          <span className="font-medium">Manual student selection (skip dates)</span>
         </label>
+        <p className="text-xs text-gray-500 ml-6 mt-1">If unchecked, you MUST provide start and end dates for auto-assignment</p>
       </div>
 
       <input
         required
-        placeholder="Group Name"
+        placeholder="Group Name (e.g., Batch 2024, FAST-NUCES)"
         className="w-full border p-3 rounded"
         value={form.group_name}
         onChange={(e) => setForm({ ...form, group_name: e.target.value })}
@@ -90,29 +91,39 @@ const CreateGroup = () => {
 
       {!isManual && (
         <>
-          <label className="block text-sm font-medium mb-1">Start Date</label>
-          <input
-            required
-            type="date"
-            className="w-full border p-3 rounded"
-            value={form.start_date}
-            onChange={(e) => setForm({ ...form, start_date: e.target.value })}
-          />
+          <div className="bg-blue-50 border border-blue-200 p-3 rounded">
+            <p className="text-sm text-blue-900 font-medium">⏰ Date-based auto-assignment</p>
+            <p className="text-xs text-blue-800 mt-1">Students registered between these dates will be automatically added to this group when approved.</p>
+          </div>
 
-          <label className="block text-sm font-medium mb-1">End Date</label>
-          <input
-            required
-            type="date"
-            className="w-full border p-3 rounded"
-            value={form.end_date}
-            onChange={(e) => setForm({ ...form, end_date: e.target.value })}
-          />
+          <div>
+            <label className="block text-sm font-medium mb-1">Start Date</label>
+            <input
+              required
+              type="date"
+              className="w-full border p-3 rounded"
+              value={form.start_date}
+              onChange={(e) => setForm({ ...form, start_date: e.target.value })}
+            />
+          </div>
+
+          <div>
+            <label className="block text-sm font-medium mb-1">End Date</label>
+            <input
+              required
+              type="date"
+              className="w-full border p-3 rounded"
+              value={form.end_date}
+              onChange={(e) => setForm({ ...form, end_date: e.target.value })}
+            />
+          </div>
         </>
       )}
 
       {isManual && (
         <div>
-          <h3 className="text-lg font-medium mb-2">Select Students</h3>
+          <h3 className="text-lg font-medium mb-2">Select Students (Optional)</h3>
+          <p className="text-xs text-gray-600 mb-2">Choose students to add manually, or leave empty to add them later.</p>
           <div className="max-h-64 overflow-y-auto border rounded p-2">
             {allStudents.map((student) => (
               <label key={student.user_id} className="flex items-center mb-1">
@@ -137,9 +148,9 @@ const CreateGroup = () => {
 
       <button
         disabled={loading}
-        className="px-4 py-2 bg-primary-900 text-white rounded disabled:opacity-50"
+        className="w-full px-4 py-2 bg-primary-900 text-white rounded disabled:opacity-50"
       >
-        {loading ? "Saving..." : "Save Group"}
+        {loading ? "Saving..." : "Create Group"}
       </button>
     </form>
   );

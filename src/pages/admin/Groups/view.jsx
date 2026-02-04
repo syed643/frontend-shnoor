@@ -37,8 +37,8 @@ const GroupsView = ({ groups = [], loading = false, onCreate, onSelectGroup, onD
                   className="border-t hover:bg-slate-50"
                 >
                   <td className="p-4 font-medium text-primary-900 cursor-pointer" onClick={() => onSelectGroup(g.group_id)}>{g.group_name}</td>
-                  <td className="p-4 cursor-pointer" onClick={() => onSelectGroup(g.group_id)}>{new Date(g.start_date).toLocaleDateString()}</td>
-                  <td className="p-4 cursor-pointer" onClick={() => onSelectGroup(g.group_id)}>{g.end_date ? new Date(g.end_date).toLocaleDateString() : 'Ongoing'}</td>
+                  <td className="p-4 cursor-pointer" onClick={() => onSelectGroup(g.group_id)}>{g.start_date ? new Date(g.start_date).toLocaleDateString() : '-'}</td>
+                  <td className="p-4 cursor-pointer" onClick={() => onSelectGroup(g.group_id)}>{g.end_date ? new Date(g.end_date).toLocaleDateString() : '-'}</td>
                   <td className="p-4 cursor-pointer" onClick={() => onSelectGroup(g.group_id)}>{g.user_count ?? 0}</td>
                   <td className="p-4">
                     <button

@@ -21,7 +21,7 @@ const EditGroup = () => {
         const group = res.data;
         setForm({
           group_name: group.group_name,
-          start_date: group.start_date.split('T')[0],
+          start_date: group.start_date ? group.start_date.split('T')[0] : "",
           end_date: group.end_date ? group.end_date.split('T')[0] : "",
         });
         setIsCollegeGroup(group.created_by === null);
