@@ -31,9 +31,23 @@ const AssignCourse = () => {
           api.get("/api/admin/students"),
           api.get("/api/admin/courses?status=approved"),
         ]);
-        setGroups(groupsRes.data.groups || []);
-        setStudents(studentsRes.data.students || []);
-        setCourses(coursesRes.data.courses || []);
+        setGroups(
+          Array.isArray(groupsRes.data)
+            ? groupsRes.data
+            : groupsRes.data.groups || groupsRes.data.data || [],
+        );
+
+        setStudents(
+          Array.isArray(studentsRes.data)
+            ? studentsRes.data
+            : studentsRes.data.students || studentsRes.data.data || [],
+        );
+
+        setCourses(
+          Array.isArray(coursesRes.data)
+            ? coursesRes.data
+            : coursesRes.data.courses || coursesRes.data.data || [],
+        );
       } catch (err) {
         console.error("AssignCourse fetch error:", err);
         setError("Failed to load students or courses");
