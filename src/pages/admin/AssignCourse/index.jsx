@@ -16,7 +16,6 @@ const AssignCourse = () => {
   const [searchStudent, setSearchStudent] = useState("");
   const [showSuccessPopup, setShowSuccessPopup] = useState(false); // NEW
 
-
   /* =========================
      FETCH STUDENTS + COURSES
   ========================= */
@@ -27,13 +26,13 @@ const AssignCourse = () => {
 
         await auth.currentUser.getIdToken(); // token validated via axios interceptor
 
-        const [studentsRes, coursesRes, groupsRes] = await Promise.all([
+        const [groupsRes, studentsRes, coursesRes] = await Promise.all([
           api.get("/api/admin/groups"),
           api.get("/api/admin/students"),
           api.get("/api/admin/courses?status=approved"),
         ]);
-        setGroups(groupsRes.data || []);
-        setStudents(studentsRes.data || []);
+        setGroups(groupsRes.data.groups || []);
+        setStudents(studentsRes.data.students || []);
         setCourses(coursesRes.data.courses || []);
       } catch (err) {
         console.error("AssignCourse fetch error:", err);
@@ -49,16 +48,18 @@ const AssignCourse = () => {
   /* =========================
      TOGGLE SELECTION
   ========================= */
-    const toggleGroup = (groupId) => {
+  const toggleGroup = (groupId) => {
     setSelectedGroups((prev) =>
-      prev.includes(groupId) ? prev.filter((id) => id !== groupId) : [...prev, groupId]
+      prev.includes(groupId)
+        ? prev.filter((id) => id !== groupId)
+        : [...prev, groupId],
     );
-  }; 
+  };
   const toggleStudent = (userId) => {
     setSelectedStudents((prev) =>
       prev.includes(userId)
         ? prev.filter((id) => id !== userId)
-        : [...prev, userId]
+        : [...prev, userId],
     );
   };
 
@@ -66,7 +67,7 @@ const AssignCourse = () => {
     setSelectedCourses((prev) =>
       prev.includes(courseId)
         ? prev.filter((id) => id !== courseId)
-        : [...prev, courseId]
+        : [...prev, courseId],
     );
   };
 
@@ -74,7 +75,11 @@ const AssignCourse = () => {
      ASSIGN COURSES
   ========================= */
   const handleAssign = async () => {
-    if (selectedGroups.length === 0 || selectedStudents.length === 0 || selectedCourses.length === 0) {
+    if (
+      selectedGroups.length === 0 ||
+      selectedStudents.length === 0 ||
+      selectedCourses.length === 0
+    ) {
       throw new Error("Select at least one student and one course");
     }
 
@@ -100,14 +105,14 @@ const AssignCourse = () => {
   /* =========================
      FILTERED STUDENTS
   ========================= */
-    const filteredGroups = groups.filter(
-    (g) => (g.group_name || "").toLowerCase().includes(searchGroup.toLowerCase())
+  const filteredGroups = groups.filter((g) =>
+    (g.group_name || "").toLowerCase().includes(searchGroup.toLowerCase()),
   );
 
   const filteredStudents = students.filter(
     (s) =>
       (s.name || "").toLowerCase().includes(searchStudent.toLowerCase()) ||
-      (s.email || "").toLowerCase().includes(searchStudent.toLowerCase())
+      (s.email || "").toLowerCase().includes(searchStudent.toLowerCase()),
   );
 
   return (
