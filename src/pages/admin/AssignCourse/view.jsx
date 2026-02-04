@@ -11,6 +11,10 @@ import {
 
 const AssignCourseView = ({
   loading,
+  groups,
+  searchGroup,
+  setSearchGroup,
+  toggleGroup,
   students,
   courses,
   selectedStudents,
@@ -37,16 +41,79 @@ const AssignCourseView = ({
 
   return (
     <div className="p-2 h-[calc(100vh-6rem)] flex flex-col font-sans w-full">
-      <div className="bg-white rounded-2xl shadow-sm border border-slate-200 flex-1 flex flex-col overflow-hidden w-full">
-        <form
-          onSubmit={(e) => {
-            e.preventDefault();
-            handleAssign();
-          }}
-          className="flex-1 flex flex-col h-full"
-        >
+   <div className="bg-white rounded-2xl shadow-sm border border-slate-200 flex-1 flex flex-col overflow-hidden w-full">
+        <form onSubmit={(e) => {e.preventDefault(); handleAssign()}} className="flex-1 flex flex-col h-full">
           <div className="flex flex-1 overflow-hidden divide-x divide-slate-200">
-            {}
+            {/* Groups Section */}
+            <div className="flex-1 flex flex-col min-w-0 bg-slate-50/50">
+              <div className="p-4 border-b border-slate-100 bg-white">
+                <h3 className="flex items-center gap-2 text-lg font-bold text-primary-900 mb-4 tracking-tight">
+                  <User className="text-slate-400" size={20} /> Select Groups
+                  {selectedGroups.length > 0 && (
+                    <span className="bg-indigo-100 text-[var(--color-indigo-600)] text-xs px-2 py-0.5 rounded-md font-bold tabular-nums">
+                      {selectedGroups.length}
+                    </span>
+                  )}
+                </h3>
+
+                <div className="relative">
+                  <Search
+                    className="absolute left-4 top-1/2 -translate-y-1/2 text-slate-400"
+                    size={20}
+                  />
+                  <input
+                    type="text"
+                    placeholder="Search group..."
+                    value={searchGroup}
+                    onChange={(e) => setSearchGroup(e.target.value)}
+                    className="input-field !pl-12 w-full text-base"
+                  />
+                </div>
+              </div>
+
+              <div className="flex-1 overflow-y-auto p-4 space-y-2 custom-scrollbar">
+                {groups.map((g) => (
+                  <div
+                    key={g.group_id}
+                    onClick={() => toggleGroup(g.group_id)}
+                    className={`flex items-center justify-between p-3 rounded-xl border cursor-pointer transition-all group ${
+                      selectedGroups.includes(g.group_id)
+                        ? "bg-indigo-50 border-[var(--color-indigo-600)] shadow-sm"
+                        : "bg-white border-slate-200 hover:border-indigo-300 hover:shadow-sm"
+                    }`}
+                  >
+                    <div className="min-w-0">
+                      <div
+                        className={`font-bold text-base truncate ${selectedGroups.includes(g.group_id) ? "text-[var(--color-indigo-600)]" : "text-slate-700"}`}
+                      >
+                        {g.group_name}
+                      </div>
+                      <div className="flex items-center gap-1.5 text-sm text-slate-500 truncate mt-0.5">
+                        <Mail size={12} className="text-slate-400" /> {g.user_count || 0} students • { new Date(g.start_date).toLocaleDateString('en-CA') } → { g.end_date ? new Date(g.end_date).toLocaleDateString('en-CA') : 'Ongoing' }
+                      </div>
+                    </div>
+                    <div
+                      className={`w-6 h-6 rounded-full flex items-center justify-center transition-colors ${
+                        selectedGroups.includes(g.group_id)
+                          ? "text-[var(--color-indigo-600)]"
+                          : "text-slate-200 group-hover:text-indigo-300"
+                      }`}
+                    >
+                      <CheckCircle2 size={20} />
+                    </div>
+                  </div>
+                ))}
+                {groups.length === 0 && (
+                  <div className="text-center py-12 text-slate-400 border-2 border-dashed border-slate-200 rounded-xl bg-slate-50 mx-4">
+                    <p className="text-sm font-medium">
+                      No groups found matching "{searchGroup}"
+                    </p>
+                  </div>
+                )}
+              </div>
+            </div>
+
+            {/* Students Section */}
             <div className="flex-1 flex flex-col min-w-0 bg-slate-50/50">
               <div className="p-4 border-b border-slate-100 bg-white">
                 <h3 className="flex items-center gap-2 text-lg font-bold text-primary-900 mb-4 tracking-tight">
@@ -96,7 +163,7 @@ const AssignCourseView = ({
                     </div>
                     <div
                       className={`w-6 h-6 rounded-full flex items-center justify-center transition-colors ${
-                        selectedStudents.includes(s.id)
+                        selectedStudents.includes(s.user_id)
                           ? "text-[var(--color-indigo-600)]"
                           : "text-slate-200 group-hover:text-indigo-300"
                       }`}
@@ -115,9 +182,9 @@ const AssignCourseView = ({
               </div>
             </div>
 
-            {}
+            {/* Courses Section */}
             <div
-              className={`flex-1 flex flex-col min-w-0 transition-opacity ${selectedStudents.length === 0 ? "opacity-50 pointer-events-none bg-slate-50" : "bg-white"}`}
+              className={`flex-1 flex flex-col min-w-0 transition-opacity ${(selectedGroups.length === 0 && selectedStudents.length === 0) ? "opacity-50 pointer-events-none bg-slate-50" : "bg-white"}`}
             >
               <div className="p-4 border-b border-slate-100 bg-white">
                 <h3 className="flex items-center gap-2 text-lg font-bold text-primary-900 mb-1 tracking-tight">
@@ -133,18 +200,18 @@ const AssignCourseView = ({
                   )}
                 </h3>
                 <p className="text-xs text-slate-500 font-bold uppercase tracking-wider h-6 flex items-center">
-                  {selectedStudents.length === 0
-                    ? "Select students first"
+                  {(selectedGroups.length === 0 && selectedStudents.length === 0)
+                    ? "Select groups or students first"
                     : "Choose courses to assign"}
                 </p>
               </div>
 
               <div className="flex-1 overflow-y-auto p-4 space-y-2 relative custom-scrollbar">
-                {selectedStudents.length === 0 && (
+                {(selectedGroups.length === 0 && selectedStudents.length === 0) && (
                   <div className="absolute inset-0 flex items-center justify-center bg-white/50 backdrop-blur-[1px] z-10">
                     <div className="bg-white px-6 py-4 rounded-xl shadow-lg border border-slate-200 text-slate-600 font-bold flex items-center gap-2 text-sm">
                       <AlertCircle size={18} className="text-amber-500" />{" "}
-                      Select at least one student
+                      Select at least one group or student
                     </div>
                   </div>
                 )}
@@ -197,17 +264,17 @@ const AssignCourseView = ({
             <button
               type="submit"
               disabled={
-                selectedStudents.length === 0 || selectedCourses.length === 0
+                (selectedGroups.length === 0 && selectedStudents.length === 0) || selectedCourses.length === 0
               }
               className={`flex items-center gap-2 px-8 py-3 rounded-xl font-bold shadow-lg transition-all text-sm ${
-                selectedStudents.length === 0 || selectedCourses.length === 0
+                (selectedGroups.length === 0 && selectedStudents.length === 0) || selectedCourses.length === 0
                   ? "bg-slate-200 text-slate-400 cursor-not-allowed shadow-none"
                   : "bg-[var(--color-primary)] hover:bg-slate-800 text-white shadow-slate-900/10 hover:shadow-xl hover:-translate-y-0.5"
               }`}
             >
               <PlusCircle size={20} />
-              {selectedStudents.length > 0 && selectedCourses.length > 0
-                ? `Assign ${selectedCourses.length} Course${selectedCourses.length > 1 ? "s" : ""} to ${selectedStudents.length} Student${selectedStudents.length > 1 ? "s" : ""}`
+              {(selectedGroups.length > 0 || selectedStudents.length > 0) && selectedCourses.length > 0
+                ? `Assign ${selectedCourses.length} Course${selectedCourses.length > 1 ? "s" : ""} to ${selectedGroups.length + selectedStudents.length} Recipient${selectedGroups.length + selectedStudents.length > 1 ? "s" : ""}`
                 : "Confirm Assignment"}
             </button>
           </div>

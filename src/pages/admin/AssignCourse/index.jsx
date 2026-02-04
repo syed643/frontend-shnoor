@@ -8,7 +8,8 @@ const AssignCourse = () => {
   const [courses, setCourses] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState("");
-
+  const [selectedGroups, setSelectedGroups] = useState([]);
+  const [searchGroup, setSearchGroup] = useState("");
   const [selectedStudents, setSelectedStudents] = useState([]);
   const [selectedCourses, setSelectedCourses] = useState([]);
   const [searchStudent, setSearchStudent] = useState("");
@@ -25,11 +26,12 @@ const AssignCourse = () => {
 
         await auth.currentUser.getIdToken(); // token validated via axios interceptor
 
-        const [studentsRes, coursesRes] = await Promise.all([
+        const [studentsRes, coursesRes, groupsRes] = await Promise.all([
+          api.get("/api/admin/groups"),
           api.get("/api/admin/students"),
           api.get("/api/admin/courses?status=approved"),
         ]);
-
+        setGroups(groupsRes.data || []);
         setStudents(studentsRes.data || []);
         setCourses(coursesRes.data.courses || []);
       } catch (err) {
@@ -46,6 +48,11 @@ const AssignCourse = () => {
   /* =========================
      TOGGLE SELECTION
   ========================= */
+    const toggleGroup = (groupId) => {
+    setSelectedGroups((prev) =>
+      prev.includes(groupId) ? prev.filter((id) => id !== groupId) : [...prev, groupId]
+    );
+  }; 
   const toggleStudent = (userId) => {
     setSelectedStudents((prev) =>
       prev.includes(userId)
@@ -66,7 +73,7 @@ const AssignCourse = () => {
      ASSIGN COURSES
   ========================= */
   const handleAssign = async () => {
-    if (selectedStudents.length === 0 || selectedCourses.length === 0) {
+    if (selectedGroups.length === 0 || selectedStudents.length === 0 || selectedCourses.length === 0) {
       throw new Error("Select at least one student and one course");
     }
 
@@ -74,10 +81,12 @@ const AssignCourse = () => {
       await auth.currentUser.getIdToken();
 
       await api.post("/api/admin/assign-courses", {
+        groupIds: selectedGroups,
         studentIds: selectedStudents,
         courseIds: selectedCourses,
       });
 
+      setSelectedGroups([]);
       setSelectedStudents([]);
       setSelectedCourses([]);
       setShowSuccessPopup(true); // NEW
@@ -90,6 +99,10 @@ const AssignCourse = () => {
   /* =========================
      FILTERED STUDENTS
   ========================= */
+    const filteredGroups = groups.filter(
+    (g) => (g.group_name || "").toLowerCase().includes(searchGroup.toLowerCase())
+  );
+
   const filteredStudents = students.filter(
     (s) =>
       (s.name || "").toLowerCase().includes(searchStudent.toLowerCase()) ||
@@ -100,6 +113,10 @@ const AssignCourse = () => {
     <AssignCourseView
       loading={loading}
       error={error}
+      groups={filteredGroups}
+      searchGroup={searchGroup}
+      setSearchGroup={setSearchGroup}
+      toggleGroup={toggleGroup}
       students={filteredStudents}
       courses={courses}
       selectedStudents={selectedStudents}

@@ -100,6 +100,7 @@ const AdminLayoutView = ({
             </div>
             <ul className="mb-8">
               <NavItem path="manage-users" icon={Users} label="Manage Users" />
+              <NavItem path="groups" icon={Users} label="Groups" />
               <NavItem
                 path="approve-courses"
                 icon={CheckCircle}

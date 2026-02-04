@@ -79,7 +79,12 @@ function App() {
               <Route path="assign-course" element={<AssignCourse />} />
               <Route path="certificates" element={<CertificateConfig />} />
               <Route path="manage-users" element={<ManageUsers />} />
+              <Route path= "groups" element={<Groups/>}/>
+              <Route path="groups/create" element={<CreateGroup />} />
+              <Route path="groups/edit/:groupId" element={<EditGroup />} />
+              <Route path="groups/:groupId/users" element={<GroupUsers />} />
               <Route path="settings" element={<ProfileSettings />} />
+
               <Route
                 path="profile-management"
                 element={<ProfileManagement />}
