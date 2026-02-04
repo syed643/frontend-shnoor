@@ -26,6 +26,7 @@ const AssignCourseView = ({
   handleAssign,
   showSuccessPopup,
   setShowSuccessPopup,
+  selectedGroups
 }) => {
   if (loading)
     return (
