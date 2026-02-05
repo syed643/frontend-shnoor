@@ -11,6 +11,7 @@ import {
   ArrowUp,
   ArrowDown,
   Info,
+  Minus,
 } from "lucide-react";
 
 const AddCourseView = ({
