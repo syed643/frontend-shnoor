@@ -79,16 +79,18 @@ const ProfileSettings = () => {
     setUploading(true);
 
     try {
-      const { ref, uploadBytes, getDownloadURL } =
-        await import("firebase/storage");
+      const token = await auth.currentUser.getIdToken();
+      const formData = new FormData();
+      formData.append("file", file);
 
-      const storageRef = ref(
-        storage,
-        `profile_pictures/${auth.currentUser.uid}`,
-      );
-
-      await uploadBytes(storageRef, file);
-      const downloadURL = await getDownloadURL(storageRef);
+      // Upload to backend
+      const res = await api.post("/api/users/upload-profile-picture", formData, {
+        headers: {
+          "Content-Type": "multipart/form-data",
+          Authorization: `Bearer ${token}`,
+        },
+      });
+      const downloadURL = res.data.url;
 
       setPreviewUrl(downloadURL);
       setUserData((prev) => ({ ...prev, photoURL: downloadURL }));
