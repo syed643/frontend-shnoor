@@ -94,7 +94,8 @@ const AssignCourse = () => {
       selectedStudents.length === 0 ||
       selectedCourses.length === 0
     ) {
-      throw new Error("Select at least one student and one course");
+      setError("Select at least one student and one course");
+      return;
     }
 
     try {
@@ -112,7 +113,7 @@ const AssignCourse = () => {
       setShowSuccessPopup(true); // NEW
     } catch (err) {
       console.error("Assign course error:", err);
-      throw err;
+      setError("Failed to assign courses");
     }
   };
 
