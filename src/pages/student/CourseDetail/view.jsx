@@ -92,7 +92,9 @@ const CourseDetailView = ({
               </div>
               <div className="flex items-center gap-2">
                 <Calendar className="text-slate-400" size={16} /> updated{" "}
-                {course.updatedAt || "Recently"}
+                {course.updatedAt
+                  ? new Date(course.updatedAt).toLocaleDateString()
+                  : "Recently"}{" "}
               </div>
             </div>
 
@@ -105,7 +107,7 @@ const CourseDetailView = ({
                   Created by
                 </div>
                 <div className="font-bold text-primary-900">
-                  {course.instructor?.name}
+                  {course.instructor?.name || "Instructor"}
                 </div>
               </div>
             </div>
@@ -239,7 +241,7 @@ const CourseDetailView = ({
                   Senior Instructor
                 </p>
                 <p className="text-slate-600 leading-relaxed text-sm">
-                  {course.instructor?.bio}
+                  {course.instructor?.bio || "Instructor Details Not Available"}
                 </p>
               </div>
             </div>
@@ -250,7 +252,7 @@ const CourseDetailView = ({
         <div className="lg:col-span-1">
           <div className="bg-white rounded-2xl shadow-xl border border-slate-200 overflow-hidden sticky top-24">
             {/* Preview Area */}
-            <div className="h-48 bg-primary-900 relative group cursor-pointer flex items-center justify-center">
+            <div   onClick={() => navigate(`/preview/${course.id}`)} className="h-48 bg-primary-900 relative group cursor-pointer flex items-center justify-center">
               <div className="absolute inset-0 bg-indigo-600/20 group-hover:bg-indigo-600/30 transition-colors"></div>
               <div className="w-16 h-16 bg-white rounded-full flex items-center justify-center text-indigo-600 shadow-lg transform group-hover:scale-110 transition-transform duration-300">
                 <Play size={24} className="ml-1" fill="currentColor" />
@@ -282,7 +284,8 @@ const CourseDetailView = ({
                 </div>
                 <div className="flex items-center gap-3 text-sm text-slate-600">
                   <Clock className="text-slate-400" size={16} />{" "}
-                  {(course.modules?.length ?? 0) * 15 || 60} mins on-demand video
+                  {course.modules?.length ? course.modules.length * 15 : 60}{" "}
+                  mins on-demand video video
                 </div>
                 <div className="flex items-center gap-3 text-sm text-slate-600">
                   <CheckCircle className="text-slate-400" size={16} /> Access on
