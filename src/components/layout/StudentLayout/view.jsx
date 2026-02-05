@@ -12,8 +12,10 @@ import {
   Menu,
   Settings,
   MessageSquare,
+  Award,
 } from "lucide-react";
 import markLogo from "../../../assets/just_logo.jpeg";
+import NotificationToast from "../../common/NotificationToast";
 
 const StudentLayoutView = ({
   studentName,
@@ -26,7 +28,14 @@ const StudentLayoutView = ({
   navigate,
   location,
   photoURL,
+  notifications,
+  onDismiss,
+  toasts,
+  onDismissToast,
+  notifPermission,
+  onRequestPermission,
 }) => {
+  const [notifOpen, setNotifOpen] = React.useState(false);
   const NavItem = ({ path, icon: Icon, label, badgeCount }) => {
     const isActive =
       location.pathname.includes(path) &&
@@ -60,6 +69,7 @@ const StudentLayoutView = ({
 
   return (
     <div className="flex min-h-screen bg-slate-50 font-sans text-slate-900">
+      <NotificationToast notifications={toasts} onDismiss={onDismissToast} />
       {isSidebarOpen && (
         <div
           className="fixed inset-0 bg-black/50 z-40 lg:hidden backdrop-blur-sm"
@@ -123,6 +133,94 @@ const StudentLayoutView = ({
           </div>
 
           <div className="flex items-center gap-4">
+            <div className="relative">
+              <button
+                className="p-2 text-slate-500 bg-yellow-100 hover:bg-yellow-200 rounded-full relative transition-colors border border-yellow-300"
+                onClick={() => setNotifOpen(!notifOpen)}
+              >
+                <div className="text-slate-600">
+                  <svg
+                    xmlns="http://www.w3.org/2000/svg"
+                    width="20"
+                    height="20"
+                    viewBox="0 0 24 24"
+                    fill="none"
+                    stroke="currentColor"
+                    strokeWidth="2"
+                    strokeLinecap="round"
+                    strokeLinejoin="round"
+                  >
+                    <path d="M6 8a6 6 0 0 1 12 0c0 7 3 9 3 9H3s3-2 3-9" />
+                    <path d="M10.3 21a1.94 1.94 0 0 0 3.4 0" />
+                  </svg>
+                </div>
+                {notifications.length > 0 && (
+                  <span className="absolute top-1 right-1 h-2.5 w-2.5 bg-red-500 rounded-full border-2 border-white"></span>
+                )}
+              </button>
+
+              {notifOpen && (
+                <div className="absolute right-0 mt-2 w-80 bg-white rounded-xl shadow-2xl border border-slate-100 overflow-hidden z-50 animate-in fade-in zoom-in-95 duration-200">
+                  <div className="p-4 border-b border-slate-50 bg-slate-50 flex flex-col gap-2">
+                    <div className="flex justify-between items-center w-full">
+                      <h3 className="font-bold text-slate-800">
+                        Notifications
+                      </h3>
+                      <span className="text-xs font-bold bg-indigo-100 text-indigo-700 px-2 py-0.5 rounded-full">
+                        {notifications.length} New
+                      </span>
+                    </div>
+                    {notifPermission === "default" && (
+                      <button
+                        onClick={onRequestPermission}
+                        className="text-xs w-full py-1.5 bg-indigo-600 text-white rounded-md hover:bg-indigo-700 transition flex items-center justify-center gap-1 shadow-sm"
+                      >
+                        🔔 Enable Desktop Notifications
+                      </button>
+                    )}
+
+                    {notifPermission === "denied" && (
+                      <div className="text-[10px] text-red-500 bg-red-50 px-2 py-1 rounded border border-red-100 text-center">
+                        ⚠️ System notifications blocked. Check browser settings.
+                      </div>
+                    )}
+                  </div>
+                  <div className="max-h-96 overflow-y-auto">
+                    {notifications.length === 0 ? (
+                      <div className="p-8 text-center text-slate-400 text-sm">
+                        No new notifications
+                      </div>
+                    ) : (
+                      notifications.map((notif) => (
+                        <div
+                          key={notif.id}
+                          onClick={() => {
+                            console.debug("Notification clicked:", notif);
+                            onDismiss(notif.id);
+                            if (notif.link) navigate(notif.link);
+                            setNotifOpen(false);
+                          }}
+                          className="p-4 border-b border-slate-50 hover:bg-indigo-50 transition-colors cursor-pointer flex gap-3 items-start"
+                        >
+                          <div className="h-2 w-2 mt-2 rounded-full bg-indigo-500 shrink-0" />
+                          <div>
+                            <p className="text-sm text-slate-700 leading-snug">
+                              {notif.message}
+                            </p>
+                            <p className="text-xs text-slate-400 mt-1">
+                              {new Date(notif.created_at).toLocaleTimeString(
+                                [],
+                                { hour: "2-digit", minute: "2-digit" },
+                              )}
+                            </p>
+                          </div>
+                        </div>
+                      ))
+                    )}
+                  </div>
+                </div>
+              )}
+            </div>
             <div className="hidden md:flex items-center gap-2 bg-slate-50 px-3 py-1.5 rounded-full border border-slate-100">
               <div className="flex flex-col items-end">
                 <span className="text-[10px] text-slate-400 font-bold uppercase tracking-wider leading-none mb-0.5">
