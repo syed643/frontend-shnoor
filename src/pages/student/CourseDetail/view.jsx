@@ -8,6 +8,8 @@ import {
   Star,
   Globe,
   Award,
+  Info,
+  FileText,
   ArrowLeft,
   Check,
 } from "lucide-react";
@@ -108,12 +110,10 @@ const CourseDetailView = ({
               </div>
             </div>
           </div>
-
-          {}
           {(course.prereq_description ||
             (course.prereq_video_urls && course.prereq_video_urls.length > 0) ||
             course.prereq_pdf_url) && (
-            <div className="bg-white p-8 border border-slate-200 p-6 shadow-sm rounded-2xl">
+            <div className="bg-white border border-slate-200 p-6 shadow-sm rounded-2xl">
               <div className="flex items-center gap-3 mb-4">
                 <div className="w-8 h-8 bg-amber-100 rounded-full flex items-center justify-center">
                   <Info className="text-amber-600" size={16} />
@@ -282,7 +282,7 @@ const CourseDetailView = ({
                 </div>
                 <div className="flex items-center gap-3 text-sm text-slate-600">
                   <Clock className="text-slate-400" size={16} />{" "}
-                  {course.modules?.length * 15 || 60} mins on-demand video
+                  {(course.modules?.length ?? 0) * 15 || 60} mins on-demand video
                 </div>
                 <div className="flex items-center gap-3 text-sm text-slate-600">
                   <CheckCircle className="text-slate-400" size={16} /> Access on
