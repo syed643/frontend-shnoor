@@ -132,6 +132,171 @@ const AddCourseView = ({
                       className="w-full px-4 py-2.5 bg-slate-50 border border-slate-200 rounded-md focus:border-indigo-500 focus:ring-0 outline-none transition-all font-medium text-primary-900 text-sm"
                     />
                   </div>
+
+                  {/* --- NEW: Schedule & Pricing --- */}
+                  <div className="space-y-6 pt-4 border-t border-slate-100">
+                    {/* Schedule Release */}
+                    <div className="space-y-1.5">
+                      <label className="text-xs font-bold text-slate-500 uppercase tracking-wide">
+                        Schedule Release (Optional)
+                      </label>
+                      <input
+                        type="datetime-local"
+                        name="scheduleDate"
+                        value={courseData.scheduleDate || ""}
+                        onChange={handleCourseChange}
+                        className="w-full px-4 py-2.5 bg-slate-50 border border-slate-200 rounded-md focus:border-indigo-500 focus:ring-0 outline-none text-slate-700 text-sm"
+                      />
+                    </div>
+
+                    {/* Pricing Section */}
+                    <div className="space-y-3">
+                      <label className="text-xs font-bold text-slate-500 uppercase tracking-wide">
+                        Pricing Strategy
+                      </label>
+
+                      <div className="flex gap-4">
+                        <label className="flex items-center gap-2 cursor-pointer p-3 border border-slate-200 rounded-md hover:bg-slate-50 flex-1">
+                          <input
+                            type="radio"
+                            name="isPaid"
+                            value="false"
+                            checked={
+                              courseData.isPaid === false ||
+                              courseData.isPaid === "false"
+                            }
+                            onChange={(e) =>
+                              handleCourseChange({
+                                target: { name: "isPaid", value: false },
+                              })
+                            }
+                            className="text-indigo-600 focus:ring-indigo-500"
+                          />
+                          <span className="text-sm font-semibold text-slate-700">
+                            Free Course
+                          </span>
+                        </label>
+
+                        <label className="flex items-center gap-2 cursor-pointer p-3 border border-slate-200 rounded-md hover:bg-slate-50 flex-1">
+                          <input
+                            type="radio"
+                            name="isPaid"
+                            value="true"
+                            checked={
+                              courseData.isPaid === true ||
+                              courseData.isPaid === "true"
+                            }
+                            onChange={(e) =>
+                              handleCourseChange({
+                                target: { name: "isPaid", value: true },
+                              })
+                            }
+                            className="text-indigo-600 focus:ring-indigo-500"
+                          />
+                          <span className="text-sm font-semibold text-slate-700">
+                            Paid Course
+                          </span>
+                        </label>
+                      </div>
+
+                      {(courseData.isPaid === true ||
+                        courseData.isPaid === "true") && (
+                        <div className="space-y-1.5 animate-in fade-in slide-in-from-top-1">
+                          <label className="text-xs font-bold text-emerald-600 uppercase tracking-wide">
+                            Price (INR)
+                          </label>
+                          <div className="relative">
+                            <span className="absolute left-3 top-1/2 -translate-y-1/2 text-slate-400 font-bold">
+                              ₹
+                            </span>
+                            <input
+                              type="number"
+                              name="price"
+                              placeholder="0.00"
+                              min="0"
+                              step="0.01"
+                              value={courseData.price || ""}
+                              onChange={handleCourseChange}
+                              className="w-full pl-8 pr-4 py-2.5 bg-white border border-emerald-200 rounded-md focus:border-emerald-500 focus:ring-0 outline-none text-slate-900 font-bold text-sm"
+                            />
+                          </div>
+                        </div>
+                      )}
+                    </div>
+                  </div>
+                  <div className="mt-4 space-y-4 border border-slate-200 rounded-md p-4 bg-slate-50">
+                    <h4 className="text-xs font-bold text-slate-600 uppercase tracking-wide flex items-center gap-2">
+                      <Info size={14} className="text-indigo-500" />
+                      Pre-requirements for this course
+                    </h4>
+
+                    <div className="space-y-1.5">
+                      <label className="text-xs font-semibold text-slate-500">
+                        Concepts students should know before starting
+                      </label>
+                      <textarea
+                        name="prereq_description"
+                        rows="3"
+                        placeholder="e.g. Basic Python syntax, linear algebra fundamentals..."
+                        value={courseData.prereq_description}
+                        onChange={handleCourseChange}
+                        className="w-full px-3 py-2 bg-white border border-slate-200 rounded-md focus:border-indigo-500 focus:ring-0 outline-none text-xs"
+                      />
+                    </div>
+
+                    <div className="space-y-1.5">
+                      <div className="flex items-center justify-between">
+                        <label className="text-xs font-semibold text-slate-500">
+                          Recommended Video Links
+                        </label>
+                        <button
+                          type="button"
+                          onClick={addVideoUrl}
+                          className="flex items-center gap-1 px-2 py-1 text-xs bg-indigo-50 text-indigo-600 rounded-md hover:bg-indigo-100 transition-colors"
+                        >
+                          <Plus size={12} />
+                          Add Video
+                        </button>
+                      </div>
+
+                      <div className="space-y-2">
+                        {courseData.prereq_video_urls.map((url, index) => (
+                          <div key={index} className="flex gap-2">
+                            <input
+                              placeholder={`Video ${index + 1}: https://youtube.com/...`}
+                              value={url}
+                              onChange={(e) =>
+                                updateVideoUrl(index, e.target.value)
+                              }
+                              className="flex-1 px-3 py-2 bg-white border border-slate-200 rounded-md focus:border-indigo-500 focus:ring-0 outline-none text-xs"
+                            />
+                            {courseData.prereq_video_urls.length > 1 && (
+                              <button
+                                type="button"
+                                onClick={() => removeVideoUrl(index)}
+                                className="px-2 py-2 text-red-500 hover:bg-red-50 rounded-md transition-colors"
+                              >
+                                <Minus size={14} />
+                              </button>
+                            )}
+                          </div>
+                        ))}
+                      </div>
+                    </div>
+
+                    <div className="space-y-1.5">
+                      <label className="text-xs font-semibold text-slate-500">
+                        PDF Links
+                      </label>
+                      <input
+                        name="prereq_pdf_url"
+                        placeholder="https://... (public PDF link)"
+                        value={courseData.prereq_pdf_url}
+                        onChange={handleCourseChange}
+                        className="w-full px-3 py-2 bg-white border border-slate-200 rounded-md focus:border-indigo-500 focus:ring-0 outline-none text-xs"
+                      />
+                    </div>
+                  </div>
                 </div>
 
                 <div className="space-y-6">
@@ -212,171 +377,6 @@ const AddCourseView = ({
                         </select>
                       </div>
                     </div>
-                  </div>
-                </div>
-          
-                {/* --- NEW: Schedule & Pricing --- */}
-                <div className="space-y-6 pt-4 border-t border-slate-100">
-                  {/* Schedule Release */}
-                  <div className="space-y-1.5">
-                    <label className="text-xs font-bold text-slate-500 uppercase tracking-wide">
-                      Schedule Release (Optional)
-                    </label>
-                    <input
-                      type="datetime-local"
-                      name="scheduleDate"
-                      value={courseData.scheduleDate || ""}
-                      onChange={handleCourseChange}
-                      className="w-full px-4 py-2.5 bg-slate-50 border border-slate-200 rounded-md focus:border-indigo-500 focus:ring-0 outline-none text-slate-700 text-sm"
-                    />
-                  </div>
-
-                  {/* Pricing Section */}
-                  <div className="space-y-3">
-                    <label className="text-xs font-bold text-slate-500 uppercase tracking-wide">
-                      Pricing Strategy
-                    </label>
-
-                    <div className="flex gap-4">
-                      <label className="flex items-center gap-2 cursor-pointer p-3 border border-slate-200 rounded-md hover:bg-slate-50 flex-1">
-                        <input
-                          type="radio"
-                          name="isPaid"
-                          value="false"
-                          checked={
-                            courseData.isPaid === false ||
-                            courseData.isPaid === "false"
-                          }
-                          onChange={(e) =>
-                            handleCourseChange({
-                              target: { name: "isPaid", value: false },
-                            })
-                          }
-                          className="text-indigo-600 focus:ring-indigo-500"
-                        />
-                        <span className="text-sm font-semibold text-slate-700">
-                          Free Course
-                        </span>
-                      </label>
-
-                      <label className="flex items-center gap-2 cursor-pointer p-3 border border-slate-200 rounded-md hover:bg-slate-50 flex-1">
-                        <input
-                          type="radio"
-                          name="isPaid"
-                          value="true"
-                          checked={
-                            courseData.isPaid === true ||
-                            courseData.isPaid === "true"
-                          }
-                          onChange={(e) =>
-                            handleCourseChange({
-                              target: { name: "isPaid", value: true },
-                            })
-                          }
-                          className="text-indigo-600 focus:ring-indigo-500"
-                        />
-                        <span className="text-sm font-semibold text-slate-700">
-                          Paid Course
-                        </span>
-                      </label>
-                    </div>
-
-                    {(courseData.isPaid === true ||
-                      courseData.isPaid === "true") && (
-                      <div className="space-y-1.5 animate-in fade-in slide-in-from-top-1">
-                        <label className="text-xs font-bold text-emerald-600 uppercase tracking-wide">
-                          Price (INR)
-                        </label>
-                        <div className="relative">
-                          <span className="absolute left-3 top-1/2 -translate-y-1/2 text-slate-400 font-bold">
-                            ₹
-                          </span>
-                          <input
-                            type="number"
-                            name="price"
-                            placeholder="0.00"
-                            min="0"
-                            step="0.01"
-                            value={courseData.price || ""}
-                            onChange={handleCourseChange}
-                            className="w-full pl-8 pr-4 py-2.5 bg-white border border-emerald-200 rounded-md focus:border-emerald-500 focus:ring-0 outline-none text-slate-900 font-bold text-sm"
-                          />
-                        </div>
-                      </div>
-                    )}
-                  </div>
-                </div>
-                      <div className="mt-4 space-y-4 border border-slate-200 rounded-md p-4 bg-slate-50">
-                  <h4 className="text-xs font-bold text-slate-600 uppercase tracking-wide flex items-center gap-2">
-                    <Info size={14} className="text-indigo-500" />
-                    Pre-requirements for this course
-                  </h4>
-
-                  <div className="space-y-1.5">
-                    <label className="text-xs font-semibold text-slate-500">
-                      Concepts students should know before starting
-                    </label>
-                    <textarea
-                      name="prereq_description"
-                      rows="3"
-                      placeholder="e.g. Basic Python syntax, linear algebra fundamentals..."
-                      value={courseData.prereq_description}
-                      onChange={handleCourseChange}
-                      className="w-full px-3 py-2 bg-white border border-slate-200 rounded-md focus:border-indigo-500 focus:ring-0 outline-none text-xs"
-                    />
-                  </div>
-
-                  <div className="space-y-1.5">
-                    <div className="flex items-center justify-between">
-                      <label className="text-xs font-semibold text-slate-500">
-                        Recommended Video Links
-                      </label>
-                      <button
-                        type="button"
-                        onClick={addVideoUrl}
-                        className="flex items-center gap-1 px-2 py-1 text-xs bg-indigo-50 text-indigo-600 rounded-md hover:bg-indigo-100 transition-colors"
-                      >
-                        <Plus size={12} />
-                        Add Video
-                      </button>
-                    </div>
-
-                    <div className="space-y-2">
-                      {courseData.prereq_video_urls.map((url, index) => (
-                        <div key={index} className="flex gap-2">
-                          <input
-                            placeholder={`Video ${index + 1}: https://youtube.com/...`}
-                            value={url}
-                            onChange={(e) =>
-                              updateVideoUrl(index, e.target.value)
-                            }
-                            className="flex-1 px-3 py-2 bg-white border border-slate-200 rounded-md focus:border-indigo-500 focus:ring-0 outline-none text-xs"
-                          />
-                          {courseData.prereq_video_urls.length > 1 && (
-                            <button
-                              type="button"
-                              onClick={() => removeVideoUrl(index)}
-                              className="px-2 py-2 text-red-500 hover:bg-red-50 rounded-md transition-colors"
-                            >
-                              <Minus size={14} />
-                            </button>
-                          )}
-                        </div>
-                      ))}
-                    </div>
-                  </div>
-
-                  <div className="space-y-1.5">
-                    <label className="text-xs font-semibold text-slate-500">
-                      PDF Links
-                    </label>
-                    <input
-                      name="prereq_pdf_url"
-                      placeholder="https://... (public PDF link)"
-                      value={courseData.prereq_pdf_url}
-                      onChange={handleCourseChange}
-                      className="w-full px-3 py-2 bg-white border border-slate-200 rounded-md focus:border-indigo-500 focus:ring-0 outline-none text-xs"
-                    />
                   </div>
                 </div>
               </div>
