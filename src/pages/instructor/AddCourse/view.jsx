@@ -214,79 +214,7 @@ const AddCourseView = ({
                     </div>
                   </div>
                 </div>
-                <div className="mt-4 space-y-4 border border-slate-200 rounded-md p-4 bg-slate-50">
-                  <h4 className="text-xs font-bold text-slate-600 uppercase tracking-wide flex items-center gap-2">
-                    <Info size={14} className="text-indigo-500" />
-                    Pre-requirements for this course
-                  </h4>
-
-                  <div className="space-y-1.5">
-                    <label className="text-xs font-semibold text-slate-500">
-                      Concepts students should know before starting
-                    </label>
-                    <textarea
-                      name="prereq_description"
-                      rows="3"
-                      placeholder="e.g. Basic Python syntax, linear algebra fundamentals..."
-                      value={courseData.prereq_description}
-                      onChange={handleCourseChange}
-                      className="w-full px-3 py-2 bg-white border border-slate-200 rounded-md focus:border-indigo-500 focus:ring-0 outline-none text-xs"
-                    />
-                  </div>
-
-                  <div className="space-y-1.5">
-                    <div className="flex items-center justify-between">
-                      <label className="text-xs font-semibold text-slate-500">
-                        Recommended Video Links
-                      </label>
-                      <button
-                        type="button"
-                        onClick={addVideoUrl}
-                        className="flex items-center gap-1 px-2 py-1 text-xs bg-indigo-50 text-indigo-600 rounded-md hover:bg-indigo-100 transition-colors"
-                      >
-                        <Plus size={12} />
-                        Add Video
-                      </button>
-                    </div>
-
-                    <div className="space-y-2">
-                      {courseData.prereq_video_urls.map((url, index) => (
-                        <div key={index} className="flex gap-2">
-                          <input
-                            placeholder={`Video ${index + 1}: https://youtube.com/...`}
-                            value={url}
-                            onChange={(e) =>
-                              updateVideoUrl(index, e.target.value)
-                            }
-                            className="flex-1 px-3 py-2 bg-white border border-slate-200 rounded-md focus:border-indigo-500 focus:ring-0 outline-none text-xs"
-                          />
-                          {courseData.prereq_video_urls.length > 1 && (
-                            <button
-                              type="button"
-                              onClick={() => removeVideoUrl(index)}
-                              className="px-2 py-2 text-red-500 hover:bg-red-50 rounded-md transition-colors"
-                            >
-                              <Minus size={14} />
-                            </button>
-                          )}
-                        </div>
-                      ))}
-                    </div>
-                  </div>
-
-                  <div className="space-y-1.5">
-                    <label className="text-xs font-semibold text-slate-500">
-                      PDF Links
-                    </label>
-                    <input
-                      name="prereq_pdf_url"
-                      placeholder="https://... (public PDF link)"
-                      value={courseData.prereq_pdf_url}
-                      onChange={handleCourseChange}
-                      className="w-full px-3 py-2 bg-white border border-slate-200 rounded-md focus:border-indigo-500 focus:ring-0 outline-none text-xs"
-                    />
-                  </div>
-                </div>
+          
                 {/* --- NEW: Schedule & Pricing --- */}
                 <div className="space-y-6 pt-4 border-t border-slate-100">
                   {/* Schedule Release */}
@@ -376,6 +304,79 @@ const AddCourseView = ({
                         </div>
                       </div>
                     )}
+                  </div>
+                </div>
+                      <div className="mt-4 space-y-4 border border-slate-200 rounded-md p-4 bg-slate-50">
+                  <h4 className="text-xs font-bold text-slate-600 uppercase tracking-wide flex items-center gap-2">
+                    <Info size={14} className="text-indigo-500" />
+                    Pre-requirements for this course
+                  </h4>
+
+                  <div className="space-y-1.5">
+                    <label className="text-xs font-semibold text-slate-500">
+                      Concepts students should know before starting
+                    </label>
+                    <textarea
+                      name="prereq_description"
+                      rows="3"
+                      placeholder="e.g. Basic Python syntax, linear algebra fundamentals..."
+                      value={courseData.prereq_description}
+                      onChange={handleCourseChange}
+                      className="w-full px-3 py-2 bg-white border border-slate-200 rounded-md focus:border-indigo-500 focus:ring-0 outline-none text-xs"
+                    />
+                  </div>
+
+                  <div className="space-y-1.5">
+                    <div className="flex items-center justify-between">
+                      <label className="text-xs font-semibold text-slate-500">
+                        Recommended Video Links
+                      </label>
+                      <button
+                        type="button"
+                        onClick={addVideoUrl}
+                        className="flex items-center gap-1 px-2 py-1 text-xs bg-indigo-50 text-indigo-600 rounded-md hover:bg-indigo-100 transition-colors"
+                      >
+                        <Plus size={12} />
+                        Add Video
+                      </button>
+                    </div>
+
+                    <div className="space-y-2">
+                      {courseData.prereq_video_urls.map((url, index) => (
+                        <div key={index} className="flex gap-2">
+                          <input
+                            placeholder={`Video ${index + 1}: https://youtube.com/...`}
+                            value={url}
+                            onChange={(e) =>
+                              updateVideoUrl(index, e.target.value)
+                            }
+                            className="flex-1 px-3 py-2 bg-white border border-slate-200 rounded-md focus:border-indigo-500 focus:ring-0 outline-none text-xs"
+                          />
+                          {courseData.prereq_video_urls.length > 1 && (
+                            <button
+                              type="button"
+                              onClick={() => removeVideoUrl(index)}
+                              className="px-2 py-2 text-red-500 hover:bg-red-50 rounded-md transition-colors"
+                            >
+                              <Minus size={14} />
+                            </button>
+                          )}
+                        </div>
+                      ))}
+                    </div>
+                  </div>
+
+                  <div className="space-y-1.5">
+                    <label className="text-xs font-semibold text-slate-500">
+                      PDF Links
+                    </label>
+                    <input
+                      name="prereq_pdf_url"
+                      placeholder="https://... (public PDF link)"
+                      value={courseData.prereq_pdf_url}
+                      onChange={handleCourseChange}
+                      className="w-full px-3 py-2 bg-white border border-slate-200 rounded-md focus:border-indigo-500 focus:ring-0 outline-none text-xs"
+                    />
                   </div>
                 </div>
               </div>
