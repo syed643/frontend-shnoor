@@ -112,11 +112,8 @@ const CourseDetailView = ({
               </div>
             </div>
           </div>
-          {(course.prereq_description?.trim() ||
-            (Array.isArray(course.prereq_video_urls) &&
-              course.prereq_video_urls.length > 0) ||
-            (typeof course.prereq_video_urls === "string" &&
-              course.prereq_video_urls !== "[]") ||
+          {(course.prereq_description ||
+            (course.prereq_video_urls && course.prereq_video_urls.length > 0) ||
             course.prereq_pdf_url) && (
             <div className="bg-white border border-slate-200 p-6 shadow-sm rounded-2xl">
               <div className="flex items-center gap-3 mb-4">
@@ -135,34 +132,19 @@ const CourseDetailView = ({
               )}
 
               <div className="flex flex-wrap gap-3">
-                {(() => {
-                  let videos = course.prereq_video_urls;
-
-                  if (typeof videos === "string") {
-                    try {
-                      videos = JSON.parse(videos);
-                    } catch {
-                      videos = [];
-                    }
-                  }
-
-                  if (Array.isArray(videos)) {
-                    return videos.map((videoUrl, index) => (
-                      <a
-                        key={index}
-                        href={videoUrl}
-                        target="_blank"
-                        rel="noopener noreferrer"
-                        className="inline-flex items-center gap-2 px-4 py-2 bg-slate-100 hover:bg-amber-100 font-semibold rounded-lg transition-colors text-sm"
-                      >
-                        <Play size={14} />
-                        Watch Video {index + 1}
-                      </a>
-                    ));
-                  }
-
-                  return null;
-                })()}
+                {Array.isArray(course.prereq_video_urls) &&
+                  course.prereq_video_urls.map((videoUrl, index) => (
+                    <a
+                      key={index}
+                      href={videoUrl}
+                      target="_blank"
+                      rel="noopener noreferrer"
+                      className="inline-flex items-center gap-2 px-4 py-2 bg-slate-100 hover:bg-amber-100 font-semibold rounded-lg transition-colors text-sm"
+                    >
+                      <Play size={14} />
+                      Watch Video {index + 1}
+                    </a>
+                  ))}
 
                 {course.prereq_pdf_url && (
                   <a
@@ -254,7 +236,7 @@ const CourseDetailView = ({
               </div>
               <div>
                 <h4 className="font-bold text-lg text-primary-900 mb-1">
-                  {course.instructor?.name}
+                  {course.instructor?.name || "Instructor"}
                 </h4>
                 <p className="text-sm text-indigo-600 font-medium mb-4">
                   Senior Instructor
@@ -307,7 +289,7 @@ const CourseDetailView = ({
                 <div className="flex items-center gap-3 text-sm text-slate-600">
                   <Clock className="text-slate-400" size={16} />{" "}
                   {course.modules?.length ? course.modules.length * 15 : 60}{" "}
-                  mins on-demand video video
+                  mins on-demand video
                 </div>
                 <div className="flex items-center gap-3 text-sm text-slate-600">
                   <CheckCircle className="text-slate-400" size={16} /> Access on
