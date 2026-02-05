@@ -90,11 +90,12 @@ const AssignCourse = () => {
   ========================= */
   const handleAssign = async () => {
     if (
-      selectedGroups.length === 0 ||
-      selectedStudents.length === 0 ||
-      selectedCourses.length === 0
+      selectedCourses.length === 0 ||
+      (selectedGroups.length === 0 && selectedStudents.length === 0)
     ) {
-      setError("Select at least one student and one course");
+      setError(
+        "Select at least one group OR one student and at least one course",
+      );
       return;
     }
 
