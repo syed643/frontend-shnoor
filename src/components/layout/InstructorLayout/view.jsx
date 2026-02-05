@@ -16,7 +16,7 @@ import {
 import markLogo from "../../../assets/just_logo.jpeg";
 import { useNavigate } from "react-router-dom";
 
-const NavItem = ({ path, icon: Icon, label, badgeCount, handleNavigate, location, setIsSidebarOpen }) => {
+const NavItem = ({ path, icon: Icon, label, badgeCount=0, handleNavigate, location, setIsSidebarOpen }) => {
   const isActive = location.pathname.includes(path);
 
   return (
