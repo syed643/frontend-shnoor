@@ -39,7 +39,7 @@ const CoursePlayerView = ({
   handleMarkComplete,
   navigate,
   courseId,
-  recommendedCourses
+  recommendedCourses,
 }) => {
   if (loading)
     return (
@@ -101,7 +101,47 @@ const CoursePlayerView = ({
           </div>
         </div>
       </div>
-
+      {(course.prereq_description ||
+        (course.prereq_video_urls && course.prereq_video_urls.length > 0) ||
+        course.prereq_pdf_url) && (
+        <div className="bg-slate-800 border-b border-slate-700 px-6 py-3 text-xs flex flex-wrap gap-4 items-center">
+          <div className="font-semibold text-slate-200 flex items-center gap-2">
+            <Info size={14} className="text-indigo-400" />
+            Pre‑course requirements
+          </div>
+          {course.prereq_description && (
+            <p className="text-slate-300 max-w-3xl">
+              {course.prereq_description}
+            </p>
+          )}
+          <div className="ml-auto flex gap-3">
+            {course.prereq_video_urls &&
+              course.prereq_video_urls.map((videoUrl, index) => (
+                <a
+                  key={index}
+                  href={videoUrl}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="inline-flex items-center gap-1 px-3 py-1 rounded-full bg-indigo-600 hover:bg-indigo-500 text-white font-semibold transition text-[11px]"
+                >
+                  <Play size={12} />
+                  Video {index + 1}
+                </a>
+              ))}
+            {course.prereq_pdf_url && (
+              <a
+                href={course.prereq_pdf_url}
+                target="_blank"
+                rel="noopener noreferrer"
+                className="inline-flex items-center gap-1 px-3 py-1 rounded-full bg-slate-700 hover:bg-slate-600 text-slate-100 font-semibold transition text-[11px]"
+              >
+                <FileText size={12} />
+                Download PDF
+              </a>
+            )}
+          </div>
+        </div>
+      )}
       <div className="flex-1 flex overflow-hidden">
         {}
         <div className="flex-1 flex flex-col relative bg-black">
@@ -262,50 +302,52 @@ const CoursePlayerView = ({
       {/* =========================
     RECOMMENDED COURSES
    ========================= */}
-{recommendedCourses?.length > 0 && (
-  <div className="bg-slate-900 border-t border-slate-700 px-8 py-10">
-    <h3 className="text-sm font-bold uppercase tracking-wider text-slate-400 mb-6">
-      Recommended for You
-    </h3>
+      {recommendedCourses?.length > 0 && (
+        <div className="bg-slate-900 border-t border-slate-700 px-8 py-10">
+          <h3 className="text-sm font-bold uppercase tracking-wider text-slate-400 mb-6">
+            Recommended for You
+          </h3>
 
-    <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
-      {recommendedCourses.slice(0, 4).map((rec) => (
-        <div
-          key={rec.courses_id}
-          onClick={() => navigate(`/student/course/${rec.courses_id}`)}
-          className="bg-slate-800 border border-slate-700 rounded-lg p-4 cursor-pointer hover:border-indigo-500 hover:shadow-lg transition-all group"
-        >
-          <div className="h-28 bg-slate-700 rounded-md flex items-center justify-center mb-4">
-            <BookOpen className="text-slate-500 group-hover:text-indigo-400 transition-colors" size={32} />
-          </div>
+          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
+            {recommendedCourses.slice(0, 4).map((rec) => (
+              <div
+                key={rec.courses_id}
+                onClick={() => navigate(`/student/course/${rec.courses_id}`)}
+                className="bg-slate-800 border border-slate-700 rounded-lg p-4 cursor-pointer hover:border-indigo-500 hover:shadow-lg transition-all group"
+              >
+                <div className="h-28 bg-slate-700 rounded-md flex items-center justify-center mb-4">
+                  <BookOpen
+                    className="text-slate-500 group-hover:text-indigo-400 transition-colors"
+                    size={32}
+                  />
+                </div>
 
-          <h4 className="text-sm font-bold text-white mb-1 line-clamp-2">
-            {rec.title}
-          </h4>
+                <h4 className="text-sm font-bold text-white mb-1 line-clamp-2">
+                  {rec.title}
+                </h4>
 
-          <p className="text-xs text-slate-400 mb-2">
-            {rec.category}
-          </p>
+                <p className="text-xs text-slate-400 mb-2">{rec.category}</p>
 
-          <div className="flex items-center justify-between text-xs">
-            <span className="text-slate-500">{rec.difficulty}</span>
+                <div className="flex items-center justify-between text-xs">
+                  <span className="text-slate-500">{rec.difficulty}</span>
 
-            <span
-              className={`font-bold ${
-                rec.price_type === "paid"
-                  ? "text-emerald-400"
-                  : "text-indigo-400"
-              }`}
-            >
-              {rec.price_type === "paid" ? `₹${rec.price_amount}` : "FREE"}
-            </span>
+                  <span
+                    className={`font-bold ${
+                      rec.price_type === "paid"
+                        ? "text-emerald-400"
+                        : "text-indigo-400"
+                    }`}
+                  >
+                    {rec.price_type === "paid"
+                      ? `₹${rec.price_amount}`
+                      : "FREE"}
+                  </span>
+                </div>
+              </div>
+            ))}
           </div>
         </div>
-      ))}
-    </div>
-  </div>
-)}
-
+      )}
     </div>
   );
 };

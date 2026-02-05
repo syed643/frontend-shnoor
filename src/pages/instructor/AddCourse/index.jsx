@@ -27,6 +27,9 @@ export const AddCourse = () => {
     scheduleDate: "",
     isPaid: false,
     price: "",
+    prereq_description: "",
+    prereq_video_urls: [""], // Changed to array with one empty string
+    prereq_pdf_url: "",
   });
 
   const [moduleForm, setModuleForm] = useState({
@@ -44,9 +47,29 @@ export const AddCourse = () => {
   const [videoInputType, setVideoInputType] = useState("url");
   const [pdfInputType, setPdfInputType] = useState("url");
 
-  /* =========================
-     LOAD COURSE (EDIT MODE)
-     ========================= */
+  const addVideoUrl = () => {
+    setCourseData((prev) => ({
+      ...prev,
+      prereq_video_urls: [...prev.prereq_video_urls, ""],
+    }));
+  };
+
+  const removeVideoUrl = (index) => {
+    setCourseData((prev) => ({
+      ...prev,
+      prereq_video_urls: prev.prereq_video_urls.filter((_, i) => i !== index),
+    }));
+  };
+
+  const updateVideoUrl = (index, value) => {
+    setCourseData((prev) => ({
+      ...prev,
+      prereq_video_urls: prev.prereq_video_urls.map((url, i) =>
+        i === index ? value : url,
+      ),
+    }));
+  };
+
   useEffect(() => {
     if (location.state?.courseData) {
       const data = location.state.courseData;
@@ -198,6 +221,11 @@ export const AddCourse = () => {
             courseData.isPaid === true || courseData.isPaid === "true"
               ? Number(courseData.price || 0)
               : null,
+          prereq_description: courseData.prereq_description || null,
+          prereq_video_urls: courseData.prereq_video_urls.filter(
+            (url) => url.trim() !== "",
+          ), 
+          prereq_pdf_url: courseData.prereq_pdf_url || null,
         },
         {
           headers: { Authorization: `Bearer ${token}` },
@@ -257,6 +285,9 @@ export const AddCourse = () => {
       removeModule={removeModule}
       moveModule={moveModule}
       handleSubmit={handleSubmit}
+      addVideoUrl={addVideoUrl}
+      removeVideoUrl={removeVideoUrl}
+      updateVideoUrl={updateVideoUrl}
     />
   );
 };
