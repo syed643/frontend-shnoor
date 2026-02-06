@@ -3,46 +3,49 @@ import { useNavigate, useLocation } from "react-router-dom";
 import { useAuth } from "../../../auth/AuthContext";
 import api from "../../../api/axios";
 import { useSocket } from "../../../context/SocketContext";
-import { initializeSocket, onNotification, disconnectSocket } from "../../../services/socket";
+import {
+  initializeSocket,
+  onNotification,
+  disconnectSocket,
+} from "../../../services/socket";
 import StudentLayoutView from "./view";
+import StudentBot from "../../StudentBot/StudentBot";
 
 const StudentLayout = () => {
   const navigate = useNavigate();
   const location = useLocation();
   const { currentUser, logout } = useAuth();
-
+  const isExamPage = location.pathname.startsWith("/student/exams/");
   const [studentName, setStudentName] = useState("");
   const [xp, setXp] = useState(0);
   const [rank, setRank] = useState("Novice");
   const [isSidebarOpen, setIsSidebarOpen] = useState(false);
 
-
-    // Chat Unread Count
+  // Chat Unread Count
   const { unreadCounts } = useSocket();
   const totalUnread = Object.values(unreadCounts).reduce((a, b) => a + b, 0);
   const [notifications, setNotifications] = useState([]);
   const [notifPermission, setNotifPermission] = useState(
-    "Notification" in window ? Notification.permission : "default"
+    "Notification" in window ? Notification.permission : "default",
   );
-
 
   // Push Subscription Logic
   const subscribeUserToPush = async () => {
-    if (!('serviceWorker' in navigator) || !('PushManager' in window)) {
+    if (!("serviceWorker" in navigator) || !("PushManager" in window)) {
       console.warn("Push messaging is not supported");
       return;
     }
 
     try {
-      const registration = await navigator.serviceWorker.register('/sw.js');
-      console.log('Service Worker Registered');
+      const registration = await navigator.serviceWorker.register("/sw.js");
+      console.log("Service Worker Registered");
 
       // Helper to convert VAPID key
       const urlBase64ToUint8Array = (base64String) => {
-        const padding = '='.repeat((4 - base64String.length % 4) % 4);
+        const padding = "=".repeat((4 - (base64String.length % 4)) % 4);
         const base64 = (base64String + padding)
-          .replace(/-/g, '+')
-          .replace(/_/g, '/');
+          .replace(/-/g, "+")
+          .replace(/_/g, "/");
 
         const rawData = window.atob(base64);
         const outputArray = new Uint8Array(rawData.length);
@@ -53,20 +56,20 @@ const StudentLayout = () => {
         return outputArray;
       };
 
-      const publicVapidKey = "BKwO75HycvnqB51-Jx6aCKHQ4yYIhnniMRAt83Ytgtrxvr7tjKF5sWW9i-79W31bEv9uY2MHX4PdL_NM6d8zm1E"; // TODO: Enviroment variable ideally, but hardcoding for speed/demo as per user context
+      const publicVapidKey =
+        "BKwO75HycvnqB51-Jx6aCKHQ4yYIhnniMRAt83Ytgtrxvr7tjKF5sWW9i-79W31bEv9uY2MHX4PdL_NM6d8zm1E"; // TODO: Enviroment variable ideally, but hardcoding for speed/demo as per user context
       const convertedVapidKey = urlBase64ToUint8Array(publicVapidKey);
 
       const subscription = await registration.pushManager.subscribe({
         userVisibleOnly: true,
-        applicationServerKey: convertedVapidKey
+        applicationServerKey: convertedVapidKey,
       });
 
       console.log("Push Subscription Object:", subscription);
 
       // Send to backend
-      await api.post('/api/notifications/subscribe', { subscription });
+      await api.post("/api/notifications/subscribe", { subscription });
       console.log("Attributes sent to server.");
-
     } catch (err) {
       console.error("Failed to subscribe to push:", err);
     }
@@ -103,8 +106,8 @@ const StudentLayout = () => {
           xpValue >= 500
             ? "Expert"
             : xpValue >= 200
-            ? "Intermediate"
-            : "Novice"
+              ? "Intermediate"
+              : "Novice",
         );
       } catch (err) {
         console.error("Failed to fetch student profile:", err);
@@ -113,15 +116,14 @@ const StudentLayout = () => {
 
     if (currentUser) {
       fetchProfile();
-       // Auto-subscribe if already granted (ensures SW is registered)
-      if (Notification.permission === 'granted') {
+      // Auto-subscribe if already granted (ensures SW is registered)
+      if (Notification.permission === "granted") {
         subscribeUserToPush();
       }
 
       const socket = initializeSocket(currentUser.uid);
 
       onNotification((notification) => {
-
         console.log("🔔 Live notification received:", notification);
         console.log("Current Permission State:", Notification.permission);
 
@@ -139,22 +141,29 @@ const StudentLayout = () => {
 
         // Show OS notification
         if (Notification.permission === "granted") {
-          console.log("Attempting to create OS notification...", "Page Visibility:", document.visibilityState);
+          console.log(
+            "Attempting to create OS notification...",
+            "Page Visibility:",
+            document.visibilityState,
+          );
 
           // Some browsers block notifications if the tab is focused.
           // We will try to send it anyway as per user request.
           try {
             // Create notification
-            const title = notification.type === "STREAK_EXPIRED" ? "⚠️ Streak Expired" : "🎓 New Notification";
+            const title =
+              notification.type === "STREAK_EXPIRED"
+                ? "⚠️ Streak Expired"
+                : "🎓 New Notification";
             const icon = "/just_logo.svg";
 
             // Use ServiceWorker registration if available (more reliable)
-            if ('serviceWorker' in navigator && navigator.serviceWorker.ready) {
-              navigator.serviceWorker.ready.then(registration => {
+            if ("serviceWorker" in navigator && navigator.serviceWorker.ready) {
+              navigator.serviceWorker.ready.then((registration) => {
                 registration.showNotification(title, {
                   body: notification.message,
                   icon: icon,
-                  tag: notification.id // Prevent duplicates
+                  tag: notification.id, // Prevent duplicates
                 });
               });
             } else {
@@ -172,13 +181,16 @@ const StudentLayout = () => {
             console.error("OS Notification failed:", e);
           }
         } else {
-          console.warn("OS Notification skipped. Permission:", Notification.permission);
+          console.warn(
+            "OS Notification skipped. Permission:",
+            Notification.permission,
+          );
         }
       });
 
       return () => disconnectSocket();
     }
-  }, [currentUser,navigate]);
+  }, [currentUser, navigate]);
 
   useEffect(() => {
     const fetchNotifications = async () => {
@@ -230,10 +242,11 @@ const StudentLayout = () => {
   };
 
   return (
+    <>
     <StudentLayoutView
       studentName={studentName}
       xp={xp}
-      setXp={setXp}       
+      setXp={setXp}
       rank={rank}
       isSidebarOpen={isSidebarOpen}
       setIsSidebarOpen={setIsSidebarOpen}
@@ -248,6 +261,8 @@ const StudentLayout = () => {
       toasts={toasts}
       onDismissToast={handleDismissToast}
     />
+          {!isExamPage && <StudentBot />}
+</>
   );
 };
 
