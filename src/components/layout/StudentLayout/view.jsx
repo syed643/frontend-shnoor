@@ -16,7 +16,7 @@ import {
 } from "lucide-react";
 import markLogo from "../../../assets/just_logo.jpeg";
 import NotificationToast from "../../common/NotificationToast";
-import StudentBot from "../../../components/StudentBot/StudentBot";
+// import StudentBot from "../../../components/StudentBot/StudentBot";
 
 const StudentLayoutView = ({
   studentName,
@@ -282,7 +282,6 @@ const StudentLayoutView = ({
             <Outlet context={{ studentName, xp }} />
           </div>
         </main>
-        <StudentBot />
       </div>
     </div>
   );
