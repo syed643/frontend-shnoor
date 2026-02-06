@@ -82,7 +82,7 @@ const StudentBot = () => {
         // No API configured — show helpful hint
         appendMessage({
           from: "bot",
-          text: "Bot is not configured. Please set BOT_URL (or enable VITE_STUDENT_BOT_USE_PROXY=true).",
+          text: "Bot is not configured. Please set VITE_API_URL (or enable VITE_STUDENT_BOT_USE_PROXY=true).",
         });
       } else {
         const resp = await fetch(EFFECTIVE_API_URL, {
