@@ -1,5 +1,5 @@
 import React, { useState, useEffect, useRef } from "react";
-import { Send, MessageCircle, X } from "lucide-react";
+import { Send, X } from "lucide-react";
 import botAvatarSvg from "../../assets/bot-avatar.avif";
 import { useAuth } from "../../auth/AuthContext";
 
@@ -38,8 +38,7 @@ if (avatarModules) {
 }
 
 const StudentBot = () => {
-  const API_URL = import.meta.env.VITE_STUDENT_BOT_API_URL || "";
-  const API_KEY = import.meta.env.VITE_STUDENT_BOT_API_KEY || "";
+  const API_URL = import.meta.env.VITE_API_URL || "";
   const USE_PROXY = import.meta.env.VITE_STUDENT_BOT_USE_PROXY === "true"; // set to true in frontend .env to use server proxy at /api/bot/chat
   const EFFECTIVE_API_URL = USE_PROXY ? "/api/bot/chat" : API_URL;
   const { currentUser } = useAuth();
@@ -85,8 +84,6 @@ const StudentBot = () => {
           method: "POST",
           headers: {
             "Content-Type": "application/json",
-            // If using server proxy, the server should add the Authorization header using its secret
-            ...(USE_PROXY ? {} : (API_KEY ? { Authorization: `Bearer ${API_KEY}` } : {})),
           },
           body: JSON.stringify({
             message: text,
@@ -234,7 +231,6 @@ const StudentBot = () => {
                   placeholder="Ask a question — press Enter to send"
                   className="flex-1 resize-none h-10 rounded-full bg-transparent border-0 px-1 py-1 text-sm outline-none focus:ring-0"
                 />
-                <div className="text-xs text-slate-400 hidden sm:block"></div>
               </div>
 
               <button
