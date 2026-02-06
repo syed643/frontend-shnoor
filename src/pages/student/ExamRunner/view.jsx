@@ -350,16 +350,20 @@ const ExamRunnerView = ({
                   {currentQ.marks} Marks
                 </span>
               </div>
-
-              <div className="p-6 md:p-8 flex-1 grid gap-4">
+              {/* Replace the options render block with this temporary debug-friendly code */}
+              <div className="p-6 md:p-8 flex-1 grid gap-4 pb-24">
+                {" "}
+                {/* added pb-24 to avoid bottom overlay */}
                 {optionsArray.length === 0 ? (
-                  <div className="text-slate-500">No options provided for this question.</div>
+                  <div className="text-slate-500">
+                    No options provided for this question.
+                  </div>
                 ) : (
                   optionsArray.map((opt, i) => {
-                    // If opt is an object, try to get a display value
                     const display =
-                      opt && typeof opt === "object" ? opt.text ?? opt.value ?? String(opt) : String(opt);
-
+                      opt && typeof opt === "object"
+                        ? (opt.text ?? opt.value ?? JSON.stringify(opt))
+                        : (opt ?? "(empty option)");
                     const optionKey = `${questionId}-opt-${i}`;
 
                     return (
@@ -391,20 +395,15 @@ const ExamRunnerView = ({
                           className="hidden"
                         />
                         <span
-                          className={`text-lg transition-colors ${
-                            answers[questionId] === display
-                              ? "text-blue-700 font-bold"
-                              : "text-slate-600 font-medium group-hover:text-slate-800"
-                          }`}
+                          className={`text-lg ${answers[questionId] === display ? "text-blue-700 font-bold" : "text-slate-600 font-medium"}`}
                         >
-                          {display}
+                          {i + 1}. {display}
                         </span>
                       </label>
                     );
                   })
                 )}
               </div>
-
               <div className="p-6 md:p-8 border-t border-slate-100 flex justify-between items-center bg-slate-50/30">
                 <button
                   className={`flex items-center gap-2 px-6 py-3 rounded-xl font-bold text-slate-600 hover:bg-white hover:shadow-sm border border-transparent hover:border-slate-200 transition-all ${currentQIndex === 0 ? "invisible" : ""}`}
