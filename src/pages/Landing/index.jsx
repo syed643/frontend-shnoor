@@ -7,11 +7,13 @@ const Landing = () => {
 
   const handleLogin = () => navigate('/login');
   const handleRegister = () => navigate('/register');
+  const handleContact = () => navigate('/contact');
 
   return (
     <LandingView 
       onLogin={handleLogin}
       onRegister={handleRegister}
+      onContact={handleContact}
     />
   );
 };

@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import {
   ArrowRight, Menu, X, Terminal, BarChart3, CheckCircle2,
-  Mail, Phone, MapPin, Send, Play,
+  Mail, Phone, MapPin, Play,
   Twitter, Facebook, Linkedin, Instagram,
   Globe, Zap, GraduationCap, Layout, BookOpen, Video, Award
 } from 'lucide-react';
@@ -14,7 +14,7 @@ import selfPacedIcon from '../../assets/self_paced.png';
 import labsIcon from '../../assets/labs.png';
 import examIcon from '../../assets/exam.png';
 
-const LandingView = ({ onLogin, onRegister }) => {
+const LandingView = ({ onLogin, onRegister, onContact }) => {
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
   const [scrolled, setScrolled] = useState(false);
 
@@ -32,9 +32,9 @@ const LandingView = ({ onLogin, onRegister }) => {
     }
   };
 
-  const NavLink = ({ target, label }) => (
+  const NavLink = ({ target, label, onClick }) => (
     <button
-      onClick={() => scrollToSection(target)}
+      onClick={onClick ? onClick : () => scrollToSection(target)}
       className="text-sm font-semibold text-slate-600 hover:text-slate-900 transition-colors tracking-wide"
     >
       {label}
@@ -81,7 +81,7 @@ const LandingView = ({ onLogin, onRegister }) => {
             <NavLink target="training" label="Training" />
             <NavLink target="certification" label="Certifications" />
             <NavLink target="stories" label="Success Stories" />
-            <NavLink target="contact" label="Contact" />
+            <NavLink target="contact" label="Contact" onClick={onContact} />
           </div>
 
           <div className="hidden md:flex items-center gap-4">
@@ -106,7 +106,7 @@ const LandingView = ({ onLogin, onRegister }) => {
             <NavLink target="training" label="Training" />
             <NavLink target="certification" label="Certifications" />
             <NavLink target="stories" label="Success Stories" />
-            <NavLink target="contact" label="Contact" />
+            <NavLink target="contact" label="Contact" onClick={onContact} />
             <hr className="border-slate-100" />
             <button onClick={onLogin} className="w-full h-12 border border-slate-200 rounded-xl font-bold text-slate-900">Log In</button>
             <button onClick={onRegister} className="w-full h-12 bg-slate-900 text-white rounded-xl font-bold">Get Started</button>
@@ -430,80 +430,6 @@ const LandingView = ({ onLogin, onRegister }) => {
         </div>
       </section>
 
-      {/* --- CONTACT SECTION --- */}
-      <section id="contact" className="py-24 px-6 relative z-10 bg-slate-50">
-        <div className="max-w-6xl mx-auto bg-white rounded-[2rem] overflow-hidden shadow-2xl flex flex-col lg:flex-row border border-slate-100">
-          
-          {/* Left Side (Dark Info) */}
-          <div className="bg-slate-900 p-12 lg:w-5/12 text-white flex flex-col justify-center relative overflow-hidden">
-            <div className="absolute inset-0 opacity-10" style={{ backgroundImage: 'radial-gradient(#ffffff 1px, transparent 1px)', backgroundSize: '24px 24px' }}></div>
-            
-            <div className="relative z-10">
-              <span className="text-xs font-bold tracking-widest uppercase text-slate-400 mb-2 block">Get in Touch</span>
-              <h2 className="text-3xl font-black tracking-tight mb-8">Ready to upgrade your workforce?</h2>
-              
-              <div className="space-y-8">
-                <div className="flex items-start gap-4">
-                  <div className="w-10 h-10 rounded-full bg-white/10 flex items-center justify-center shrink-0">
-                    <Mail size={18} className="text-indigo-400" />
-                  </div>
-                  <div className="flex flex-col">
-                    <span className="font-medium text-slate-200">info@shnoor.com <span className="text-slate-500 text-sm">(General)</span></span>
-                    <span className="font-medium text-slate-200">proc@shnoor.com <span className="text-slate-500 text-sm">(Sales)</span></span>
-                  </div>
-                </div>
-                
-                <div className="flex items-start gap-4">
-                  <div className="w-10 h-10 rounded-full bg-white/10 flex items-center justify-center shrink-0">
-                    <Phone size={18} className="text-indigo-400" />
-                  </div>
-                   <div className="flex flex-col">
-                    <span className="font-medium text-slate-200">+91-9429694298</span>
-                    <span className="font-medium text-slate-200">+91-9041914601</span>
-                  </div>
-                </div>
-                
-                <div className="flex items-start gap-4">
-                  <div className="w-10 h-10 rounded-full bg-white/10 flex items-center justify-center shrink-0">
-                    <MapPin size={18} className="text-indigo-400" />
-                  </div>
-                  <span className="font-medium text-slate-200 leading-relaxed">
-                    10009 Mount Tabor Road, City,<br/> Odessa Missouri, United States
-                  </span>
-                </div>
-              </div>
-            </div>
-          </div>
-
-          {/* Right Side (Light Form) */}
-          <div className="p-12 lg:w-7/12 bg-white flex flex-col justify-center">
-            <form className="space-y-6">
-              <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-                <div className="space-y-2">
-                  <label className="text-xs font-bold text-slate-500 uppercase tracking-wide">First Name</label>
-                  <input type="text" className="w-full h-12 px-4 rounded-xl bg-slate-50 border border-slate-200 focus:outline-none focus:border-indigo-500 focus:ring-2 focus:ring-indigo-500/20 transition-all text-slate-900 font-medium" />
-                </div>
-                <div className="space-y-2">
-                  <label className="text-xs font-bold text-slate-500 uppercase tracking-wide">Last Name</label>
-                  <input type="text" className="w-full h-12 px-4 rounded-xl bg-slate-50 border border-slate-200 focus:outline-none focus:border-indigo-500 focus:ring-2 focus:ring-indigo-500/20 transition-all text-slate-900 font-medium" />
-                </div>
-              </div>
-              <div className="space-y-2">
-                <label className="text-xs font-bold text-slate-500 uppercase tracking-wide">Work Email</label>
-                <input type="email" className="w-full h-12 px-4 rounded-xl bg-slate-50 border border-slate-200 focus:outline-none focus:border-indigo-500 focus:ring-2 focus:ring-indigo-500/20 transition-all text-slate-900 font-medium" />
-              </div>
-              <div className="space-y-2">
-                <label className="text-xs font-bold text-slate-500 uppercase tracking-wide">Message</label>
-                <textarea rows="4" className="w-full p-4 rounded-xl bg-slate-50 border border-slate-200 focus:outline-none focus:border-indigo-500 focus:ring-2 focus:ring-indigo-500/20 transition-all text-slate-900 font-medium resize-none"></textarea>
-              </div>
-              <button type="button" className="w-full h-14 bg-indigo-600 text-white rounded-xl font-bold uppercase tracking-widest hover:bg-indigo-700 transition-all shadow-lg hover:shadow-indigo-600/25 flex items-center justify-center gap-2">
-                Send Message <Send size={18} />
-              </button>
-            </form>
-          </div>
-        </div>
-      </section>
-
       {/* --- FOOTER --- */}
       <footer className="bg-[#0F172A] border-t border-slate-800 pt-16 pb-8 px-6 relative z-10 font-medium text-left">
         <div className="max-w-7xl mx-auto grid grid-cols-1 lg:grid-cols-12 gap-12 mb-16">
@@ -531,7 +457,7 @@ const LandingView = ({ onLogin, onRegister }) => {
             <ul className="space-y-4 text-sm">
               <li><button onClick={() => scrollToSection('home')} className="!text-[#94a3b8] hover:!text-white transition-colors">Home</button></li>
               <li><button onClick={() => scrollToSection('training')} className="!text-[#94a3b8] hover:!text-white transition-colors">Training</button></li>
-              <li><button onClick={() => scrollToSection('contact')} className="!text-[#94a3b8] hover:!text-white transition-colors">Contact Us</button></li>
+              <li><button onClick={onContact} className="!text-[#94a3b8] hover:!text-white transition-colors">Contact Us</button></li>
             </ul>
           </div>
 

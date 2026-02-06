@@ -41,6 +41,7 @@ import ManageUsers from "./pages/admin/ManageUsers";
 import Suspended from "./pages/auth/Suspended";
 import PracticeSession from "./pages/student/PracticeSession";
 import Landing from "./pages/Landing";
+import Contact from "./pages/Contact";
 import ProfileSettings from "./pages/shared/ProfileSettings";
 import StudentExams from "./pages/student/StudentExams";
 import StudentChat from "./pages/student/StudentChat";
@@ -63,6 +64,7 @@ function App() {
         <SocketProvider>
           <Routes>
             <Route path="/" element={<Landing />} />
+            <Route path="/contact" element={<Contact />} />
             <Route path="/login" element={<Login />} />
             <Route path="/register" element={<Register />} />
             <Route path="/forgot-password" element={<ForgotPassword />} />
