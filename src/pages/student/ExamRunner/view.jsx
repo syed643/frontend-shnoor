@@ -146,6 +146,20 @@ const ExamRunnerView = ({
   const questionId = currentQ.question_id || currentQ.id;
   const isPractice = exam.duration === 0;
 
+  // Normalize options to an array (accept arrays or objects)
+  let optionsArray = [];
+  if (Array.isArray(currentQ.options)) {
+    optionsArray = currentQ.options;
+  } else if (currentQ.options && typeof currentQ.options === "object") {
+    // If it's an object like {a: 'opt1', b: 'opt2' }
+    optionsArray = Object.values(currentQ.options);
+  } else {
+    optionsArray = [];
+  }
+
+  // Debugging helper: uncomment to inspect options in console
+  // console.log({ questionId, optionsArray, raw: currentQ.options });
+
   return (
     <div className="h-[calc(100vh-6rem)] flex flex-col bg-slate-50">
       {}
@@ -338,45 +352,57 @@ const ExamRunnerView = ({
               </div>
 
               <div className="p-6 md:p-8 flex-1 grid gap-4">
-                {currentQ.options.map((opt, i) => (
-                  <label
-                    key={i}
-                    className={`group flex items-center gap-4 p-4 md:p-5 rounded-lg border-2 cursor-pointer transition-all ${
-                      answers[questionId] === opt
-                        ? "border-indigo-500 bg-indigo-50 ring-1 ring-indigo-500"
-                        : "border-slate-200 bg-white hover:border-indigo-300 hover:bg-slate-50"
-                    }`}
-                  >
-                    <div
-                      className={`w-6 h-6 rounded-full border-2 flex items-center justify-center shrink-0 transition-colors ${
-                        answers[questionId] === opt
-                          ? "border-indigo-500 bg-indigo-500"
-                          : "border-slate-300 group-hover:border-indigo-400"
-                      }`}
-                    >
-                      {answers[questionId] === opt && (
-                        <div className="w-2.5 h-2.5 bg-white rounded-full" />
-                      )}
-                    </div>
-                    <input
-                      type="radio"
-                      name={`q-${currentQ.id}`}
-                      value={opt}
-                      checked={answers[questionId] === opt}
-                      onChange={() => handleAnswer(questionId, opt)}
-                      className="hidden"
-                    />
-                    <span
-                      className={`text-lg transition-colors ${
-                        answers[questionId] === opt
-                          ? "text-blue-700 font-bold"
-                          : "text-slate-600 font-medium group-hover:text-slate-800"
-                      }`}
-                    >
-                      {opt}
-                    </span>
-                  </label>
-                ))}
+                {optionsArray.length === 0 ? (
+                  <div className="text-slate-500">No options provided for this question.</div>
+                ) : (
+                  optionsArray.map((opt, i) => {
+                    // If opt is an object, try to get a display value
+                    const display =
+                      opt && typeof opt === "object" ? opt.text ?? opt.value ?? String(opt) : String(opt);
+
+                    const optionKey = `${questionId}-opt-${i}`;
+
+                    return (
+                      <label
+                        key={optionKey}
+                        className={`group flex items-center gap-4 p-4 md:p-5 rounded-lg border-2 cursor-pointer transition-all ${
+                          answers[questionId] === display
+                            ? "border-indigo-500 bg-indigo-50 ring-1 ring-indigo-500"
+                            : "border-slate-200 bg-white hover:border-indigo-300 hover:bg-slate-50"
+                        }`}
+                      >
+                        <div
+                          className={`w-6 h-6 rounded-full border-2 flex items-center justify-center shrink-0 transition-colors ${
+                            answers[questionId] === display
+                              ? "border-indigo-500 bg-indigo-500"
+                              : "border-slate-300 group-hover:border-indigo-400"
+                          }`}
+                        >
+                          {answers[questionId] === display && (
+                            <div className="w-2.5 h-2.5 bg-white rounded-full" />
+                          )}
+                        </div>
+                        <input
+                          type="radio"
+                          name={`q-${questionId}`}
+                          value={display}
+                          checked={answers[questionId] === display}
+                          onChange={() => handleAnswer(questionId, display)}
+                          className="hidden"
+                        />
+                        <span
+                          className={`text-lg transition-colors ${
+                            answers[questionId] === display
+                              ? "text-blue-700 font-bold"
+                              : "text-slate-600 font-medium group-hover:text-slate-800"
+                          }`}
+                        >
+                          {display}
+                        </span>
+                      </label>
+                    );
+                  })
+                )}
               </div>
 
               <div className="p-6 md:p-8 border-t border-slate-100 flex justify-between items-center bg-slate-50/30">
