@@ -1,5 +1,5 @@
 import React, { useState } from "react";
-import { BookOpen, Search, Filter, ArrowRight, Library } from "lucide-react";
+import { BookOpen, Search, Filter, ArrowRight, Library, Star } from "lucide-react";
 import ReviewModal from "../../../components/student/ReviewModal";
 
 const StudentCoursesView = ({
