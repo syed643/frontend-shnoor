@@ -38,7 +38,7 @@ if (avatarModules) {
 }
 
 const StudentBot = () => {
-  const API_URL = import.meta.env.VITE_API_URL || "";
+  const API_URL = import.meta.env.BOT_URL || "";
   const USE_PROXY = import.meta.env.VITE_STUDENT_BOT_USE_PROXY === "true"; // set to true in frontend .env to use server proxy at /api/bot/chat
   const EFFECTIVE_API_URL = USE_PROXY ? "/api/bot/chat" : API_URL;
   const { currentUser } = useAuth();
