@@ -196,7 +196,6 @@ const StudentLayout = () => {
     const fetchNotifications = async () => {
       try {
         const res = await api.get("/api/notifications");
-        console.log("🔔 API Poll Result:", res.data);
         const unread = res.data.filter((n) => !n.is_read);
 
         setNotifications((prev) => {
