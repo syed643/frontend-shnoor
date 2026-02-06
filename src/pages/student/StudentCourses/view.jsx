@@ -1,5 +1,6 @@
 import React from "react";
 import { BookOpen, Search, Filter, ArrowRight, Library } from "lucide-react";
+import ReviewModal from "../../../components/student/ReviewModal";
 
 const StudentCoursesView = ({
   loading,
@@ -19,6 +20,33 @@ const StudentCoursesView = ({
   isFreeOnly, // NEW
   setIsFreeOnly, // NEW
 }) => {
+  const [reviewModal, setReviewModal] = useState({
+    isOpen: false,
+    courseId: null,
+    courseTitle: "",
+    instructorId: null,
+    instructorName: "",
+  });
+
+  const openReviewModal = (e, course) => {
+    e.stopPropagation();
+    // Ensure we have course_id and instructor_id
+    if (!course.instructor_id) {
+      console.warn("No instructor_id found for course", course);
+      return;
+    }
+    if (!course.courses_id && !course.id) {
+      console.warn("No course_id found for course", course);
+      return;
+    }
+    setReviewModal({
+      isOpen: true,
+      courseId: course.courses_id || course.id,
+      courseTitle: course.title || "Course",
+      instructorId: course.instructor_id,
+      instructorName: course.instructor_name || "Instructor",
+    });
+  };
   if (loading)
     return (
       <div className="flex items-center justify-center min-h-[400px]">
@@ -33,7 +61,14 @@ const StudentCoursesView = ({
 
   return (
     <div className="space-y-8 font-sans text-primary-900">
-      {/* Header */}
+      <ReviewModal
+        isOpen={reviewModal.isOpen}
+        onClose={() => setReviewModal({ ...reviewModal, isOpen: false })}
+        courseId={reviewModal.courseId}
+        courseTitle={reviewModal.courseTitle}
+        instructorId={reviewModal.instructorId}
+        instructorName={reviewModal.instructorName}
+      />
       <div className="flex flex-col md:flex-row justify-between items-end gap-6 border-b border-slate-200 pb-6">
         <div>
           <h1 className="text-2xl font-bold text-primary-900 tracking-tight">
@@ -103,7 +138,6 @@ const StudentCoursesView = ({
           </div>
         </div>
       </div>
-
       {/* Controls */}
       <div className="flex flex-col md:flex-row gap-4">
         <div className="relative flex-1">
@@ -161,7 +195,6 @@ const StudentCoursesView = ({
           </select>
         </div>
       </div>
-
       {/* Grid */}
       {displayCourses.length === 0 ? (
         <div className="bg-slate-50 border border-slate-200 rounded-lg p-16 text-center">
@@ -223,14 +256,37 @@ const StudentCoursesView = ({
 
                   <div className="mt-auto pt-4 border-t border-slate-100">
                     {isEnrolled ? (
-                      <button
-                        className="w-full bg-primary-900 hover:bg-slate-800 text-white font-bold py-2 px-4 rounded text-sm transition-colors flex items-center justify-center gap-2"
-                        onClick={() =>
-                          navigate(`/student/course/${courses.courses_id}`)
-                        }
-                      >
-                        Resume <ArrowRight size={14} />
-                      </button>
+                      <>
+                        <button
+                          className="w-full bg-primary-900 hover:bg-slate-800 text-white font-bold py-2 px-4 rounded text-sm transition-colors flex items-center justify-center gap-2"
+                          onClick={() =>
+                            navigate(`/student/course/${courses.courses_id}`)
+                          }
+                        >
+                          Resume <ArrowRight size={14} />
+                        </button>
+                        <button
+                          className={`w-full font-bold py-2 px-4 rounded text-sm transition-colors flex items-center justify-center gap-2 ${
+                            courses.has_reviewed
+                              ? "bg-green-50 text-green-700 border border-green-200 cursor-not-allowed"
+                              : "bg-slate-100 text-slate-600 hover:bg-amber-50 hover:text-amber-600"
+                          }`}
+                          onClick={(e) =>
+                            !courses.has_reviewed && openReviewModal(e, courses)
+                          }
+                          disabled={courses.has_reviewed}
+                        >
+                          {courses.has_reviewed ? (
+                            <>
+                              <Check size={14} /> Rating Submitted
+                            </>
+                          ) : (
+                            <>
+                              <Star size={14} /> Rate Instructor
+                            </>
+                          )}
+                        </button>
+                      </>
                     ) : (
                       <button
                         className="w-full bg-white border border-slate-200 text-slate-600 hover:border-indigo-500 hover:text-indigo-600 font-bold py-2 px-4 rounded text-sm transition-all flex items-center justify-center gap-2"
