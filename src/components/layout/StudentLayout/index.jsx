@@ -15,7 +15,7 @@ const StudentLayout = () => {
   const navigate = useNavigate();
   const location = useLocation();
   const { currentUser, logout } = useAuth();
-  const isExamPage = location.pathname.startsWith("/student/exams/");
+  const isExamPage = location.pathname.includes("/student/exams/");
   const [studentName, setStudentName] = useState("");
   const [xp, setXp] = useState(0);
   const [rank, setRank] = useState("Novice");
