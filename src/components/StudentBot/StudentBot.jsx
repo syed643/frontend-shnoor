@@ -73,11 +73,11 @@ const StudentBot = () => {
     setLoading(true);
 
     try {
-      if (!API_URL) {
+      if (!EFFECTIVE_API_URL) {
         // No API configured — show helpful hint
         appendMessage({
           from: "bot",
-          text: "Bot is not configured. Please add VITE_STUDENT_BOT_API_URL and optionally VITE_STUDENT_BOT_API_KEY in your `.env` file.",
+          text: "Bot is not configured. Please set VITE_API_URL (or enable VITE_STUDENT_BOT_USE_PROXY=true).",
         });
       } else {
         const resp = await fetch(EFFECTIVE_API_URL, {
@@ -95,10 +95,21 @@ const StudentBot = () => {
           const errText = await resp.text();
           appendMessage({ from: "bot", text: `Error from bot API: ${errText || resp.status}` });
         } else {
-          const data = await resp.json();
-          // Expecting { reply: '...' } or { message: '...' } — try both
-          const reply = data.reply ?? data.message ?? JSON.stringify(data);
-          appendMessage({ from: "bot", text: reply });
+          const rawText = await resp.text();
+          if (!rawText.trim()) {
+            appendMessage({ from: "bot", text: "Bot returned an empty response." });
+          } else {
+            let data;
+            try {
+              data = JSON.parse(rawText);
+            } catch (parseErr) {
+              appendMessage({ from: "bot", text: rawText });
+              return;
+            }
+            // Expecting { reply: '...' } or { message: '...' } — try both
+            const reply = data.reply ?? data.message ?? JSON.stringify(data);
+            appendMessage({ from: "bot", text: reply });
+          }
         }
       }
     } catch (err) {
