@@ -336,7 +336,7 @@ const ExamRunnerView = ({
               </div>
             </div>
           ) : (
-            <div className="w-full bg-white rounded-2xl shadow-sm border border-slate-200 flex flex-col h-full md:h-auto overflow-hidden">
+            <div className="w-full bg-white rounded-2xl shadow-sm border border-slate-200 flex flex-col h-full md:h-auto min-h-0">
               <div className="p-6 md:p-8 border-b border-slate-100 flex justify-between items-start gap-4 bg-slate-50/50">
                 <div>
                   <span className="text-sm font-bold text-slate-400 uppercase tracking-wide">
@@ -351,7 +351,7 @@ const ExamRunnerView = ({
                 </span>
               </div>
               {/* Replace the options render block with this temporary debug-friendly code */}
-              <div className="p-6 md:p-8 flex-1 grid gap-4 pb-24">
+              <div className="p-6 md:p-8 flex-1 min-h-0 overflow-y-auto grid gap-4 pb-24">
                 {" "}
                 {/* added pb-24 to avoid bottom overlay */}
                 {optionsArray.length === 0 ? (
