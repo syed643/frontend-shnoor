@@ -70,7 +70,7 @@ const CoursePlayerView = ({
     );
 
   return (
-    <div className="flex flex-col h-screen bg-primary-900 text-slate-100 overflow-hidden font-sans">
+    <div className="flex flex-col min-h-screen bg-primary-900 text-slate-100 font-sans">
       {}
       <div className="h-16 bg-slate-800 border-b border-slate-700 flex items-center justify-between px-6 flex-shrink-0 z-20 shadow-md">
         <div className="flex items-center gap-4">
@@ -143,7 +143,7 @@ const CoursePlayerView = ({
           </div>
         </div>
       )}
-      <div className="flex-1 flex overflow-hidden">
+      <div className="flex-1 flex min-h-[calc(100vh-4rem)] overflow-hidden">
         {}
         <div className="flex-1 flex flex-col relative bg-black">
           {}
@@ -220,7 +220,7 @@ const CoursePlayerView = ({
         </div>
 
         {}
-        <div className="w-80 bg-primary-900 border-l border-slate-700 flex flex-col flex-shrink-0 shadow-2xl z-10">
+<div className="w-80 bg-primary-900 border-l border-slate-700 flex flex-col shadow-2xl z-10">
           <div className="p-4 bg-slate-800 border-b border-slate-700">
             <h3 className="font-bold text-slate-100 uppercase tracking-wider text-xs">
               Course Content
@@ -304,7 +304,7 @@ const CoursePlayerView = ({
     RECOMMENDED COURSES
    ========================= */}
       {recommendedCourses?.length > 0 && (
-        <div className="bg-slate-900 border-t border-slate-700 px-8 py-10">
+<div className="bg-slate-900 border-t border-slate-700 px-8 py-12 mt-6">
           <h3 className="text-sm font-bold uppercase tracking-wider text-slate-400 mb-6">
             Recommended for You
           </h3>
