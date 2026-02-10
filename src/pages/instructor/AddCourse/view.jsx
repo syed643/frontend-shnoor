@@ -12,6 +12,7 @@ import {
   ArrowDown,
   Info,
   Minus,
+  Upload,
 } from "lucide-react";
 import TextStreamPlayer from "../../student/CoursePlayer/TextStreamPlayer";
 
