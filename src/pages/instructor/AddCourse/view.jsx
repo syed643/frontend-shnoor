@@ -48,7 +48,6 @@ const AddCourseView = ({
   isBulkUploading,
   bulkUploadResult,
   closeBulkUpload,
-  // Module Bulk Upload Props
   showModuleBulkUpload,
   setShowModuleBulkUpload,
   handleModuleBulkFileSelect,
@@ -60,7 +59,6 @@ const AddCourseView = ({
   isModuleBulkUploading,
   moduleBulkUploadResult,
   closeModuleBulkUpload,
-  // Preview Props
   previewModuleId,
   setPreviewModuleId,
 }) => {
@@ -690,6 +688,22 @@ const AddCourseView = ({
             </div>
           )}
 
+      {previewModuleId && (
+  <div className="fixed inset-0 bg-black/80 flex items-center justify-center z-50 p-4">
+    <div className="bg-white rounded-xl shadow-2xl w-full max-w-4xl h-[80vh] flex flex-col overflow-hidden relative">
+      <button
+        onClick={() => setPreviewModuleId(null)}
+        className="absolute top-4 right-4 z-50 bg-slate-800 text-white p-2 rounded-full"
+      >
+        &times;
+      </button>
+
+      <div className="flex-1 overflow-hidden">
+        <TextStreamPlayer moduleId={previewModuleId} />
+      </div>
+    </div>
+  </div>
+)}
           {/* STEP 3: Review */}
           {step === 3 && (
             <div className="w-full">
@@ -774,23 +788,231 @@ const AddCourseView = ({
           )}
         </div>
       </div>
-      {previewModuleId && (
-  <div className="fixed inset-0 bg-black/80 flex items-center justify-center z-50 p-4">
-    <div className="bg-white rounded-xl shadow-2xl w-full max-w-4xl h-[80vh] flex flex-col overflow-hidden relative">
-      <button
-        onClick={() => setPreviewModuleId(null)}
-        className="absolute top-4 right-4 z-50 bg-slate-800 text-white p-2 rounded-full"
-      >
-        &times;
-      </button>
+            {/* --- Bulk Upload Modal --- */}
+            {showBulkUpload && (
+                <div className="fixed inset-0 bg-black/50 flex items-center justify-center z-50">
+                    <div className="bg-white rounded-lg shadow-xl w-full max-w-lg p-6 m-4">
+                        <div className="flex justify-between items-center mb-6">
+                            <h3 className="text-lg font-bold text-primary-900 flex items-center gap-2">
+                                <Upload size={20} /> Bulk Upload Courses
+                            </h3>
+                            <button onClick={closeBulkUpload} className="text-slate-400 hover:text-slate-600">
+                                &times;
+                            </button>
+                        </div>
 
-      <div className="flex-1 overflow-hidden">
-        <TextStreamPlayer moduleId={previewModuleId} />
-      </div>
-    </div>
-  </div>
-)}
+                        {!bulkUploadResult ? (
+                            <div className="space-y-6">
+                                <div className="border-2 border-dashed border-slate-300 rounded-lg p-8 text-center hover:bg-slate-50 transition-colors relative">
+                                    <input
+                                        type="file"
+                                        accept=".csv"
+                                        onChange={handleBulkFileSelect}
+                                        disabled={isBulkUploading}
+                                        className="opacity-0 absolute inset-0 w-full h-full cursor-pointer"
+                                    />
+                                    <div className="space-y-2">
+                                        <div className="bg-indigo-50 text-indigo-600 w-12 h-12 rounded-full flex items-center justify-center mx-auto mb-2">
+                                            <Upload size={24} />
+                                        </div>
+                                        <p className="font-semibold text-slate-700">
+                                            {bulkFile ? bulkFile.name : "Click to select CSV file"}
+                                        </p>
+                                        <p className="text-xs text-slate-400">
+                                            Max size 50MB. .csv files only.
+                                        </p>
+                                    </div>
+                                </div>
 
+                                {bulkFile && !isBulkUploading && (
+                                    <div className="flex justify-end">
+                                        <button
+                                            onClick={handleBulkUpload}
+                                            className="bg-indigo-600 hover:bg-indigo-700 text-white font-bold py-2 px-6 rounded-md transition-colors flex items-center gap-2"
+                                        >
+                                            <Upload size={16} /> Start Upload
+                                        </button>
+                                    </div>
+                                )}
+
+                                {isBulkUploading && (
+                                    <div className="space-y-2">
+
+                                        <div className="flex justify-between text-xs font-semibold text-slate-600">
+                                            <span>Uploading...</span>
+                                            <span>{Math.round(bulkUploadProgress)}%</span>
+                                        </div>
+                                        <div className="w-full bg-slate-200 h-2 rounded-full overflow-hidden">
+                                            <div
+                                                className="bg-indigo-600 h-full transition-all duration-300"
+                                                style={{ width: `${bulkUploadProgress}%` }}
+                                            ></div>
+                                        </div>
+                                    </div>
+                                )}
+                            </div>
+                        ) : (
+                            <div className="space-y-4">
+                                <div className={`p-4 rounded-md ${bulkUploadResult.successCount > 0 ? 'bg-emerald-50 text-emerald-800' : 'bg-rose-50 text-rose-800'}`}>
+                                    <p className="font-bold">Process Complete</p>
+                                    <p className="text-sm mt-1">
+                                        Successfully created: <b>{bulkUploadResult.successCount}</b> courses.
+                                    </p>
+                                </div>
+
+                                {bulkUploadResult.errors?.length > 0 && (
+                                    <div className="bg-slate-50 border border-slate-200 rounded-md p-3 max-h-48 overflow-y-auto">
+                                        <p className="text-xs font-bold text-slate-500 uppercase mb-2">Errors ({bulkUploadResult.errors.length})</p>
+                                        <ul className="space-y-1">
+                                            {bulkUploadResult.errors.map((err, i) => (
+                                                <li key={i} className="text-xs text-rose-600 flex gap-2">
+                                                    <span className="font-mono bg-rose-100 px-1 rounded">{err.row || err.course || '?'}</span>
+                                                    <span>{err.message}</span>
+                                                </li>
+                                            ))}
+                                        </ul>
+                                    </div>
+                                )}
+
+                                <div className="flex justify-end pt-2">
+                                    <button
+                                        onClick={closeBulkUpload}
+                                        className="bg-primary-900 text-white px-4 py-2 rounded text-sm hover:bg-slate-800 transition-colors"
+                                    >
+                                        Close & Refresh
+                                    </button>
+                                </div>
+                            </div>
+                        )}
+                    </div>
+                </div>
+            )}
+            {/* --- Module Bulk Upload Modal --- */}
+            {showModuleBulkUpload && (
+                <div className="fixed inset-0 bg-black/50 flex items-center justify-center z-50">
+                    <div className="bg-white rounded-lg shadow-xl w-full max-w-lg p-6 m-4 max-h-[90vh] overflow-y-auto">
+                        <div className="flex justify-between items-center mb-6">
+                            <h3 className="text-lg font-bold text-primary-900 flex items-center gap-2">
+                                <Upload size={20} /> Bulk Upload Modules
+                            </h3>
+                            <button onClick={closeModuleBulkUpload} className="text-slate-400 hover:text-slate-600">
+                                &times;
+                            </button>
+                        </div>
+
+                        {!moduleBulkUploadResult ? (
+                            <div className="space-y-6">
+                                {/* CSV Selection */}
+                                <div className="border-2 border-dashed border-slate-300 rounded-lg p-6 text-center hover:bg-slate-50 transition-colors relative">
+                                    <input
+                                        type="file"
+                                        accept=".csv"
+                                        onChange={handleModuleBulkFileSelect}
+                                        disabled={isModuleBulkUploading}
+                                        className="opacity-0 absolute inset-0 w-full h-full cursor-pointer"
+                                    />
+                                    <div className="space-y-2">
+                                        <div className="bg-indigo-50 text-indigo-600 w-10 h-10 rounded-full flex items-center justify-center mx-auto mb-2">
+                                            <FileText size={20} />
+                                        </div>
+                                        <p className="font-semibold text-slate-700 text-sm">
+                                            {moduleBulkFile ? moduleBulkFile.name : "Select CSV File"}
+                                        </p>
+                                        <p className="text-xs text-slate-400">
+                                            Req: module_name, module_type, module_source, module_duration
+                                        </p>
+                                    </div>
+                                </div>
+
+                                {/* Resource Files Selection */}
+                                <div className="border-2 border-dashed border-slate-300 rounded-lg p-6 text-center hover:bg-slate-50 transition-colors relative">
+                                    <input
+                                        type="file"
+                                        multiple
+                                        onChange={handleModuleResourceFilesSelect}
+                                        disabled={isModuleBulkUploading}
+                                        className="opacity-0 absolute inset-0 w-full h-full cursor-pointer"
+                                    />
+                                    <div className="space-y-2">
+                                        <div className="bg-indigo-50 text-indigo-600 w-10 h-10 rounded-full flex items-center justify-center mx-auto mb-2">
+                                            <Video size={20} />
+                                        </div>
+                                        <p className="font-semibold text-slate-700 text-sm">
+                                            {moduleResourceFiles.length > 0 ? `${moduleResourceFiles.length} files selected` : "Select Resource Files (Videos/PDFs)"}
+                                        </p>
+                                        <p className="text-xs text-slate-400">
+                                            Select all videos/PDFs referenced in your CSV
+                                        </p>
+                                    </div>
+                                </div>
+
+                                {moduleBulkFile && !isModuleBulkUploading && (
+                                    <div className="flex justify-end pt-2">
+                                        <button
+                                            onClick={handleModuleBulkUpload}
+                                            className="bg-indigo-600 hover:bg-indigo-700 text-white font-bold py-2 px-6 rounded-md transition-colors flex items-center gap-2 text-sm"
+                                        >
+                                            <Upload size={14} /> Start Upload
+                                        </button>
+                                    </div>
+                                )}
+
+                                {isModuleBulkUploading && (
+                                    <div className="space-y-2">
+                                        <div className="flex justify-between text-xs font-semibold text-slate-600">
+                                            <span>Uploading modules...</span>
+                                            <span>{Math.round(moduleBulkUploadProgress)}%</span>
+                                        </div>
+                                        <div className="w-full bg-slate-200 h-2 rounded-full overflow-hidden">
+                                            <div
+                                                className="bg-indigo-600 h-full transition-all duration-300"
+                                                style={{ width: `${moduleBulkUploadProgress}%` }}
+                                            ></div>
+                                        </div>
+                                    </div>
+                                )}
+                            </div>
+                        ) : (
+                            <div className="space-y-4">
+                                <div className={`p-4 rounded-md ${moduleBulkUploadResult.successCount > 0 ? 'bg-emerald-50 text-emerald-800' : 'bg-rose-50 text-rose-800'}`}>
+                                    <p className="font-bold">Process Complete</p>
+                                    <p className="text-sm mt-1">
+                                        Successfully created: <b>{moduleBulkUploadResult.successCount}</b> modules.
+                                    </p>
+                                    {moduleBulkUploadResult.totalRows > 0 && (
+                                        <p className="text-xs mt-1 text-slate-500">
+                                            Processed {moduleBulkUploadResult.totalRows} rows.
+                                        </p>
+                                    )}
+                                </div>
+
+                                {moduleBulkUploadResult.errors?.length > 0 && (
+                                    <div className="bg-slate-50 border border-slate-200 rounded-md p-3 max-h-48 overflow-y-auto">
+                                        <p className="text-xs font-bold text-slate-500 uppercase mb-2">Errors ({moduleBulkUploadResult.errors.length})</p>
+                                        <ul className="space-y-1">
+                                            {moduleBulkUploadResult.errors.map((err, i) => (
+                                                <li key={i} className="text-xs text-rose-600 flex gap-2">
+                                                    <span className="font-mono bg-rose-100 px-1 rounded">Row {err.row}</span>
+                                                    <span>{err.message}</span>
+                                                </li>
+                                            ))}
+                                        </ul>
+                                    </div>
+                                )}
+
+                                <div className="flex justify-end pt-2">
+                                    <button
+                                        onClick={closeModuleBulkUpload}
+                                        className="bg-primary-900 text-white px-4 py-2 rounded text-sm hover:bg-slate-800 transition-colors"
+                                    >
+                                        Close & Refresh
+                                    </button>
+                                </div>
+                            </div>
+                        )}
+                    </div>
+                </div>
+            )}
     </div>
   );
 };
