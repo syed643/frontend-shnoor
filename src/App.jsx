@@ -117,7 +117,7 @@ function App() {
               <Route path="courses" element={<CourseList />} />
               <Route path="practice" element={<InstructorPracticeList />} />
               <Route path="practice/new" element={<AddPractice />} />
-              <Route path="contests" element={<ContestManagement />} />
+              <Route path="contests/*" element={<ContestManagement />} />
               <Route path="contests/create" element={<CreateContest />} />
               <Route path="exams" element={<ExamBuilder />} />
               <Route path="performance" element={<StudentPerformance />} />
