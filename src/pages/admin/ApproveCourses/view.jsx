@@ -8,6 +8,7 @@ import {
   BookOpen,
   Clock,
   ShieldCheck,
+  Eye,
 } from "lucide-react";
 import { getEmbedUrl } from "../../../utils/urlHelper";
 import TextStreamPlayer from "../../student/CoursePlayer/TextStreamPlayer";
