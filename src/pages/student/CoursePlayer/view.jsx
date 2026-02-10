@@ -8,6 +8,8 @@ import {
   BookOpen,
   Info,
 } from "lucide-react";
+import { getEmbedUrl } from "../../../utils/urlHelper";
+import TextStreamPlayer from "./TextStreamPlayer";
 
 const toEmbedUrl = (url) => {
   if (!url) return "";
@@ -147,47 +149,84 @@ const CoursePlayerView = ({
         {}
         <div className="flex-1 flex flex-col relative bg-black">
           {}
-          <div className="flex-1 relative">
-            {currentModule?.type === "video" ? (
-              currentModule.url.includes("firebasestorage") ||
-              currentModule.url.match(/\.(mp4|webm|ogg)$/) ? (
-                <video
-                  controls
-                  className="w-full h-full object-contain bg-black"
-                >
-                  <source src={currentModule.url} type="video/mp4" />
-                  Your browser does not support the video tag.
-                </video>
-              ) : (
-                <iframe
-                  className="w-full h-full absolute top-0 left-0"
-                  src={toEmbedUrl(currentModule.url)}
-                  title="Video Player"
-                  frameBorder="0"
-                  allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
-                  allowFullScreen
-                />
-              )
-            ) : (
-              <div className="flex flex-col items-center justify-center h-full bg-slate-800 text-slate-300 p-8">
-                <FileText size={64} className="text-slate-500 mb-6" />
-                <h3 className="text-2xl font-bold text-white mb-2">
-                  Document Viewer
-                </h3>
-                <p className="text-lg mb-8">{currentModule?.title}</p>
-                <a
-                  href={currentModule?.url}
-                  target="_blank"
-                  rel="noopener noreferrer"
-                  className="bg-primary-900 hover:bg-slate-800 text-white font-bold py-3 px-8 rounded-xl transition-all hover:scale-105 flex items-center gap-2"
-                >
-                  Open Document <ExternalLink size={14} />
-                </a>
-              </div>
-            )}
-          </div>
+       <div className="flex-1 relative">
 
-          {}
+  {/* TEXT STREAM */}
+  {currentModule?.type === "text_stream" ? (
+    <TextStreamPlayer
+      moduleId={currentModule.id}
+      url={currentModule.url}
+      onComplete={handleMarkComplete}
+    />
+
+  ) : currentModule?.type === "video" ? (
+
+    /* VIDEO */
+    currentModule?.url?.includes("firebasestorage") ||
+    currentModule?.url?.match(/\.(mp4|webm|ogg)$/i) ? (
+      <video
+        controls
+        className="w-full h-full object-contain bg-black"
+      >
+        <source src={currentModule.url} type="video/mp4" />
+        Your browser does not support the video tag.
+      </video>
+    ) : (
+      <iframe
+        className="w-full h-full absolute top-0 left-0"
+        src={toEmbedUrl(currentModule.url)}
+        title="Video Player"
+        frameBorder="0"
+        allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
+        allowFullScreen
+      />
+    )
+
+  ) : currentModule?.type === "pdf" ||
+      currentModule?.url?.toLowerCase().includes(".pdf") ? (
+
+    /* PDF */
+    <iframe
+      src={currentModule.url}
+      className="w-full h-full"
+      title={currentModule.title || "PDF Document"}
+      allow="fullscreen"
+    />
+
+  ) : currentModule?.type === "html" ||
+      currentModule?.url?.toLowerCase().endsWith(".html") ? (
+
+    /* HTML */
+    <iframe
+      src={currentModule.url}
+      className="w-full h-full"
+      title={currentModule.title || "HTML Content"}
+      allow="fullscreen"
+    />
+
+  ) : (
+
+    /* FALLBACK */
+    <div className="flex flex-col items-center justify-center h-full bg-slate-800 text-slate-300 p-8">
+      <FileText size={64} className="text-slate-500 mb-6" />
+      <h3 className="text-2xl font-bold text-white mb-2">
+        Document Viewer
+      </h3>
+      <p className="text-lg mb-8">{currentModule?.title}</p>
+      {currentModule?.url && (
+        <a
+          href={currentModule.url}
+          target="_blank"
+          rel="noopener noreferrer"
+          className="bg-primary-900 hover:bg-slate-800 text-white font-bold py-3 px-8 rounded-xl transition-all hover:scale-105 flex items-center gap-2"
+        >
+          Open Document <ExternalLink size={14} />
+        </a>
+      )}
+    </div>
+  )}
+
+</div>
           <div className="h-20 bg-slate-800 border-t border-slate-700 flex items-center justify-between px-8 flex-shrink-0">
             <div>
               <h2 className="text-lg font-bold text-white">
@@ -218,9 +257,7 @@ const CoursePlayerView = ({
             </button>
           </div>
         </div>
-
-        {}
-<div className="w-80 bg-primary-900 border-l border-slate-700 flex flex-col shadow-2xl z-10">
+        <div className="w-80 bg-primary-900 border-l border-slate-700 flex flex-col shadow-2xl z-10">
           <div className="p-4 bg-slate-800 border-b border-slate-700">
             <h3 className="font-bold text-slate-100 uppercase tracking-wider text-xs">
               Course Content
@@ -304,7 +341,7 @@ const CoursePlayerView = ({
     RECOMMENDED COURSES
    ========================= */}
       {recommendedCourses?.length > 0 && (
-<div className="bg-slate-900 border-t border-slate-700 px-8 py-12 mt-6">
+        <div className="bg-slate-900 border-t border-slate-700 px-8 py-12 mt-6">
           <h3 className="text-sm font-bold uppercase tracking-wider text-slate-400 mb-6">
             Recommended for You
           </h3>
