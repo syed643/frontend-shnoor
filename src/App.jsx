@@ -55,6 +55,12 @@ import Groups from "./pages/admin/Groups";
 import CreateGroup from "./pages/admin/Groups/create";
 import EditGroup from "./pages/admin/Groups/edit";
 import GroupUsers from "./pages/admin/Groups/users";
+import ContestManagement from "./pages/instructor/ContestManagement";
+import CreateContest from "./pages/instructor/ContestManagement/CreateContext";
+import WeeklyContest from "./pages/student/WeeklyContest";
+import ContestDetail from "./pages/student/WeeklyContest/ContestDetail";
+import ContestResult from "./pages/student/ContestResult";
+import ContestLeaderboard from "./pages/student/ContestLeaderboard";
 // import Leaderboard from './pages/student/Leaderboard';
 
 function App() {
@@ -85,7 +91,7 @@ function App() {
               <Route path="assign-course" element={<AssignCourse />} />
               <Route path="certificates" element={<CertificateConfig />} />
               <Route path="manage-users" element={<ManageUsers />} />
-              <Route path= "groups" element={<Groups/>}/>
+              <Route path="groups" element={<Groups />} />
               <Route path="groups/create" element={<CreateGroup />} />
               <Route path="groups/edit/:groupId" element={<EditGroup />} />
               <Route path="groups/:groupId/users" element={<GroupUsers />} />
@@ -111,6 +117,8 @@ function App() {
               <Route path="courses" element={<CourseList />} />
               <Route path="practice" element={<InstructorPracticeList />} />
               <Route path="practice/new" element={<AddPractice />} />
+              <Route path="contests" element={<ContestManagement />} />
+              <Route path="contests/create" element={<CreateContest />} />
               <Route path="exams" element={<ExamBuilder />} />
               <Route path="performance" element={<StudentPerformance />} />
               <Route path="settings" element={<ProfileSettings />} />
@@ -134,6 +142,17 @@ function App() {
               <Route
                 path="practice/session/:challengeId"
                 element={<PracticeSession />}
+              />
+              <Route path="contests" element={<WeeklyContest />} />
+              <Route path="contest/:contestId" element={<ContestDetail />} />
+              <Route
+                path="/student/contest/:contestId/result"
+                element={<ContestResult />}
+              />
+
+              <Route
+                path="/student/contest/:contestId/leaderboard"
+                element={<ContestLeaderboard />}
               />
               <Route path="exams" element={<StudentExams />} />
               <Route path="exam/:examId" element={<ExamRunner />} />
