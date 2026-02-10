@@ -6,6 +6,7 @@ import {
   Play,
   ExternalLink,
   BookOpen,
+  Info,
 } from "lucide-react";
 
 const toEmbedUrl = (url) => {
