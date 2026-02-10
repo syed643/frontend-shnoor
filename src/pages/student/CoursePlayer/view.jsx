@@ -123,7 +123,7 @@ const CoursePlayerView = ({
                   href={videoUrl}
                   target="_blank"
                   rel="noopener noreferrer"
-                  className="inline-flex items-center gap-1 px-3 py-1 rounded-full bg-indigo-600 hover:bg-indigo-500 text-white font-semibold transition text-[11px]"
+                  className="inline-flex items-center gap-1 px-3 py-1 rounded-full bg-indigo-400 hover:bg-indigo-500 text-white font-semibold transition text-[11px]"
                 >
                   <Play size={12} />
                   Video {index + 1}
