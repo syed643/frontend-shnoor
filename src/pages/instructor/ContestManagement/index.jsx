@@ -1,8 +1,8 @@
 import { Routes, Route } from "react-router-dom";
 
 import ContestList from "./ContestList";
-import CreateContest from "./CreateContest";
-import EditContest from "./EditContest";
+import CreateContest from "./CreateContext";
+import EditContest from "./EditContext";
 import AddContestQuestion from "./AddContestQuestion";
 import AddDescriptiveContestQuestion from "./AddDescriptiveContestQuestion";
 import AddCodingContestQuestion from "./AddCodingContestQuestion";
