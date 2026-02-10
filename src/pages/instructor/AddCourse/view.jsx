@@ -13,6 +13,7 @@ import {
   Info,
   Minus,
 } from "lucide-react";
+import TextStreamPlayer from "../../student/CoursePlayer/TextStreamPlayer";
 
 const AddCourseView = ({
   step,
@@ -38,6 +39,30 @@ const AddCourseView = ({
   addVideoUrl,
   removeVideoUrl,
   updateVideoUrl,
+  showBulkUpload,
+  setShowBulkUpload,
+  handleBulkFileSelect,
+  bulkFile,
+  handleBulkUpload,
+  bulkUploadProgress,
+  isBulkUploading,
+  bulkUploadResult,
+  closeBulkUpload,
+  // Module Bulk Upload Props
+  showModuleBulkUpload,
+  setShowModuleBulkUpload,
+  handleModuleBulkFileSelect,
+  moduleBulkFile,
+  handleModuleResourceFilesSelect,
+  moduleResourceFiles,
+  handleModuleBulkUpload,
+  moduleBulkUploadProgress,
+  isModuleBulkUploading,
+  moduleBulkUploadResult,
+  closeModuleBulkUpload,
+  // Preview Props
+  previewModuleId,
+  setPreviewModuleId,
 }) => {
   if (loading)
     return (
@@ -80,6 +105,16 @@ const AddCourseView = ({
             ))}
           </div>
         </div>
+        {!editCourseId && (
+          <div className="bg-white border-b border-slate-200 px-6 py-2 flex justify-end">
+            <button
+              onClick={() => setShowBulkUpload(true)}
+              className="text-sm font-semibold text-indigo-600 hover:text-indigo-800 flex items-center gap-2"
+            >
+              <Plus size={14} /> Bulk Upload (CSV)
+            </button>
+          </div>
+        )}
 
         {/* --- Main Content --- */}
         <div className="bg-white rounded-lg shadow-sm border border-slate-200 flex-1 p-6">
@@ -433,6 +468,7 @@ const AddCourseView = ({
                       >
                         <option value="video">Video</option>
                         <option value="pdf">PDF</option>
+                        <option value="text_stream">Text Stream</option>
                       </select>
                     </div>
                     {moduleForm.type === "video" && (
@@ -572,9 +608,18 @@ const AddCourseView = ({
               <div className="lg:col-span-2">
                 <div className="bg-[#f8fafc] h-full rounded-lg border border-slate-200 flex flex-col">
                   <div className="px-6 py-4 border-b border-slate-200 flex justify-between items-center bg-white rounded-t-lg">
-                    <h3 className="text-sm font-bold text-primary-900">
-                      Curriculum ({courseData.modules.length})
-                    </h3>
+                    <div className="flex justify-between items-center">
+                      <h3 className="text-sm font-bold text-primary-900">
+                        Curriculum ({courseData.modules.length})
+                      </h3>
+
+                      <button
+                        onClick={() => setShowModuleBulkUpload(true)}
+                        className="text-xs font-semibold text-indigo-600 hover:text-indigo-800 flex items-center gap-1"
+                      >
+                        <Plus size={12} /> Bulk Upload
+                      </button>
+                    </div>
                   </div>
 
                   <div className="flex-1 overflow-auto p-4 space-y-2">
@@ -605,6 +650,16 @@ const AddCourseView = ({
                             </div>
                           </div>
                           <div className="flex items-center gap-2 opacity-0 group-hover:opacity-100 transition-opacity">
+                            {m.type === "text_stream" && (
+                              <button
+                                onClick={() => setPreviewModuleId(m.id)}
+                                className="p-1.5 text-slate-400 hover:text-indigo-600 hover:bg-indigo-50 rounded"
+                                title="Preview"
+                              >
+                                👁
+                              </button>
+                            )}
+
                             <button
                               onClick={() => moveModule(idx, -1)}
                               disabled={idx === 0}
@@ -719,6 +774,23 @@ const AddCourseView = ({
           )}
         </div>
       </div>
+      {previewModuleId && (
+  <div className="fixed inset-0 bg-black/80 flex items-center justify-center z-50 p-4">
+    <div className="bg-white rounded-xl shadow-2xl w-full max-w-4xl h-[80vh] flex flex-col overflow-hidden relative">
+      <button
+        onClick={() => setPreviewModuleId(null)}
+        className="absolute top-4 right-4 z-50 bg-slate-800 text-white p-2 rounded-full"
+      >
+        &times;
+      </button>
+
+      <div className="flex-1 overflow-hidden">
+        <TextStreamPlayer moduleId={previewModuleId} />
+      </div>
+    </div>
+  </div>
+)}
+
     </div>
   );
 };

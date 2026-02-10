@@ -46,6 +46,23 @@ export const AddCourse = () => {
   const [uploading, setUploading] = useState(false);
   const [videoInputType, setVideoInputType] = useState("url");
   const [pdfInputType, setPdfInputType] = useState("url");
+  const [showBulkUpload, setShowBulkUpload] = useState(false);
+  const [bulkFile, setBulkFile] = useState(null);
+  const [isBulkUploading, setIsBulkUploading] = useState(false);
+  const [bulkUploadProgress, setBulkUploadProgress] = useState(0);
+  const [bulkUploadResult, setBulkUploadResult] = useState(null);
+
+  // Module Bulk Upload State
+  const [showModuleBulkUpload, setShowModuleBulkUpload] = useState(false);
+  const [moduleBulkFile, setModuleBulkFile] = useState(null);
+  const [moduleResourceFiles, setModuleResourceFiles] = useState([]);
+  const [isModuleBulkUploading, setIsModuleBulkUploading] = useState(false);
+  const [moduleBulkUploadProgress, setModuleBulkUploadProgress] = useState(0);
+  const [moduleBulkUploadResult, setModuleBulkUploadResult] = useState(null);
+
+
+  // Preview State
+  const [previewModuleId, setPreviewModuleId] = useState(null);
 
   const addVideoUrl = () => {
     setCourseData((prev) => ({
@@ -158,7 +175,7 @@ export const AddCourse = () => {
     });
   };
 
-  const handleFileUpload = async (file, fieldName) => {
+  {/*const handleFileUpload = async (file, fieldName) => {
     if (!file) return;
 
     // OPTIONAL: size check
@@ -180,11 +197,196 @@ export const AddCourse = () => {
       setUploading(false);
       setUploadProgress(100);
     }, 800);
+  };*/}
+
+  const handleFileUpload = async (file, fieldName) => {
+    if (!file) return;
+
+    if (file.size > 500 * 1024 * 1024) {
+      alert("File too large (max 500MB)");
+      return;
+    }
+
+    setUploading(true);
+    setUploadProgress(0); // Optional: if you implement progress tracking
+
+    const formData = new FormData();
+    formData.append("file", file);
+
+    try {
+      const token = await auth.currentUser.getIdToken();
+      const res = await api.post("/api/upload", formData, {
+        headers: {
+          "Content-Type": "multipart/form-data",
+          Authorization: `Bearer ${token}`,
+        },
+        onUploadProgress: (progressEvent) => {
+          const percentCompleted =
+            Math.round((progressEvent.loaded * 100) / progressEvent.total);
+          setUploadProgress(percentCompleted);
+        },
+      });
+
+      setModuleForm((prev) => ({
+        ...prev,
+        [fieldName]: res.data.url,
+      }));
+
+      alert(`${fieldName === 'url' ? 'Video' : 'File'} uploaded successfully!`);
+
+    } catch (err) {
+      console.error("Upload error:", err);
+      const errorMsg = err.response?.data?.message || err.message || "Failed to upload file.";
+      alert(`Upload failed: ${errorMsg}`);
+    } finally {
+      setUploading(false);
+    }
+  };
+
+   const handleBulkFileSelect = (e) => {
+    if (e.target.files && e.target.files[0]) {
+      setBulkFile(e.target.files[0]);
+      setBulkUploadResult(null);
+    }
+  };
+
+  const handleBulkUpload = async () => {
+    if (!bulkFile) return;
+
+    setIsBulkUploading(true);
+    setBulkUploadProgress(0);
+
+    const formData = new FormData();
+    formData.append("file", bulkFile);
+
+    try {
+      const token = await auth.currentUser.getIdToken();
+      const res = await api.post("/api/courses/bulk-upload", formData, {
+        headers: {
+          "Content-Type": "multipart/form-data",
+          Authorization: `Bearer ${token}`,
+        },
+        onUploadProgress: (progressEvent) => {
+          const percentCompleted = Math.round((progressEvent.loaded * 100) / progressEvent.total);
+          setBulkUploadProgress(percentCompleted);
+        },
+      });
+
+      setBulkUploadResult(res.data);
+      setBulkFile(null); // Clear file after upload
+    } catch (err) {
+      console.error("Bulk upload error:", err);
+      const errorMsg = err.response?.data?.message || err.message || "Upload failed";
+      setBulkUploadResult({
+        successCount: 0,
+        errors: [{ message: errorMsg }]
+      });
+    } finally {
+      setIsBulkUploading(false);
+    }
+  };
+
+  const closeBulkUpload = () => {
+    setShowBulkUpload(false);
+    setBulkFile(null);
+    setBulkUploadResult(null);
+    // Optionally refresh list if needed, but we are in AddCourse page. 
+    // Maybe navigate to dashboard if success?
+    if (bulkUploadResult?.successCount > 0) {
+      navigate("/instructor/dashboard");
+    }
   };
 
   /* =========================
-     SUBMIT COURSE
+     MODULE BULK UPLOAD HANDLERS
      ========================= */
+  const handleModuleBulkFileSelect = (e) => {
+    if (e.target.files && e.target.files[0]) {
+      setModuleBulkFile(e.target.files[0]);
+      setModuleBulkUploadResult(null);
+    }
+  };
+
+  const handleModuleResourceFilesSelect = (e) => {
+    if (e.target.files) {
+      setModuleResourceFiles(Array.from(e.target.files));
+    }
+  };
+
+  const handleModuleBulkUpload = async () => {
+    if (!moduleBulkFile) return;
+
+    if (!editCourseId && !courseData.id) {
+      alert("Please save the course as a 'Draft' first to use Bulk Upload.");
+      return;
+    }
+
+    const targetCourseId = editCourseId || courseData.id; // Assuming courseData might have ID if saved but URL not updated
+
+    setIsModuleBulkUploading(true);
+    setModuleBulkUploadProgress(0);
+
+    const formData = new FormData();
+    formData.append("courseId", targetCourseId);
+    formData.append("file", moduleBulkFile);
+
+    if (moduleResourceFiles.length > 0) {
+      moduleResourceFiles.forEach(f => {
+        formData.append("resources", f);
+      });
+    }
+
+    try {
+      const token = await auth.currentUser.getIdToken();
+      const res = await api.post("/api/modules/bulk-upload", formData, {
+        headers: {
+          "Content-Type": "multipart/form-data",
+          Authorization: `Bearer ${token}`,
+        },
+        onUploadProgress: (progressEvent) => {
+          const percentCompleted = Math.round((progressEvent.loaded * 100) / progressEvent.total);
+          setModuleBulkUploadProgress(percentCompleted);
+        },
+      });
+
+      setModuleBulkUploadResult(res.data);
+
+      // Refresh Modules List
+      const modulesRes = await api.get(`/api/courses/${targetCourseId}/modules`, {
+        headers: { Authorization: `Bearer ${token}` }
+      });
+
+      setCourseData(prev => ({
+        ...prev,
+        modules: modulesRes.data.map(m => ({
+          id: m.module_id,
+          title: m.title,
+          type: m.type,
+          url: m.content_url,
+          duration: m.duration_mins,
+          order: m.module_order
+        }))
+      }));
+
+    } catch (err) {
+      console.error("Module bulk upload error:", err);
+      const errorMsg = err.response?.data?.message || err.message || "Upload failed";
+      setModuleBulkUploadResult({
+        successCount: 0,
+        errors: [{ message: errorMsg }]
+      });
+    } finally {
+      setIsModuleBulkUploading(false);
+    }
+  };
+
+  const closeModuleBulkUpload = () => {
+    setShowModuleBulkUpload(false);
+    setModuleBulkFile(null);
+    setModuleResourceFiles([]);
+    setModuleBulkUploadResult(null);
+  };
+
   const handleSubmit = async (statusOverride) => {
     if (!auth.currentUser) return;
 
@@ -288,6 +490,33 @@ export const AddCourse = () => {
       addVideoUrl={addVideoUrl}
       removeVideoUrl={removeVideoUrl}
       updateVideoUrl={updateVideoUrl}
+          // Bulk Upload
+      showBulkUpload={showBulkUpload}
+      setShowBulkUpload={setShowBulkUpload}
+      handleBulkFileSelect={handleBulkFileSelect}
+      bulkFile={bulkFile}
+      handleBulkUpload={handleBulkUpload}
+      bulkUploadProgress={bulkUploadProgress}
+      isBulkUploading={isBulkUploading}
+      bulkUploadResult={bulkUploadResult}
+      closeBulkUpload={closeBulkUpload}
+
+      // Module Bulk Upload
+      showModuleBulkUpload={showModuleBulkUpload}
+      setShowModuleBulkUpload={setShowModuleBulkUpload}
+      handleModuleBulkFileSelect={handleModuleBulkFileSelect}
+      moduleBulkFile={moduleBulkFile}
+      handleModuleResourceFilesSelect={handleModuleResourceFilesSelect}
+      moduleResourceFiles={moduleResourceFiles}
+      handleModuleBulkUpload={handleModuleBulkUpload}
+      moduleBulkUploadProgress={moduleBulkUploadProgress}
+      isModuleBulkUploading={isModuleBulkUploading}
+      moduleBulkUploadResult={moduleBulkUploadResult}
+      closeModuleBulkUpload={closeModuleBulkUpload}
+
+      // Preview
+      previewModuleId={previewModuleId}
+      setPreviewModuleId={setPreviewModuleId}
     />
   );
 };

@@ -7,6 +7,9 @@ const ApproveCourses = () => {
   const [selectedCourse, setSelectedCourse] = useState(null);
   const [modules, setModules] = useState([]);
   const [loading, setLoading] = useState(true);
+  const [previewModuleId, setPreviewModuleId] = useState(null);
+  const [previewUrl, setPreviewUrl] = useState(null);
+  const [previewModuleType, setPreviewModuleType] = useState(null);
 
   useEffect(() => {
     fetchPendingCourses();
@@ -47,13 +50,10 @@ const ApproveCourses = () => {
     if (!window.confirm(`Are you sure you want to ${status}?`)) return;
 
     try {
-      await api.patch(
-        `/api/admin/courses/${courseId}/status`,
-        { status }
-      );
+      await api.patch(`/api/admin/courses/${courseId}/status`, { status });
 
       setPendingCourses((prev) =>
-        prev.filter((c) => c.courses_id !== courseId)
+        prev.filter((c) => c.courses_id !== courseId),
       );
 
       closeDetails();
@@ -68,12 +68,17 @@ const ApproveCourses = () => {
       loading={loading}
       pendingCourses={pendingCourses}
       selectedCourse={selectedCourse}
-      setSelectedCourse={selectCourse}   
+      setSelectedCourse={selectCourse}
       modules={modules}
-      handleAction={updateStatus}       
+      handleAction={updateStatus}
+       previewModuleId={previewModuleId}
+      setPreviewModuleId={setPreviewModuleId}
+      previewUrl={previewUrl}
+      setPreviewUrl={setPreviewUrl}
+      previewModuleType={previewModuleType}
+      setPreviewModuleType={setPreviewModuleType}
     />
   );
 };
-
 
 export default ApproveCourses;
