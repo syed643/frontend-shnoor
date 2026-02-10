@@ -107,6 +107,7 @@ const StudentLayoutView = ({
               <NavItem path="exams" icon={ClipboardList} label="Exams" />
               <NavItem path="certificates" icon={Trophy} label="Certificates" />
               <NavItem path="practice" icon={Code} label="Practice Arena" />
+              <NavItem path="contests" icon={Trophy} label="Weekly Contests" />
               <NavItem
                 path="chat"
                 icon={MessageSquare}
