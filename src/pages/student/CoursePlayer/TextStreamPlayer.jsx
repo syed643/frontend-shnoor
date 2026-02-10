@@ -132,8 +132,8 @@ const TextStreamPlayer = ({ moduleId, url, onComplete }) => {
 
     if (!streamData) {
         // Fallback: If stream failed to load (e.g. 404 because no chunks were created) 
-        // AND it is an HTML file, show an improved failure UI
-        if (url && url.match(/\.html$/i)) {
+        // AND it is an HTML/PDF file, show an improved failure UI
+        if (url && (url.match(/\.html$/i) || url.match(/\.pdf$/i))) {
             return (
                 <div className="w-full h-full relative bg-slate-900 border border-slate-700 rounded-xl overflow-hidden shadow-2xl">
                     <iframe
@@ -152,7 +152,27 @@ const TextStreamPlayer = ({ moduleId, url, onComplete }) => {
                 </div>
             );
         }
-        return <div className="text-white p-8">Failed to load content.</div>;
+        return (
+            <div className="flex flex-col items-center justify-center h-full text-slate-400 p-8 transition-all animate-in fade-in">
+                <div className="w-16 h-16 bg-slate-800 rounded-full flex items-center justify-center mb-4 shadow-inner">
+                    <FileText className="text-slate-600" />
+                </div>
+                <h3 className="text-lg font-bold text-white mb-2">Content Not Available</h3>
+                <p className="text-sm text-center max-w-xs mb-6">
+                    This module doesn't have any streaming content yet or the source is unavailable.
+                </p>
+                {url && (
+                    <a
+                        href={url}
+                        target="_blank"
+                        rel="noopener noreferrer"
+                        className="px-6 py-2 bg-slate-800 hover:bg-slate-700 text-white rounded-lg text-sm font-medium transition-colors border border-slate-700"
+                    >
+                        Try manual link
+                    </a>
+                )}
+            </div>
+        );
     }
 
     // Unified View (Streaming builds up the list)
