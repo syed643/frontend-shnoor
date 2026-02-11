@@ -61,16 +61,20 @@ import WeeklyContest from "./pages/student/WeeklyContest";
 import ContestDetail from "./pages/student/WeeklyContest/ContestDetail";
 import ContestResult from "./pages/student/ContestResult";
 import ContestLeaderboard from "./pages/student/ContestLeaderboard";
+import CookieBanner from "./components/CookieBanner";
+import CookiePolicy from "./pages/CookiePolicy";
 // import Leaderboard from './pages/student/Leaderboard';
 
 function App() {
   return (
     <Router>
       <AuthProvider>
+        <CookieBanner />
         <SocketProvider>
           <Routes>
             <Route path="/" element={<Landing />} />
             <Route path="/contact" element={<Contact />} />
+            <Route path="/cookie-policy" element={<CookiePolicy />} />
             <Route path="/login" element={<Login />} />
             <Route path="/register" element={<Register />} />
             <Route path="/forgot-password" element={<ForgotPassword />} />

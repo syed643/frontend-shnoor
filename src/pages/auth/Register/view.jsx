@@ -118,7 +118,7 @@ const RegisterView = ({
                                 </div>
                             </button>
 
-                            <button
+                            {/*<button
                                 onClick={() => handleRoleSelect('instructor')}
                                 className="w-full group p-6 rounded-2xl border border-slate-200 hover:border-[var(--color-indigo-600)] bg-white hover:bg-slate-50 transition-all text-left flex items-center gap-5"
                             >
@@ -129,7 +129,7 @@ const RegisterView = ({
                                     <h3 className="font-bold text-slate-900">Instructor Account</h3>
                                     <p className="text-xs text-slate-500 mt-1">Create courses, manage students, and view analytics.</p>
                                 </div>
-                            </button>
+                            </button>*/}
                         </div>
                     )}
 

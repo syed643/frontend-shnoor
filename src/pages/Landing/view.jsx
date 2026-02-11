@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import {
   ArrowRight, Menu, X, Terminal, BarChart3, CheckCircle2,
-  Mail, Phone, MapPin, Play,
+  Mail, Phone, MapPin, Play, MessageCircle,
   Twitter, Facebook, Linkedin, Instagram,
   Globe, Zap, GraduationCap, Layout, BookOpen, Video, Award
 } from 'lucide-react';
@@ -10,9 +10,10 @@ import nasscomLogo from '../../assets/nascom.jpg';
 
 import instructorIcon from '../../assets/instructor.png';
 import privateIcon from '../../assets/private.png';
-import selfPacedIcon from '../../assets/self_paced.png'; 
+import selfPacedIcon from '../../assets/self_paced.png';
 import labsIcon from '../../assets/labs.png';
 import examIcon from '../../assets/exam.png';
+import WhatsAppContactButton from "../../components/WhatsAppContactButton";
 
 const LandingView = ({ onLogin, onRegister, onContact }) => {
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
@@ -47,7 +48,7 @@ const LandingView = ({ onLogin, onRegister, onContact }) => {
         src={markLogo}
         alt="Shnoor International"
         className="rounded-xl"
-        style={{ width: '60px', height: '62px', objectFit: 'cover' , borderRadius: '50%', marginRight: '10px' }}
+        style={{ width: '60px', height: '62px', objectFit: 'cover', borderRadius: '50%', marginRight: '10px' }}
       />
       <div>
         <h1 className={`brand-logo ${titleColor} text-xl md:text-2xl font-semibold mb-1 tracking-tight leading-tight`}>
@@ -147,7 +148,7 @@ const LandingView = ({ onLogin, onRegister, onContact }) => {
                 Explore Platform
               </button>
             </div>
-            
+
             <div className="mt-12 flex items-center justify-center lg:justify-start gap-8 text-slate-400 grayscale opacity-70">
               <span className="font-bold text-xl">ACME Corp</span>
               <span className="font-bold text-xl">GlobalTech</span>
@@ -162,84 +163,84 @@ const LandingView = ({ onLogin, onRegister, onContact }) => {
 
             {/* 3D Container */}
             <div className="absolute top-12 left-10 right-10 bg-[#1e293b] backdrop-blur-xl border border-slate-700 shadow-2xl rounded-3xl overflow-hidden transform rotate-y-[-10deg] rotate-x-[5deg] hover:rotate-0 transition-transform duration-700 ease-out z-10 font-sans">
-              
+
               {/* LMS Header */}
               <div className="flex items-center justify-between px-6 py-4 bg-[#0f172a] border-b border-slate-700">
                 <div className="flex items-center gap-4">
-                   <div className="w-10 h-10 rounded-full bg-gradient-to-br from-indigo-500 to-indigo-700 flex items-center justify-center text-white font-bold text-sm shadow-lg">
-                      <BookOpen size={18} />
-                   </div>
-                   <div>
-                      <div className="text-[10px] uppercase tracking-widest text-slate-400 font-bold">Ongoing Course</div>
-                      <div className="text-sm font-bold text-white tracking-wide">Enterprise Solution Architect</div>
-                   </div>
+                  <div className="w-10 h-10 rounded-full bg-gradient-to-br from-indigo-500 to-indigo-700 flex items-center justify-center text-white font-bold text-sm shadow-lg">
+                    <BookOpen size={18} />
+                  </div>
+                  <div>
+                    <div className="text-[10px] uppercase tracking-widest text-slate-400 font-bold">Ongoing Course</div>
+                    <div className="text-sm font-bold text-white tracking-wide">Enterprise Solution Architect</div>
+                  </div>
                 </div>
                 <div className="text-right">
-                   <div className="text-xs text-slate-400 mb-1.5 font-medium flex items-center justify-end gap-2">
-                      <span className="w-2 h-2 rounded-full bg-green-500 animate-pulse"></span> 65% Completed
-                   </div>
-                   <div className="w-32 h-1.5 bg-slate-700 rounded-full overflow-hidden">
-                      <div className="w-[65%] h-full bg-gradient-to-r from-green-400 to-green-600 rounded-full shadow-[0_0_10px_rgba(74,222,128,0.5)]"></div>
-                   </div>
+                  <div className="text-xs text-slate-400 mb-1.5 font-medium flex items-center justify-end gap-2">
+                    <span className="w-2 h-2 rounded-full bg-green-500 animate-pulse"></span> 65% Completed
+                  </div>
+                  <div className="w-32 h-1.5 bg-slate-700 rounded-full overflow-hidden">
+                    <div className="w-[65%] h-full bg-gradient-to-r from-green-400 to-green-600 rounded-full shadow-[0_0_10px_rgba(74,222,128,0.5)]"></div>
+                  </div>
                 </div>
               </div>
 
               {/* LMS Body: Course Player UI */}
               <div className="flex h-[320px] bg-[#1e293b]">
-                 {/* Sidebar (Modules) */}
-                 <div className="w-[35%] border-r border-slate-700/50 p-4 space-y-2 hidden sm:block overflow-y-auto custom-scrollbar">
-                    <div className="text-[10px] font-bold text-slate-500 uppercase tracking-wider mb-3 px-2">Course Content</div>
-                    
-                    {[1, 2, 3, 4].map((i) => (
-                       <div key={i} className={`flex items-center gap-3 p-3 rounded-xl text-xs cursor-pointer transition-all duration-200 group ${i === 3 ? 'bg-indigo-600/10 border border-indigo-500/30 text-white shadow-sm' : 'text-slate-400 hover:bg-slate-700/30'}`}>
-                          <div className={`w-5 h-5 rounded-full flex items-center justify-center border shrink-0 ${i < 3 ? 'border-green-500/50 bg-green-500/10 text-green-500' : (i === 3 ? 'border-indigo-500 text-indigo-400' : 'border-slate-600')}`}>
-                             {i < 3 ? <CheckCircle2 size={10} /> : (i === 3 ? <Play size={8} fill="currentColor" /> : <span className="text-[8px]">{i}</span>)}
-                          </div>
-                          <div className="flex-1 truncate font-medium">
-                             {['System Design Basics', 'Microservices 101', 'Scalability Patterns', 'Security Protocols'][i-1]}
-                          </div>
-                       </div>
-                    ))}
-                 </div>
+                {/* Sidebar (Modules) */}
+                <div className="w-[35%] border-r border-slate-700/50 p-4 space-y-2 hidden sm:block overflow-y-auto custom-scrollbar">
+                  <div className="text-[10px] font-bold text-slate-500 uppercase tracking-wider mb-3 px-2">Course Content</div>
 
-                 {/* Main Content (Video Player Mockup) */}
-                 <div className="flex-1 p-6 flex flex-col relative">
-                    {/* Video Screen */}
-                    <div className="flex-1 bg-slate-900 rounded-xl relative overflow-hidden group cursor-pointer border border-slate-700/50 shadow-2xl">
-                       {/* Abstract Video Content */}
-                       <div className="absolute inset-0 bg-gradient-to-br from-slate-800 to-slate-900 flex items-center justify-center">
-                          <div className="w-full h-full opacity-20" style={{backgroundImage: 'radial-gradient(#6366f1 1px, transparent 1px)', backgroundSize: '20px 20px'}}></div>
-                          
-                          {/* Play Button */}
-                          <div className="w-16 h-16 bg-white/10 backdrop-blur-md rounded-full flex items-center justify-center group-hover:scale-110 transition-transform border border-white/20 shadow-xl z-10">
-                             <Play size={28} className="text-white fill-current ml-1 drop-shadow-md" />
-                          </div>
-                       </div>
+                  {[1, 2, 3, 4].map((i) => (
+                    <div key={i} className={`flex items-center gap-3 p-3 rounded-xl text-xs cursor-pointer transition-all duration-200 group ${i === 3 ? 'bg-indigo-600/10 border border-indigo-500/30 text-white shadow-sm' : 'text-slate-400 hover:bg-slate-700/30'}`}>
+                      <div className={`w-5 h-5 rounded-full flex items-center justify-center border shrink-0 ${i < 3 ? 'border-green-500/50 bg-green-500/10 text-green-500' : (i === 3 ? 'border-indigo-500 text-indigo-400' : 'border-slate-600')}`}>
+                        {i < 3 ? <CheckCircle2 size={10} /> : (i === 3 ? <Play size={8} fill="currentColor" /> : <span className="text-[8px]">{i}</span>)}
+                      </div>
+                      <div className="flex-1 truncate font-medium">
+                        {['System Design Basics', 'Microservices 101', 'Scalability Patterns', 'Security Protocols'][i - 1]}
+                      </div>
+                    </div>
+                  ))}
+                </div>
 
-                       {/* Video Controls Overlay */}
-                       <div className="absolute bottom-0 left-0 right-0 p-4 bg-gradient-to-t from-black/80 to-transparent">
-                          <div className="flex justify-between text-[10px] text-slate-300 font-mono mb-2">
-                             <span>14:20</span>
-                             <span>45:00</span>
-                          </div>
-                          <div className="w-full h-1 bg-white/20 rounded-full cursor-pointer">
-                             <div className="w-[32%] h-full bg-indigo-500 rounded-full relative">
-                                <div className="absolute right-0 top-1/2 -translate-y-1/2 w-2.5 h-2.5 bg-white rounded-full shadow-md scale-0 group-hover:scale-100 transition-transform"></div>
-                             </div>
-                          </div>
-                       </div>
+                {/* Main Content (Video Player Mockup) */}
+                <div className="flex-1 p-6 flex flex-col relative">
+                  {/* Video Screen */}
+                  <div className="flex-1 bg-slate-900 rounded-xl relative overflow-hidden group cursor-pointer border border-slate-700/50 shadow-2xl">
+                    {/* Abstract Video Content */}
+                    <div className="absolute inset-0 bg-gradient-to-br from-slate-800 to-slate-900 flex items-center justify-center">
+                      <div className="w-full h-full opacity-20" style={{ backgroundImage: 'radial-gradient(#6366f1 1px, transparent 1px)', backgroundSize: '20px 20px' }}></div>
+
+                      {/* Play Button */}
+                      <div className="w-16 h-16 bg-white/10 backdrop-blur-md rounded-full flex items-center justify-center group-hover:scale-110 transition-transform border border-white/20 shadow-xl z-10">
+                        <Play size={28} className="text-white fill-current ml-1 drop-shadow-md" />
+                      </div>
                     </div>
 
-                    <div className="mt-4 flex items-center justify-between">
-                       <div>
-                          <h4 className="text-white font-bold text-sm tracking-tight">03. Scalability Patterns</h4>
-                          <p className="text-slate-400 text-xs mt-1">Understanding horizontal vs vertical scaling strategies.</p>
-                       </div>
-                       <button className="px-3 py-1.5 rounded-lg bg-indigo-600 hover:bg-indigo-500 text-white text-xs font-bold transition-colors shadow-lg shadow-indigo-900/20">
-                          Next Lesson
-                       </button>
+                    {/* Video Controls Overlay */}
+                    <div className="absolute bottom-0 left-0 right-0 p-4 bg-gradient-to-t from-black/80 to-transparent">
+                      <div className="flex justify-between text-[10px] text-slate-300 font-mono mb-2">
+                        <span>14:20</span>
+                        <span>45:00</span>
+                      </div>
+                      <div className="w-full h-1 bg-white/20 rounded-full cursor-pointer">
+                        <div className="w-[32%] h-full bg-indigo-500 rounded-full relative">
+                          <div className="absolute right-0 top-1/2 -translate-y-1/2 w-2.5 h-2.5 bg-white rounded-full shadow-md scale-0 group-hover:scale-100 transition-transform"></div>
+                        </div>
+                      </div>
                     </div>
-                 </div>
+                  </div>
+
+                  <div className="mt-4 flex items-center justify-between">
+                    <div>
+                      <h4 className="text-white font-bold text-sm tracking-tight">03. Scalability Patterns</h4>
+                      <p className="text-slate-400 text-xs mt-1">Understanding horizontal vs vertical scaling strategies.</p>
+                    </div>
+                    <button className="px-3 py-1.5 rounded-lg bg-indigo-600 hover:bg-indigo-500 text-white text-xs font-bold transition-colors shadow-lg shadow-indigo-900/20">
+                      Next Lesson
+                    </button>
+                  </div>
+                </div>
               </div>
             </div>
 
@@ -257,7 +258,7 @@ const LandingView = ({ onLogin, onRegister, onContact }) => {
             {/* Floating Card 2: Skill Unlocked (Top Right - REPLACED LIVE SESSION) */}
             <div className="absolute top-12 -right-12 bg-white p-3 pr-5 rounded-2xl shadow-2xl flex items-center gap-3 z-30 animate-[bounce_6s_infinite] border border-slate-100">
               <div className="w-10 h-10 rounded-full bg-yellow-100 flex items-center justify-center text-yellow-600">
-                 <Zap size={18} />
+                <Zap size={18} />
               </div>
               <div>
                 <div className="text-sm font-bold text-slate-900">Skill Unlocked</div>
@@ -296,63 +297,63 @@ const LandingView = ({ onLogin, onRegister, onContact }) => {
               Choose the learning style that fits your schedule and goals.
             </p>
           </div>
-          
+
           <div className="flex flex-wrap justify-center gap-8">
-             {/* Card 1: Instructor-Led */}
-             <div className="w-full md:w-[45%] lg:w-[30%] group p-8 bg-white border border-slate-200 rounded-2xl hover:border-indigo-200 hover:shadow-xl hover:shadow-indigo-900/5 transition-all duration-300 text-center flex flex-col items-center">
-                {/* ADJUSTED: Smaller circle (w-32), Larger relative image (w-24) to fill space */}
-                <div className="w-32 h-32 bg-indigo-50 rounded-full flex items-center justify-center mb-6 transform group-hover:scale-110 transition-transform duration-300">
-                  <img src={instructorIcon} alt="Instructor-Led" className="w-24 h-24 object-contain" />
-                </div>
-                <h3 className="text-xl font-bold text-slate-900 mb-3">Instructor-Led Training</h3>
-                <p className="text-slate-500 leading-relaxed text-sm">
-                  Join live, interactive sessions with expert instructors. Real-time Q&A, hands-on guidance, and structured learning paths.
-                </p>
-             </div>
+            {/* Card 1: Instructor-Led */}
+            <div className="w-full md:w-[45%] lg:w-[30%] group p-8 bg-white border border-slate-200 rounded-2xl hover:border-indigo-200 hover:shadow-xl hover:shadow-indigo-900/5 transition-all duration-300 text-center flex flex-col items-center">
+              {/* ADJUSTED: Smaller circle (w-32), Larger relative image (w-24) to fill space */}
+              <div className="w-32 h-32 bg-indigo-50 rounded-full flex items-center justify-center mb-6 transform group-hover:scale-110 transition-transform duration-300">
+                <img src={instructorIcon} alt="Instructor-Led" className="w-24 h-24 object-contain" />
+              </div>
+              <h3 className="text-xl font-bold text-slate-900 mb-3">Instructor-Led Training</h3>
+              <p className="text-slate-500 leading-relaxed text-sm">
+                Join live, interactive sessions with expert instructors. Real-time Q&A, hands-on guidance, and structured learning paths.
+              </p>
+            </div>
 
-             {/* Card 2: Private Training */}
-             <div className="w-full md:w-[45%] lg:w-[30%] group p-8 bg-white border border-slate-200 rounded-2xl hover:border-indigo-200 hover:shadow-xl hover:shadow-indigo-900/5 transition-all duration-300 text-center flex flex-col items-center">
-                <div className="w-32 h-32 bg-indigo-50 rounded-full flex items-center justify-center mb-6 transform group-hover:scale-110 transition-transform duration-300">
-                  <img src={privateIcon} alt="Private Training" className="w-24 h-24 object-contain" />
-                </div>
-                <h3 className="text-xl font-bold text-slate-900 mb-3">Private Training</h3>
-                <p className="text-slate-500 leading-relaxed text-sm">
-                  Dedicated sessions tailored for your corporate team. Customized curriculum to meet your specific business goals.
-                </p>
-             </div>
+            {/* Card 2: Private Training */}
+            <div className="w-full md:w-[45%] lg:w-[30%] group p-8 bg-white border border-slate-200 rounded-2xl hover:border-indigo-200 hover:shadow-xl hover:shadow-indigo-900/5 transition-all duration-300 text-center flex flex-col items-center">
+              <div className="w-32 h-32 bg-indigo-50 rounded-full flex items-center justify-center mb-6 transform group-hover:scale-110 transition-transform duration-300">
+                <img src={privateIcon} alt="Private Training" className="w-24 h-24 object-contain" />
+              </div>
+              <h3 className="text-xl font-bold text-slate-900 mb-3">Private Training</h3>
+              <p className="text-slate-500 leading-relaxed text-sm">
+                Dedicated sessions tailored for your corporate team. Customized curriculum to meet your specific business goals.
+              </p>
+            </div>
 
-             {/* Card 3: Practice Arena */}
-             <div className="w-full md:w-[45%] lg:w-[30%] group p-8 bg-white border border-slate-200 rounded-2xl hover:border-indigo-200 hover:shadow-xl hover:shadow-indigo-900/5 transition-all duration-300 text-center flex flex-col items-center">
-                <div className="w-32 h-32 bg-indigo-50 rounded-full flex items-center justify-center mb-6 transform group-hover:scale-110 transition-transform duration-300">
-                  <img src={selfPacedIcon} alt="Practice Arena" className="w-24 h-24 object-contain" />
-                </div>
-                <h3 className="text-xl font-bold text-slate-900 mb-3">Practice Arena</h3>
-                <p className="text-slate-500 leading-relaxed text-sm">
-                  Sharpen your skills with interactive video modules. Watch expert solution breakdowns and tackle algorithmic challenges.
-                </p>
-             </div>
+            {/* Card 3: Practice Arena */}
+            <div className="w-full md:w-[45%] lg:w-[30%] group p-8 bg-white border border-slate-200 rounded-2xl hover:border-indigo-200 hover:shadow-xl hover:shadow-indigo-900/5 transition-all duration-300 text-center flex flex-col items-center">
+              <div className="w-32 h-32 bg-indigo-50 rounded-full flex items-center justify-center mb-6 transform group-hover:scale-110 transition-transform duration-300">
+                <img src={selfPacedIcon} alt="Practice Arena" className="w-24 h-24 object-contain" />
+              </div>
+              <h3 className="text-xl font-bold text-slate-900 mb-3">Practice Arena</h3>
+              <p className="text-slate-500 leading-relaxed text-sm">
+                Sharpen your skills with interactive video modules. Watch expert solution breakdowns and tackle algorithmic challenges.
+              </p>
+            </div>
 
-             {/* Card 4: Facilitated Labs */}
-             <div className="w-full md:w-[45%] lg:w-[30%] group p-8 bg-white border border-slate-200 rounded-2xl hover:border-indigo-200 hover:shadow-xl hover:shadow-indigo-900/5 transition-all duration-300 text-center flex flex-col items-center">
-                <div className="w-32 h-32 bg-indigo-50 rounded-full flex items-center justify-center mb-6 transform group-hover:scale-110 transition-transform duration-300">
-                  <img src={labsIcon} alt="Facilitated Labs" className="w-24 h-24 object-contain" />
-                </div>
-                <h3 className="text-xl font-bold text-slate-900 mb-3">Facilitated Labs</h3>
-                <p className="text-slate-500 leading-relaxed text-sm">
-                  Experience code-native learning. Our browser-based IDE (powered by Monaco) lets you run, debug, and test code instantly.
-                </p>
-             </div>
+            {/* Card 4: Facilitated Labs */}
+            <div className="w-full md:w-[45%] lg:w-[30%] group p-8 bg-white border border-slate-200 rounded-2xl hover:border-indigo-200 hover:shadow-xl hover:shadow-indigo-900/5 transition-all duration-300 text-center flex flex-col items-center">
+              <div className="w-32 h-32 bg-indigo-50 rounded-full flex items-center justify-center mb-6 transform group-hover:scale-110 transition-transform duration-300">
+                <img src={labsIcon} alt="Facilitated Labs" className="w-24 h-24 object-contain" />
+              </div>
+              <h3 className="text-xl font-bold text-slate-900 mb-3">Facilitated Labs</h3>
+              <p className="text-slate-500 leading-relaxed text-sm">
+                Experience code-native learning. Our browser-based IDE (powered by Monaco) lets you run, debug, and test code instantly.
+              </p>
+            </div>
 
-             {/* Card 5: Exam Prep */}
-             <div className="w-full md:w-[45%] lg:w-[30%] group p-8 bg-white border border-slate-200 rounded-2xl hover:border-indigo-200 hover:shadow-xl hover:shadow-indigo-900/5 transition-all duration-300 text-center flex flex-col items-center">
-                <div className="w-32 h-32 bg-indigo-50 rounded-full flex items-center justify-center mb-6 transform group-hover:scale-110 transition-transform duration-300">
-                  <img src={examIcon} alt="Exam Prep" className="w-24 h-24 object-contain" />
-                </div>
-                <h3 className="text-xl font-bold text-slate-900 mb-3">Exam Prep</h3>
-                <p className="text-slate-500 leading-relaxed text-sm">
-                  Comprehensive study guides, practice tests, and review sessions to ensure you ace your certification exams.
-                </p>
-             </div>
+            {/* Card 5: Exam Prep */}
+            <div className="w-full md:w-[45%] lg:w-[30%] group p-8 bg-white border border-slate-200 rounded-2xl hover:border-indigo-200 hover:shadow-xl hover:shadow-indigo-900/5 transition-all duration-300 text-center flex flex-col items-center">
+              <div className="w-32 h-32 bg-indigo-50 rounded-full flex items-center justify-center mb-6 transform group-hover:scale-110 transition-transform duration-300">
+                <img src={examIcon} alt="Exam Prep" className="w-24 h-24 object-contain" />
+              </div>
+              <h3 className="text-xl font-bold text-slate-900 mb-3">Exam Prep</h3>
+              <p className="text-slate-500 leading-relaxed text-sm">
+                Comprehensive study guides, practice tests, and review sessions to ensure you ace your certification exams.
+              </p>
+            </div>
           </div>
         </div>
       </section>
@@ -361,13 +362,13 @@ const LandingView = ({ onLogin, onRegister, onContact }) => {
       <section id="certification" className="py-20 px-6 bg-slate-100/50">
         <div className="max-w-4xl mx-auto text-center">
           <h2 className="text-3xl md:text-4xl font-black text-slate-900 tracking-tight mb-6">
-            Set Yourself Apart with <br/> Industry-Recognized Certifications
+            Set Yourself Apart with <br /> Industry-Recognized Certifications
           </h2>
           <p className="text-slate-500 text-lg mb-10 max-w-2xl mx-auto">
             Validate your expertise and advance your career. Our certifications are recognized globally and demonstrate your mastery of the Shnoor ecosystem.
           </p>
           <button onClick={onRegister} className="h-14 px-10 bg-indigo-600 text-white rounded-full font-bold text-sm uppercase tracking-widest hover:bg-indigo-700 transition-all shadow-xl hover:shadow-indigo-600/30">
-             Explore Certifications
+            Explore Certifications
           </button>
         </div>
       </section>
@@ -376,23 +377,23 @@ const LandingView = ({ onLogin, onRegister, onContact }) => {
       <section className="bg-slate-900 py-16 px-6 relative overflow-hidden">
         <div className="absolute inset-0 opacity-10" style={{ backgroundImage: 'radial-gradient(#ffffff 1px, transparent 1px)', backgroundSize: '32px 32px' }}></div>
         <div className="max-w-5xl mx-auto flex flex-col md:flex-row items-center justify-center gap-8 relative z-10">
-           <div className="w-36 h-36 rounded-full border-4 border-white/20 flex items-center justify-center bg-white backdrop-blur-sm shadow-2xl relative p-4">
-              <img 
-                src={nasscomLogo} 
-                alt="NASSCOM Certified" 
-                className="w-full h-auto object-contain"
-              />
-              <div className="absolute -top-2 -right-2 bg-indigo-600 text-white text-[10px] font-bold px-2 py-1 rounded-full uppercase tracking-wider">Milestone</div>
-           </div>
-           <div className="text-center md:text-left">
-              <h3 className="text-2xl font-bold text-white mb-2">Proudly Recognized by NASSCOM</h3>
-              <p className="text-slate-400 max-w-lg">
-                 Our proposal has been officially approved by NASSCOM, marking a significant step toward becoming a Certified Company—validating our vision, ethics, and process excellence.
-              </p>
-              <button className="mt-6 text-sm font-bold text-indigo-400 hover:text-white transition-colors flex items-center gap-2 mx-auto md:mx-0">
-                 Read the Announcement <ArrowRight size={14} />
-              </button>
-           </div>
+          <div className="w-36 h-36 rounded-full border-4 border-white/20 flex items-center justify-center bg-white backdrop-blur-sm shadow-2xl relative p-4">
+            <img
+              src={nasscomLogo}
+              alt="NASSCOM Certified"
+              className="w-full h-auto object-contain"
+            />
+            <div className="absolute -top-2 -right-2 bg-indigo-600 text-white text-[10px] font-bold px-2 py-1 rounded-full uppercase tracking-wider">Milestone</div>
+          </div>
+          <div className="text-center md:text-left">
+            <h3 className="text-2xl font-bold text-white mb-2">Proudly Recognized by NASSCOM</h3>
+            <p className="text-slate-400 max-w-lg">
+              Our proposal has been officially approved by NASSCOM, marking a significant step toward becoming a Certified Company—validating our vision, ethics, and process excellence.
+            </p>
+            <button className="mt-6 text-sm font-bold text-indigo-400 hover:text-white transition-colors flex items-center gap-2 mx-auto md:mx-0">
+              Read the Announcement <ArrowRight size={14} />
+            </button>
+          </div>
         </div>
       </section>
 
@@ -400,32 +401,32 @@ const LandingView = ({ onLogin, onRegister, onContact }) => {
       <section id="stories" className="py-24 px-6 relative z-10">
         <div className="max-w-7xl mx-auto">
           <div className="text-center mb-16">
-             <h2 className="text-3xl md:text-4xl font-black text-slate-900 tracking-tight mb-4">
-                See How Our Students Have Transformed
-             </h2>
+            <h2 className="text-3xl md:text-4xl font-black text-slate-900 tracking-tight mb-4">
+              See How Our Students Have Transformed
+            </h2>
           </div>
           <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
-             <div className="bg-white p-8 rounded-3xl border border-slate-100 shadow-sm hover:shadow-xl hover:shadow-slate-900/5 transition-all text-center group">
-                <div className="w-16 h-16 mx-auto bg-slate-100 rounded-full flex items-center justify-center mb-6 text-slate-400 group-hover:bg-indigo-50 group-hover:text-indigo-600 transition-colors">
-                   <Globe size={24} />
-                </div>
-                <h4 className="text-lg font-bold text-slate-900 mb-2">Tech Giants Corp</h4>
-                <p className="text-slate-500 italic mb-6">"Shnoor's platform helped us onboard 500+ engineers in record time. The hands-on labs were a game changer."</p>
-             </div>
-             <div className="bg-white p-8 rounded-3xl border border-slate-100 shadow-sm hover:shadow-xl hover:shadow-slate-900/5 transition-all text-center group">
-                 <div className="w-16 h-16 mx-auto bg-slate-100 rounded-full flex items-center justify-center mb-6 text-slate-400 group-hover:bg-indigo-50 group-hover:text-indigo-600 transition-colors">
-                   <Zap size={24} />
-                </div>
-                <h4 className="text-lg font-bold text-slate-900 mb-2">Innovate Inc</h4>
-                <p className="text-slate-500 italic mb-6">"The certification paths gave our team a clear roadmap for growth. We've seen a 40% boost in productivity."</p>
-             </div>
-             <div className="bg-white p-8 rounded-3xl border border-slate-100 shadow-sm hover:shadow-xl hover:shadow-slate-900/5 transition-all text-center group">
-                 <div className="w-16 h-16 mx-auto bg-slate-100 rounded-full flex items-center justify-center mb-6 text-slate-400 group-hover:bg-indigo-50 group-hover:text-indigo-600 transition-colors">
-                   <GraduationCap size={24} />
-                </div>
-                <h4 className="text-lg font-bold text-slate-900 mb-2">Future Academy</h4>
-                <p className="text-slate-500 italic mb-6">"Our students love the interactive coding challenges. It makes complex concepts easy to digest and apply."</p>
-             </div>
+            <div className="bg-white p-8 rounded-3xl border border-slate-100 shadow-sm hover:shadow-xl hover:shadow-slate-900/5 transition-all text-center group">
+              <div className="w-16 h-16 mx-auto bg-slate-100 rounded-full flex items-center justify-center mb-6 text-slate-400 group-hover:bg-indigo-50 group-hover:text-indigo-600 transition-colors">
+                <Globe size={24} />
+              </div>
+              <h4 className="text-lg font-bold text-slate-900 mb-2">Tech Giants Corp</h4>
+              <p className="text-slate-500 italic mb-6">"Shnoor's platform helped us onboard 500+ engineers in record time. The hands-on labs were a game changer."</p>
+            </div>
+            <div className="bg-white p-8 rounded-3xl border border-slate-100 shadow-sm hover:shadow-xl hover:shadow-slate-900/5 transition-all text-center group">
+              <div className="w-16 h-16 mx-auto bg-slate-100 rounded-full flex items-center justify-center mb-6 text-slate-400 group-hover:bg-indigo-50 group-hover:text-indigo-600 transition-colors">
+                <Zap size={24} />
+              </div>
+              <h4 className="text-lg font-bold text-slate-900 mb-2">Innovate Inc</h4>
+              <p className="text-slate-500 italic mb-6">"The certification paths gave our team a clear roadmap for growth. We've seen a 40% boost in productivity."</p>
+            </div>
+            <div className="bg-white p-8 rounded-3xl border border-slate-100 shadow-sm hover:shadow-xl hover:shadow-slate-900/5 transition-all text-center group">
+              <div className="w-16 h-16 mx-auto bg-slate-100 rounded-full flex items-center justify-center mb-6 text-slate-400 group-hover:bg-indigo-50 group-hover:text-indigo-600 transition-colors">
+                <GraduationCap size={24} />
+              </div>
+              <h4 className="text-lg font-bold text-slate-900 mb-2">Future Academy</h4>
+              <p className="text-slate-500 italic mb-6">"Our students love the interactive coding challenges. It makes complex concepts easy to digest and apply."</p>
+            </div>
           </div>
         </div>
       </section>
@@ -433,7 +434,7 @@ const LandingView = ({ onLogin, onRegister, onContact }) => {
       {/* --- FOOTER --- */}
       <footer className="bg-[#0F172A] border-t border-slate-800 pt-16 pb-8 px-6 relative z-10 font-medium text-left">
         <div className="max-w-7xl mx-auto grid grid-cols-1 lg:grid-cols-12 gap-12 mb-16">
-          
+
           {/* Column 1: Brand & Socials (Span 5) */}
           <div className="lg:col-span-5">
             <div className="mb-6">
@@ -473,7 +474,7 @@ const LandingView = ({ onLogin, onRegister, onContact }) => {
                   <span>proc@shnoor.com (Sales)</span>
                 </div>
               </li>
-              
+
               {/* Phones */}
               <li className="flex items-start gap-3">
                 <Phone size={18} className="shrink-0 text-indigo-400 mt-1" />
@@ -483,10 +484,16 @@ const LandingView = ({ onLogin, onRegister, onContact }) => {
                 </div>
               </li>
 
+              {/* WhatsApp Button */}
+              <li className="flex items-start gap-3">
+                <MessageCircle size={18} className="shrink-0 text-indigo-400 mt-1" />
+                <WhatsAppContactButton variant="dark" />
+              </li>
+
               {/* Address */}
               <li className="flex items-start gap-3">
                 <MapPin size={18} className="shrink-0 text-indigo-400 mt-1" />
-                <span>10009 Mount Tabor Road<br/>City, Odessa Missouri, United States</span>
+                <span>10009 Mount Tabor Road<br />City, Odessa Missouri, United States</span>
               </li>
             </ul>
           </div>

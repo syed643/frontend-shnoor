@@ -17,6 +17,7 @@
     "editor": "^1.0.0",
     "emoji-picker-react": "^4.17.3",
     "firebase": "^12.7.0",
+    "framer-motion": "^12.34.0",
     "lucide-react": "^0.562.0",
     "openai": "^6.18.0",
     "react": "^19.2.0",

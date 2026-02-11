@@ -6,7 +6,6 @@ import {
 } from 'lucide-react';
 import markLogo from '../../assets/image.png';
 import WhatsAppContactButton from '../../components/WhatsappContactButton';
-
 const ContactView = ({ onBack }) => {
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
   const [scrolled, setScrolled] = useState(false);
