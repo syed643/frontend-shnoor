@@ -1,10 +1,11 @@
 import React, { useState, useEffect } from 'react';
 import {
   ArrowLeft, Menu, X,
-  Mail, Phone, MapPin, Send,
+  Mail, Phone, MapPin, Send, MessageCircle,
   Twitter, Facebook, Linkedin, Instagram,
 } from 'lucide-react';
 import markLogo from '../../assets/image.png';
+import WhatsAppContactButton from '../../components/WhatsappContactButton';
 
 const ContactView = ({ onBack }) => {
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
@@ -76,7 +77,7 @@ const ContactView = ({ onBack }) => {
           <BrandLogo />
 
           <div className="flex items-center gap-4">
-            <button 
+            <button
               onClick={onBack}
               className="flex items-center gap-2 text-sm font-bold text-slate-700 hover:text-slate-900 transition-colors px-4 py-2 rounded-full hover:bg-white/50"
             >
@@ -94,7 +95,7 @@ const ContactView = ({ onBack }) => {
         {/* Mobile Menu Dropdown */}
         {mobileMenuOpen && (
           <div className="md:hidden bg-white border-b border-slate-200 p-6 flex flex-col gap-6 shadow-xl absolute w-full animate-fade-in-up">
-            <button 
+            <button
               onClick={() => {
                 onBack();
                 setMobileMenuOpen(false);
@@ -124,15 +125,15 @@ const ContactView = ({ onBack }) => {
       {/* --- CONTACT SECTION --- */}
       <section className="py-24 px-6 relative z-10 bg-white/50">
         <div className="max-w-6xl mx-auto bg-white rounded-[2rem] overflow-hidden shadow-2xl flex flex-col lg:flex-row border border-slate-100">
-          
+
           {/* Left Side (Dark Info) */}
           <div className="bg-slate-900 p-12 lg:w-5/12 text-white flex flex-col justify-center relative overflow-hidden">
             <div className="absolute inset-0 opacity-10" style={{ backgroundImage: 'radial-gradient(#ffffff 1px, transparent 1px)', backgroundSize: '24px 24px' }}></div>
-            
+
             <div className="relative z-10">
               <span className="text-xs font-bold tracking-widest uppercase text-slate-400 mb-2 block">Contact Info</span>
               <h2 className="text-3xl font-black tracking-tight mb-8">Ready to upgrade your workforce?</h2>
-              
+
               <div className="space-y-8">
                 <div className="flex items-start gap-4">
                   <div className="w-10 h-10 rounded-full bg-white/10 flex items-center justify-center shrink-0">
@@ -143,7 +144,7 @@ const ContactView = ({ onBack }) => {
                     <span className="font-medium text-slate-200">proc@shnoor.com <span className="text-slate-500 text-sm">(Sales)</span></span>
                   </div>
                 </div>
-                
+
                 <div className="flex items-start gap-4">
                   <div className="w-10 h-10 rounded-full bg-white/10 flex items-center justify-center shrink-0">
                     <Phone size={18} className="text-indigo-400" />
@@ -153,13 +154,20 @@ const ContactView = ({ onBack }) => {
                     <span className="font-medium text-slate-200">+91-9041914601</span>
                   </div>
                 </div>
-                
+
+                <div className="flex items-start gap-4">
+                  <div className="w-10 h-10 rounded-full bg-white/10 flex items-center justify-center shrink-0">
+                    <MessageCircle size={18} className="text-indigo-400" />
+                  </div>
+                  <WhatsAppContactButton variant="light" />
+                </div>
+
                 <div className="flex items-start gap-4">
                   <div className="w-10 h-10 rounded-full bg-white/10 flex items-center justify-center shrink-0">
                     <MapPin size={18} className="text-indigo-400" />
                   </div>
                   <span className="font-medium text-slate-200 leading-relaxed">
-                    10009 Mount Tabor Road, City,<br/> Odessa Missouri, United States
+                    10009 Mount Tabor Road, City,<br /> Odessa Missouri, United States
                   </span>
                 </div>
               </div>
@@ -180,55 +188,55 @@ const ContactView = ({ onBack }) => {
               <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                 <div className="space-y-2">
                   <label className="text-xs font-bold text-slate-500 uppercase tracking-wide">First Name</label>
-                  <input 
-                    type="text" 
+                  <input
+                    type="text"
                     name="firstName"
                     value={formData.firstName}
                     onChange={handleInputChange}
                     required
-                    className="w-full h-12 px-4 rounded-xl bg-slate-50 border border-slate-200 focus:outline-none focus:border-indigo-500 focus:ring-2 focus:ring-indigo-500/20 transition-all text-slate-900 font-medium" 
+                    className="w-full h-12 px-4 rounded-xl bg-slate-50 border border-slate-200 focus:outline-none focus:border-indigo-500 focus:ring-2 focus:ring-indigo-500/20 transition-all text-slate-900 font-medium"
                     placeholder="John"
                   />
                 </div>
                 <div className="space-y-2">
                   <label className="text-xs font-bold text-slate-500 uppercase tracking-wide">Last Name</label>
-                  <input 
-                    type="text" 
+                  <input
+                    type="text"
                     name="lastName"
                     value={formData.lastName}
                     onChange={handleInputChange}
                     required
-                    className="w-full h-12 px-4 rounded-xl bg-slate-50 border border-slate-200 focus:outline-none focus:border-indigo-500 focus:ring-2 focus:ring-indigo-500/20 transition-all text-slate-900 font-medium" 
+                    className="w-full h-12 px-4 rounded-xl bg-slate-50 border border-slate-200 focus:outline-none focus:border-indigo-500 focus:ring-2 focus:ring-indigo-500/20 transition-all text-slate-900 font-medium"
                     placeholder="Doe"
                   />
                 </div>
               </div>
               <div className="space-y-2">
                 <label className="text-xs font-bold text-slate-500 uppercase tracking-wide">Work Email</label>
-                <input 
-                  type="email" 
+                <input
+                  type="email"
                   name="email"
                   value={formData.email}
                   onChange={handleInputChange}
                   required
-                  className="w-full h-12 px-4 rounded-xl bg-slate-50 border border-slate-200 focus:outline-none focus:border-indigo-500 focus:ring-2 focus:ring-indigo-500/20 transition-all text-slate-900 font-medium" 
+                  className="w-full h-12 px-4 rounded-xl bg-slate-50 border border-slate-200 focus:outline-none focus:border-indigo-500 focus:ring-2 focus:ring-indigo-500/20 transition-all text-slate-900 font-medium"
                   placeholder="john@example.com"
                 />
               </div>
               <div className="space-y-2">
                 <label className="text-xs font-bold text-slate-500 uppercase tracking-wide">Message</label>
-                <textarea 
-                  rows="5" 
+                <textarea
+                  rows="5"
                   name="message"
                   value={formData.message}
                   onChange={handleInputChange}
                   required
-                  className="w-full p-4 rounded-xl bg-slate-50 border border-slate-200 focus:outline-none focus:border-indigo-500 focus:ring-2 focus:ring-indigo-500/20 transition-all text-slate-900 font-medium resize-none" 
+                  className="w-full p-4 rounded-xl bg-slate-50 border border-slate-200 focus:outline-none focus:border-indigo-500 focus:ring-2 focus:ring-indigo-500/20 transition-all text-slate-900 font-medium resize-none"
                   placeholder="Tell us about your requirements..."
                 ></textarea>
               </div>
-              <button 
-                type="submit" 
+              <button
+                type="submit"
                 className="w-full h-14 bg-indigo-600 text-white rounded-xl font-bold uppercase tracking-widest hover:bg-indigo-700 transition-all shadow-lg hover:shadow-indigo-600/25 flex items-center justify-center gap-2 disabled:opacity-50 disabled:cursor-not-allowed"
                 disabled={submitted}
               >
@@ -242,7 +250,7 @@ const ContactView = ({ onBack }) => {
       {/* --- FOOTER --- */}
       <footer className="bg-[#0F172A] border-t border-slate-800 pt-16 pb-8 px-6 relative z-10 font-medium text-left">
         <div className="max-w-7xl mx-auto grid grid-cols-1 lg:grid-cols-12 gap-12 mb-16">
-          
+
           {/* Column 1: Brand & Socials (Span 5) */}
           <div className="lg:col-span-5">
             <div className="mb-6">
@@ -282,7 +290,7 @@ const ContactView = ({ onBack }) => {
                   <span>proc@shnoor.com (Sales)</span>
                 </div>
               </li>
-              
+
               {/* Phones */}
               <li className="flex items-start gap-3">
                 <Phone size={18} className="shrink-0 text-indigo-400 mt-1" />
@@ -292,10 +300,16 @@ const ContactView = ({ onBack }) => {
                 </div>
               </li>
 
+              {/* WhatsApp Button */}
+              <li className="flex items-start gap-3">
+                <MessageCircle size={18} className="shrink-0 text-indigo-400 mt-1" />
+                <WhatsAppContactButton variant="dark" />
+              </li>
+
               {/* Address */}
               <li className="flex items-start gap-3">
                 <MapPin size={18} className="shrink-0 text-indigo-400 mt-1" />
-                <span>10009 Mount Tabor Road<br/>City, Odessa Missouri, United States</span>
+                <span>10009 Mount Tabor Road<br />City, Odessa Missouri, United States</span>
               </li>
             </ul>
           </div>
