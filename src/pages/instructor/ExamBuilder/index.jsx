@@ -68,7 +68,7 @@ const ExamBuilder = () => {
             marks: 5,
           }
         : type === "descriptive"
-          ? { id: Date.now(), type: "descriptive", text: "", marks: 10 }
+          ? { id: Date.now(), type: "descriptive", text: "", marks: 10, keywords: "", minWordCount: 30 }
           : {
               id: Date.now(),
               type: "coding",
@@ -171,10 +171,17 @@ const ExamBuilder = () => {
         }
 
         if (q.type === "descriptive") {
+          // Parse keywords from comma-separated string
+          const keywords = q.keywords 
+            ? q.keywords.split(',').map(k => k.trim()).filter(k => k)
+            : [];
+          
           await api.post(`/api/exams/${examId}/questions/descriptive`, {
             questionText: q.text,
             marks: q.marks,
             order,
+            keywords,
+            minWordCount: q.minWordCount || 30
           });
         }
 

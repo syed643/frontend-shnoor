@@ -338,6 +338,31 @@ const ExamBuilderView = ({
                                             {q.type === 'descriptive' && (
                                                 <div className="space-y-6">
                                                     <div>
+                                                        <label className="text-xs font-bold text-slate-400 uppercase tracking-wide block mb-2">Keywords for Auto-Grading (comma-separated)</label>
+                                                        <input
+                                                            className="w-full px-4 py-2 bg-white border border-slate-200 rounded-md focus:border-indigo-500 focus:ring-0 outline-none font-medium text-slate-700 text-sm shadow-sm"
+                                                            placeholder="e.g. algorithm, data structure, complexity"
+                                                            value={q.keywords || ''}
+                                                            onChange={(e) => updateQuestion(q.id, 'keywords', e.target.value)}
+                                                        />
+                                                        <p className="text-[10px] text-slate-400 mt-1">Student answers will be scored based on keyword presence (60% of marks).</p>
+                                                    </div>
+                                                    
+                                                    <div>
+                                                        <label className="text-xs font-bold text-slate-400 uppercase tracking-wide block mb-2">Minimum Word Count</label>
+                                                        <input
+                                                            type="number"
+                                                            className="w-full px-4 py-2 bg-white border border-slate-200 rounded-md focus:border-indigo-500 focus:ring-0 outline-none font-medium text-slate-700 text-sm shadow-sm"
+                                                            placeholder="e.g. 50"
+                                                            min="10"
+                                                            max="1000"
+                                                            value={q.minWordCount || 30}
+                                                            onChange={(e) => updateQuestion(q.id, 'minWordCount', parseInt(e.target.value) || 30)}
+                                                        />
+                                                        <p className="text-[10px] text-slate-400 mt-1">Student answers meeting this word count get 40% of marks automatically.</p>
+                                                    </div>
+
+                                                    <div>
                                                         <label className="text-xs font-bold text-slate-400 uppercase tracking-wide block mb-2">Model Answer / Key Points (Optional)</label>
                                                         <textarea
                                                             className="w-full px-4 py-3 bg-white border border-slate-200 rounded-md focus:border-indigo-500 focus:ring-0 outline-none font-medium text-slate-700 text-sm resize-none shadow-sm"
