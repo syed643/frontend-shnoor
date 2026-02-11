@@ -180,7 +180,7 @@ const ExamRunner = () => {
 
 export default ExamRunner;*/}
 
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useRef } from "react";
 import { useParams, useNavigate } from "react-router-dom";
 import { auth } from "../../../auth/firebase";
 import ExamRunnerView from "./view.jsx";
@@ -204,6 +204,9 @@ const ExamRunner = () => {
   // New state for drift-proof timer
   const [startTime, setStartTime] = useState(null);
   const [isExamLocked, setIsExamLocked] = useState(false);
+
+  const answersRef = useRef(answers);
+  answersRef.current = answers;
 
   /* =========================
      LOAD EXAM FROM BACKEND
@@ -323,10 +326,14 @@ const ExamRunner = () => {
   ========================= */
   const handleAnswer = (questionId, value) => {
     if (isExamLocked || isSubmitted) return; // Prevent answers if locked
-    setAnswers(prev => ({
-      ...prev,
-      [questionId]: value
-    }));
+    setAnswers((prev) => {
+      const next = {
+        ...prev,
+        [questionId]: value
+      };
+      answersRef.current = next;
+      return next;
+    });
   };
 
   /* =========================
@@ -340,7 +347,7 @@ const ExamRunner = () => {
 
       const res = await api.post(
         `/api/exam/${examId}/submit`,
-        { answers },
+        { answers: answersRef.current },
         { headers: { Authorization: `Bearer ${token}` } }
       );
 

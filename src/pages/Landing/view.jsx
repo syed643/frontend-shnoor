@@ -13,8 +13,7 @@ import privateIcon from '../../assets/private.png';
 import selfPacedIcon from '../../assets/self_paced.png';
 import labsIcon from '../../assets/labs.png';
 import examIcon from '../../assets/exam.png';
-import WhatsAppContactButton from "../../components/WhatsAppContactButton";
-
+import WhatsAppContactButton from '../../components/WhatsAppContactButton';
 const LandingView = ({ onLogin, onRegister, onContact }) => {
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
   const [scrolled, setScrolled] = useState(false);
