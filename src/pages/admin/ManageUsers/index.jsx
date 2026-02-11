@@ -5,8 +5,12 @@ import ManageUsersView from "./view";
 const ManageUsers = () => {
   const [users, setUsers] = useState([]);
   const [loading, setLoading] = useState(true);
-  const [searchTerm, setSearchTerm] = useState("");
-  const [filterRole, setFilterRole] = useState("all");
+  const [searchInput, setSearchInput] = useState("");
+  const [appliedSearch, setAppliedSearch] = useState("");
+
+  const handleSearch = () => {
+    setAppliedSearch(searchInput);
+  };  const [filterRole, setFilterRole] = useState("all");
 
   useEffect(() => {
     fetchUsers();
@@ -60,8 +64,8 @@ const ManageUsers = () => {
   =============================== */
   const filteredUsers = users.filter((user) => {
     const matchesSearch =
-      user.full_name?.toLowerCase().includes(searchTerm.toLowerCase()) ||
-      user.email?.toLowerCase().includes(searchTerm.toLowerCase());
+      user.full_name?.toLowerCase().includes(appliedSearch.toLowerCase()) ||
+      user.email?.toLowerCase().includes(appliedSearch.toLowerCase());
 
     const matchesRole = filterRole === "all" || user.role === filterRole;
 
@@ -71,8 +75,9 @@ const ManageUsers = () => {
   return (
     <ManageUsersView
       loading={loading}
-      searchTerm={searchTerm}
-      setSearchTerm={setSearchTerm}
+      searchInput={searchInput}
+      setSearchInput={setSearchInput}
+      handleSearch={handleSearch}
       filterRole={filterRole}
       setFilterRole={setFilterRole}
       filteredUsers={filteredUsers}

@@ -11,8 +11,9 @@ import {
 
 const ManageUsersView = ({
   loading,
-  searchTerm,
-  setSearchTerm,
+  searchInput,
+  setSearchInput,
+  handleSearch,
   filterRole,
   setFilterRole,
   filteredUsers,
@@ -75,9 +76,7 @@ const ManageUsersView = ({
     <div className="p-6 h-[calc(100vh-6rem)] flex flex-col">
       {/* HEADER */}
       <div className="flex justify-between items-center mb-6 shrink-0">
-        <h2 className="text-2xl font-bold text-slate-800">
-          User Management
-        </h2>
+        <h2 className="text-2xl font-bold text-slate-800">User Management</h2>
 
         <div className="flex items-center gap-4">
           <div className="relative">
@@ -87,12 +86,18 @@ const ManageUsersView = ({
             <input
               type="text"
               placeholder="Search users..."
-              value={searchTerm}
-              onChange={(e) => setSearchTerm(e.target.value)}
+              value={searchInput}
+              onChange={(e) => setSearchInput(e.target.value)}
+              onKeyDown={(e) => e.key === "Enter" && handleSearch()}
               className="pl-10 pr-4 py-2 bg-white border border-slate-200 rounded-xl focus:border-blue-500 focus:ring-2 focus:ring-blue-500/20 outline-none transition-all font-medium min-w-62.5 shadow-sm"
             />
           </div>
-
+          <button
+            onClick={handleSearch}
+            className="px-4 py-2 bg-[#0f172a] text-white font-bold rounded-xl hover:bg-[#1e293b] transition-all shadow-sm -ml-2"
+          >
+            Search
+          </button>
           <select
             className="px-4 py-2 bg-white border border-slate-200 rounded-xl focus:border-blue-500 focus:ring-2 focus:ring-blue-500/20 outline-none transition-all font-medium text-slate-600 shadow-sm cursor-pointer"
             value={filterRole}
@@ -125,14 +130,14 @@ const ManageUsersView = ({
                 filteredUsers.map((user) => (
                   <tr
                     key={user.user_id}
-                    className="hover:bg-slate-50 transition-colors"
+                    className="hover:bg-slate-50 transition-colors cursor-pointer"
+                    onClick={() => navigate(`/admin/user/${user.user_id}`)}
                   >
                     {/* USER */}
                     <td className="py-4 px-6">
                       <div className="flex items-center gap-3">
                         <div className="w-10 h-10 rounded-full bg-slate-100 flex items-center justify-center font-bold text-slate-500 border border-slate-200 shadow-sm">
-                          {user.full_name?.charAt(0) ||
-                            user.email?.charAt(0)}
+                          {user.full_name?.charAt(0) || user.email?.charAt(0)}
                         </div>
                         <div>
                           <div className="font-bold text-slate-900">
@@ -156,9 +161,7 @@ const ManageUsersView = ({
                     </td>
 
                     {/* STATUS */}
-                    <td className="py-4 px-6">
-                      {getStatusBadge(user.status)}
-                    </td>
+                    <td className="py-4 px-6">{getStatusBadge(user.status)}</td>
 
                     {/* JOIN DATE */}
                     <td className="py-4 px-6 font-medium text-slate-600">
@@ -174,10 +177,7 @@ const ManageUsersView = ({
                           <button
                             className="flex items-center gap-2 px-3 py-1.5 bg-emerald-100 text-emerald-700 rounded-lg text-xs font-bold hover:bg-emerald-200 transition-colors"
                             onClick={() =>
-                              handleStatusChange(
-                                user.user_id,
-                                "active"
-                              )
+                              handleStatusChange(user.user_id, "active")
                             }
                           >
                             <FaCheckCircle /> Activate
@@ -190,10 +190,7 @@ const ManageUsersView = ({
                                 : "bg-red-50 text-red-600 hover:bg-red-100"
                             }`}
                             onClick={() =>
-                              handleStatusChange(
-                                user.user_id,
-                                "blocked"
-                              )
+                              handleStatusChange(user.user_id, "blocked")
                             }
                             disabled={user.role === "admin"}
                           >
@@ -206,10 +203,7 @@ const ManageUsersView = ({
                 ))
               ) : (
                 <tr>
-                  <td
-                    colSpan="5"
-                    className="text-center py-16 text-slate-400"
-                  >
+                  <td colSpan="5" className="text-center py-16 text-slate-400">
                     No users found matching your filters.
                   </td>
                 </tr>
