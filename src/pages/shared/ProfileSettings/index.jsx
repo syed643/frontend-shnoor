@@ -9,6 +9,7 @@ const ProfileSettings = () => {
     displayName: "",
     email: "",
     bio: "",
+    college: "",
     headline: "",
     linkedin: "",
     github: "",
@@ -48,6 +49,7 @@ const ProfileSettings = () => {
         headline: res.data.headline || "",
         linkedin: res.data.linkedin || "",
         github: res.data.github || "",
+        college: res.data.college || "",
         photoURL: res.data.photo_url || auth.currentUser.photoURL || "",
       });
 
@@ -121,6 +123,7 @@ const ProfileSettings = () => {
         {
           displayName: userData.displayName,
           bio: userData.bio,
+          college: userData.college,
           headline: userData.headline,
           linkedin: userData.linkedin,
           github: userData.github,
