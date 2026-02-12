@@ -155,9 +155,6 @@ const ContactView = ({ onBack }) => {
                 </div>
 
                 <div className="flex items-start gap-4">
-                  <div className="w-10 h-10 rounded-full bg-white/10 flex items-center justify-center shrink-0">
-                    <MessageCircle size={18} className="text-indigo-400" />
-                  </div>
                   <WhatsAppContactButton variant="light" />
                 </div>
 
@@ -301,7 +298,6 @@ const ContactView = ({ onBack }) => {
 
               {/* WhatsApp Button */}
               <li className="flex items-start gap-3">
-                <MessageCircle size={18} className="shrink-0 text-indigo-400 mt-1" />
                 <WhatsAppContactButton variant="dark" />
               </li>
 

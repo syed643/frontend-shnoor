@@ -485,7 +485,6 @@ const LandingView = ({ onLogin, onRegister, onContact }) => {
 
               {/* WhatsApp Button */}
               <li className="flex items-start gap-3">
-                <MessageCircle size={18} className="shrink-0 text-indigo-400 mt-1" />
                 <WhatsAppContactButton variant="dark" />
               </li>
 
