@@ -427,8 +427,11 @@ const MessageItem = ({ messageId, msg, showName, onEdit, onDelete, onReply, onRe
 
     const renderAttachment = () => {
         if (!msg.attachment_url && !msg.attachment_file_id) return null;
-        const url = msg.attachment_url || `http://localhost:5000/api/files/${msg.attachment_file_id}`;
+        
+        const API_URL = import.meta.env.VITE_API_URL || 'http://localhost:5000';
+        const url = msg.attachment_url || `${API_URL}/api/media/${msg.attachment_file_id}`;
         const type = msg.attachment_type || 'file';
+        
         if (type.includes('image')) {
             return <img src={url} alt="attachment" className="max-w-full rounded-lg mb-2 cursor-pointer max-h-60 object-cover" onClick={() => window.open(url, '_blank')} />;
         }
