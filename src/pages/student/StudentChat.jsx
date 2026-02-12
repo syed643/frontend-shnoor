@@ -299,14 +299,22 @@ const StudentChat = () => {
     const handleCreateGroup = async (e) => {
         e.preventDefault();
         try {
-            await api.post('/api/chats/groups', { name: newGroupName, description: newGroupDesc });
+            console.log('📝 Creating group:', { name: newGroupName, description: newGroupDesc });
+            const res = await api.post('/api/chats/groups', { name: newGroupName, description: newGroupDesc });
+            console.log('✅ Group created:', res.data);
             setShowCreateGroup(false);
             setNewGroupName("");
             setNewGroupDesc("");
             setActiveTab('groups');
             fetchData();
         } catch (err) {
-            alert(err.response?.data?.message || "Failed to create group");
+            console.error('❌ Create group error:', {
+                status: err.response?.status,
+                message: err.response?.data?.message,
+                fullError: err.message,
+                response: err.response?.data
+            });
+            alert(err.response?.data?.message || err.message || "Failed to create group");
         }
     };
 
