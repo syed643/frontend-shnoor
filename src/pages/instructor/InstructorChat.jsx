@@ -19,30 +19,37 @@ const InstructorChat = () => {
     useEffect(() => {
         const fetchData = async () => {
             try {
+                console.log('📥 Fetching instructor chats...');
                 const chatsRes = await api.get('/api/chats');
+                console.log('📥 Chats response:', chatsRes.data);
                 const existingChats = chatsRes.data.map(c => ({
                     id: c.chat_id,
-                    recipientName: c.recipient_name,
+                    name: c.recipient_name,
                     recipientId: c.recipient_id,
                     lastMessage: c.last_message || 'No messages yet',
                     unread: c.unread_count,
-                    exists: true
+                    exists: true,
+                    type: 'dm'
                 }));
 
+                console.log('📥 Fetching available students...');
                 const studentsRes = await api.get('/api/chats/available-students');
-                const allStudents = studentsRes.data;
+                console.log('📥 Available students:', studentsRes.data);
+                const allStudents = studentsRes.data || [];
 
+                console.log(`📥 Found ${allStudents.length} students`);
                 const mergedChats = [...existingChats];
                 allStudents.forEach(student => {
                     const alreadyExists = existingChats.some(c => c.recipientId === student.user_id);
                     if (!alreadyExists) {
                         mergedChats.push({
                             id: `new_${student.user_id}`,
-                            recipientName: student.full_name,
+                            name: student.full_name,
                             recipientId: student.user_id,
                             lastMessage: 'Start a conversation',
                             unread: 0,
-                            exists: false
+                            exists: false,
+                            type: 'dm'
                         });
                     }
                 });
@@ -64,15 +71,16 @@ const InstructorChat = () => {
                 const chatsRes = await api.get('/api/chats');
                 const existingChats = chatsRes.data.map(c => ({
                     id: c.chat_id,
-                    recipientName: c.recipient_name,
+                    name: c.recipient_name,
                     recipientId: c.recipient_id,
                     lastMessage: c.last_message || 'No messages yet',
                     unread: c.unread_count,
-                    exists: true
+                    exists: true,
+                    type: 'dm'
                 }));
 
                 const studentsRes = await api.get('/api/chats/available-students');
-                const allStudents = studentsRes.data;
+                const allStudents = studentsRes.data || [];
 
                 const mergedChats = [...existingChats];
                 allStudents.forEach(student => {
@@ -80,11 +88,12 @@ const InstructorChat = () => {
                     if (!alreadyExists) {
                         mergedChats.push({
                             id: `new_${student.user_id}`,
-                            recipientName: student.full_name,
+                            name: student.full_name,
                             recipientId: student.user_id,
                             lastMessage: 'Start a conversation',
                             unread: 0,
-                            exists: false
+                            exists: false,
+                            type: 'dm'
                         });
                     }
                 });
