@@ -40,10 +40,14 @@ const StudentChat = () => {
         }));
 
         // Get all instructors
+        console.log("📥 Fetching available instructors...");
         const instructorsRes = await api.get(
           "/api/chats/available-instructors",
         );
-        const allInstructors = instructorsRes.data;
+        console.log("📥 Available instructors response:", instructorsRes.data);
+        const allInstructors = instructorsRes.data || [];
+
+        console.log(`📥 Found ${allInstructors.length} instructors`);
 
         // Merge: existing chats + instructors without chats
         const mergedChats = [...existingChats];
