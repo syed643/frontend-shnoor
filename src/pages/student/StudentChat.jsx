@@ -1,577 +1,729 @@
-import React, { useState, useEffect } from 'react';
-import api from '../../api/axios';
-import { useSocket } from '../../context/SocketContext';
-import { useAuth } from '../../auth/AuthContext';
-import ChatList from '../../components/chat/ChatList';
-import ChatWindow from '../../components/chat/ChatWindow';
-import { Users } from 'lucide-react';
-import '../../styles/Chat.css';
+import React, { useState, useEffect } from "react";
+import api from "../../api/axios";
+import { useSocket } from "../../context/SocketContext";
+import { useAuth } from "../../auth/AuthContext";
+import ChatList from "../../components/chat/ChatList";
+import ChatWindow from "../../components/chat/ChatWindow";
+import { Users } from "lucide-react";
+import "../../styles/Chat.css";
 
 const StudentChat = () => {
-    const { socket, dbUser, unreadCounts, handleSetActiveChat, markChatRead } = useSocket();
-    const { userRole } = useAuth();
-    const [chats, setChats] = useState([]); // Direct messages
-    const [groups, setGroups] = useState([]); // My groups
-    const [availableGroups, setAvailableGroups] = useState([]); // Discoverable groups
-    const [activeTab, setActiveTab] = useState('dm'); // 'dm', 'groups', 'discover'
-    const [activeChat, setActiveChat] = useState(null);
-    const [messages, setMessages] = useState([]);
-    const [loadingMessages, setLoadingMessages] = useState(false);
-    const [showCreateGroup, setShowCreateGroup] = useState(false);
-    const [newGroupName, setNewGroupName] = useState("");
-    const [newGroupDesc, setNewGroupDesc] = useState("");
+  const { socket, dbUser, unreadCounts, handleSetActiveChat, markChatRead } =
+    useSocket();
+  const { userRole } = useAuth();
+  const [chats, setChats] = useState([]); // Direct messages
+  const [groups, setGroups] = useState([]); // My groups
+  const [availableGroups, setAvailableGroups] = useState([]); // Discoverable groups
+  const [activeTab, setActiveTab] = useState("dm"); // 'dm', 'groups', 'discover'
+  const [activeChat, setActiveChat] = useState(null);
+  const [messages, setMessages] = useState([]);
+  const [loadingMessages, setLoadingMessages] = useState(false);
+  const [showCreateGroup, setShowCreateGroup] = useState(false);
+  const [newGroupName, setNewGroupName] = useState("");
+  const [newGroupDesc, setNewGroupDesc] = useState("");
 
-    // Fetch Data
-    const fetchData = async () => {
-        try {
-            if (activeTab === 'dm') {
-                // Get existing chats
-                const chatsRes = await api.get('/api/chats');
-                console.log('📥 Fetched chats:', chatsRes.data);
-                const existingChats = chatsRes.data.map(c => ({
-                    id: c.chat_id,
-                    name: c.recipient_name,
-                    recipientId: c.recipient_id,
-                    lastMessage: c.last_message || 'No messages yet',
-                    unread: c.unread_count,
-                    exists: true,
-                    type: 'dm'
-                }));
+  // Fetch Data
+  const fetchData = async () => {
+    try {
+      if (activeTab === "dm") {
+        // Get existing chats
+        const chatsRes = await api.get("/api/chats");
+        console.log("📥 Fetched chats:", chatsRes.data);
+        const existingChats = chatsRes.data.map((c) => ({
+          id: c.chat_id,
+          name: c.recipient_name,
+          recipientId: c.recipient_id,
+          lastMessage: c.last_message || "No messages yet",
+          unread: c.unread_count,
+          exists: true,
+          type: "dm",
+        }));
 
-                // Get all instructors
-                const instructorsRes = await api.get('/api/chats/available-instructors');
-                const allInstructors = instructorsRes.data;
+        // Get all instructors
+        const instructorsRes = await api.get(
+          "/api/chats/available-instructors",
+        );
+        const allInstructors = instructorsRes.data;
 
-                // Merge: existing chats + instructors without chats
-                const mergedChats = [...existingChats];
-                allInstructors.forEach(instructor => {
-                    const alreadyExists = existingChats.some(c => c.recipientId === instructor.user_id);
-                    if (!alreadyExists) {
-                        mergedChats.push({
-                            id: `new_${instructor.user_id}`,
-                            name: instructor.full_name,
-                            recipientId: instructor.user_id,
-                            lastMessage: 'Start a conversation',
-                            unread: 0,
-                            exists: false,
-                            type: 'dm'
-                        });
-                    }
-                });
-                setChats(mergedChats);
-            } else if (activeTab === 'groups') {
-                console.log('📥 Fetching my groups...');
-                const groupsRes = await api.get('/api/chats/groups/my');
-                console.log('📥 Fetched groups raw:', groupsRes.data);
-                const groupsData = Array.isArray(groupsRes.data) ? groupsRes.data : [];
-                console.log('📥 Groups array:', groupsData);
-                setGroups(groupsData.map(g => ({
-                    id: g.group_id,
-                    name: g.name,
-                    description: g.description,
-                    meeting_link: g.meeting_link,
-                    creator_id: g.creator_id,
-                    created_at: g.created_at,
-                    member_count: g.member_count,
-                    lastMessage: g.last_message || 'No messages yet',
-                    unread: 0,
-                    exists: true,
-                    type: 'group'
-                })));
-            } else if (activeTab === 'discover') {
-                console.log('📥 Fetching available groups...');
-                const discoverRes = await api.get('/api/chats/groups/available');
-                console.log('📥 Fetched available groups:', discoverRes.data);
-                setAvailableGroups(discoverRes.data);
-            }
-        } catch (err) {
-            console.error("❌ Fetch Student Chat Error:", {
-                status: err.response?.status,
-                message: err.response?.data?.message,
-                error: err.message,
-                fullError: err
+        // Merge: existing chats + instructors without chats
+        const mergedChats = [...existingChats];
+        allInstructors.forEach((instructor) => {
+          const alreadyExists = existingChats.some(
+            (c) => c.recipientId === instructor.user_id,
+          );
+          if (!alreadyExists) {
+            mergedChats.push({
+              id: `new_${instructor.user_id}`,
+              name: instructor.full_name,
+              recipientId: instructor.user_id,
+              lastMessage: "Start a conversation",
+              unread: 0,
+              exists: false,
+              type: "dm",
             });
-        }
-    };
-
-    useEffect(() => {
-        fetchData();
-    }, [unreadCounts, activeTab]);
-
-    // Listen for global new_notification
-    useEffect(() => {
-        if (!socket) return;
-        const handleGlobalNotification = () => fetchData();
-        socket.on('new_notification', handleGlobalNotification);
-        return () => socket.off('new_notification', handleGlobalNotification);
-    }, [socket, activeTab]);
-
-    // Handle Message Receive
-    useEffect(() => {
-        if (!socket) return;
-        const handleReceive = (msg) => {
-            if (activeChat && (msg.chat_id === activeChat.id || msg.group_id === activeChat.id)) {
-                setMessages(prev => [...prev, {
-                    ...msg,
-                    isMyMessage: msg.sender_id === dbUser?.id
-                }]);
-                if (msg.chat_id) api.put('/api/chats/read', { chatId: msg.chat_id });
-            }
-        };
-        socket.on('receive_message', handleReceive);
-        return () => socket.off('receive_message', handleReceive);
-    }, [socket, activeChat, dbUser]);
-
-    // Handle Edit/Delete Messages
-    useEffect(() => {
-        if (!socket) return;
-
-        const handleEdit = (msg) => {
-            setMessages(prev => prev.map(m => m.message_id === msg.message_id ? { ...m, ...msg, isMyMessage: m.isMyMessage } : m));
-        };
-
-        const handleDelete = ({ messageId }) => {
-            setMessages(prev => prev.map(m => m.message_id === messageId ? { ...m, is_deleted: true, text: 'This message was deleted', attachment_file_id: null, attachment_url: null } : m));
-        };
-
-        socket.on('edit_message', handleEdit);
-        socket.on('delete_message', handleDelete);
-
-        return () => {
-            socket.off('edit_message', handleEdit);
-            socket.off('delete_message', handleDelete);
-        };
-    }, [socket]);
-
-    // Select Chat
-    const handleSelectChat = async (chat) => {
-        let chatId = chat.id;
-
-        if (chat.type === 'dm') {
-            handleSetActiveChat(chat.id);
-            markChatRead(chat.id);
-            if (!chat.exists) {
-                try {
-                    const res = await api.post('/api/chats', { recipientId: chat.recipientId });
-                    chatId = res.data.chat_id;
-                    chat.id = chatId;
-                    chat.exists = true;
-                } catch (err) {
-                    console.error("Create chat error:", err);
-                    return;
-                }
-            }
-            socket.emit('join_chat', chatId);
-        } else {
-            socket.emit('join_group', chatId);
-        }
-
-        setActiveChat(chat);
-        setLoadingMessages(true);
-        try {
-            const url = chat.type === 'dm' ? `/api/chats/messages/${chatId}` : `/api/chats/groups/${chatId}/messages`;
-            const res = await api.get(url);
-            setMessages(res.data.map(m => ({
-                ...m,
-                isMyMessage: m.sender_id === dbUser?.id
-            })));
-            if (chat.type === 'dm') await api.put('/api/chats/read', { chatId: chatId });
-        } finally {
-            setLoadingMessages(false);
-        }
-    };
-
-    // Listen for meeting link and group updates
-    useEffect(() => {
-        if (!socket) return;
-
-        const handleMeetingUpdate = (data) => {
-            const { groupId, meetingLink } = data;
-
-            // Update in groups list
-            setGroups(prev => prev.map(g => (g.id === groupId || g.group_id === groupId) ? { ...g, meeting_link: meetingLink } : g));
-
-            // Update active chat if it is this group
-            setActiveChat(prev => {
-                if (prev?.id === groupId || prev?.group_id === groupId) {
-                    return { ...prev, meeting_link: meetingLink };
-                }
-                return prev;
-            });
-        };
-
-        const handleGroupUpdate = (updatedGroup) => {
-            const groupId = updatedGroup.group_id;
-
-            setGroups(prev => prev.map(g => (g.id === groupId || g.group_id === groupId) ? { ...g, ...updatedGroup } : g));
-
-            setActiveChat(prev => {
-                if (prev?.id === groupId || prev?.group_id === groupId) {
-                    return { ...prev, ...updatedGroup };
-                }
-                return prev;
-            });
-        };
-
-        const handleRemovedFromGroup = ({ groupId }) => {
-            setGroups(prev => prev.filter(g => g.id !== groupId && g.group_id !== groupId));
-            setActiveChat(prev => (prev?.id === groupId || prev?.group_id === groupId) ? null : prev);
-            alert("You have been removed from the group.");
-        };
-
-        const handleReactionUpdated = ({ messageId, reactions }) => {
-            setMessages(prev => prev.map(m => m.message_id === messageId ? { ...m, reactions } : m));
-        };
-
-        const handleGroupDeleted = ({ groupId }) => {
-            setGroups(prev => prev.filter(g => g.id !== groupId && g.group_id !== groupId));
-            setActiveChat(prev => (prev?.id === groupId || prev?.group_id === groupId) ? null : prev);
-        };
-
-        socket.on('meeting_link_updated', handleMeetingUpdate);
-        socket.on('group_updated', handleGroupUpdate);
-        socket.on('group_deleted', handleGroupDeleted);
-        socket.on('removed_from_group', handleRemovedFromGroup);
-        socket.on('message_reaction_updated', handleReactionUpdated);
-
-        return () => {
-            socket.off('meeting_link_updated', handleMeetingUpdate);
-            socket.off('group_updated', handleGroupUpdate);
-            socket.off('group_deleted', handleGroupDeleted);
-            socket.off('removed_from_group', handleRemovedFromGroup);
-            socket.off('message_reaction_updated', handleReactionUpdated);
-        };
-    }, [socket]);
-
-    const handleSendMessage = async (text, file, replyToId = null) => {
-        let attachmentFileId = null;
-        let attachmentName = null;
-        let attachmentType = null;
-        let attachmentUrl = null;
-
-        if (file) {
-            try {
-                const formData = new FormData();
-                formData.append('file', file);
-                const res = await api.post('/api/chats/upload', formData, {
-                    headers: { 'Content-Type': 'multipart/form-data' }
-                });
-                attachmentFileId = res.data.file_id;
-                attachmentName = file.name;
-                attachmentType = file.type;
-                attachmentUrl = URL.createObjectURL(file);
-            } catch (err) {
-                console.error("Upload failed:", err);
-                return;
-            }
-        }
-
-        const tempId = Date.now();
-        const parentMsg = replyToId ? messages.find(m => m.message_id === replyToId) : null;
-
-        setMessages(prev => [...prev, {
-            message_id: tempId,
-            text,
-            isMyMessage: true,
-            created_at: new Date().toISOString(),
-            attachment_file_id: attachmentFileId,
-            attachment_name: attachmentName,
-            attachment_type: attachmentType,
-            attachment_url: attachmentUrl,
-            reply_to_message_id: replyToId,
-            parent_message_text: parentMsg?.text,
-            parent_message_sender_name: parentMsg?.sender_name
-        }]);
-
-        const payload = {
-            text,
-            senderId: dbUser.id,
-            senderUid: dbUser.firebase_uid,
-            senderName: dbUser.displayName || dbUser.fullName || "Student",
-            attachment_file_id: attachmentFileId,
-            attachment_name: attachmentName,
-            attachment_type: attachmentType,
-            reply_to_message_id: replyToId
-        };
-
-        if (activeChat.type === 'dm') {
-            payload.chatId = activeChat.id;
-            payload.recipientId = activeChat.recipientId;
-        } else {
-            payload.groupId = activeChat.id;
-        }
-
-        socket.emit('send_message', payload, (serverMsg) => {
-            if (serverMsg) {
-                setMessages(prev => prev.map(m => m.message_id === tempId ? { ...serverMsg, isMyMessage: true } : m));
-            }
+          }
         });
+        setChats(mergedChats);
+      } else if (activeTab === "groups") {
+        console.log("📥 Fetching my groups...");
+        const groupsRes = await api.get("/api/chats/groups/my");
+        console.log("📥 Fetched groups raw:", groupsRes.data);
+        const groupsData = Array.isArray(groupsRes.data) ? groupsRes.data : [];
+        console.log("📥 Groups array:", groupsData);
+        setGroups(
+          groupsData.map((g) => ({
+            id: g.group_id,
+            name: g.name,
+            description: g.description,
+            meeting_link: g.meeting_link,
+            creator_id: g.creator_id,
+            created_at: g.created_at,
+            member_count: g.member_count,
+            lastMessage: g.last_message || "No messages yet",
+            unread: 0,
+            exists: true,
+            type: "group",
+          })),
+        );
+      } else if (activeTab === "discover") {
+        console.log("📥 Fetching available groups...");
+        const discoverRes = await api.get("/api/chats/groups/available");
+        console.log("📥 Fetched available groups:", discoverRes.data);
+        setAvailableGroups(discoverRes.data);
+      }
+    } catch (err) {
+      console.error("❌ Fetch Student Chat Error:", {
+        status: err.response?.status,
+        message: err.response?.data?.message,
+        error: err.message,
+        fullError: err,
+      });
+    }
+  };
+
+  // Fetch when tab changes
+  useEffect(() => {
+    fetchData();
+  }, [activeTab]);
+
+  // Only refresh unread counts locally (NO fetch)
+  useEffect(() => {
+    // do nothing or update UI only
+  }, [unreadCounts]);
+
+  // Listen for global new_notification
+  {/*useEffect(() => {
+    if (!socket) return;
+    const handleGlobalNotification = () => fetchData();
+    socket.on("new_notification", handleGlobalNotification);
+    return () => socket.off("new_notification", handleGlobalNotification);
+  }, [socket, activeTab]);*/}
+
+  // Handle Message Receive
+  useEffect(() => {
+    if (!socket) return;
+    const handleReceive = (msg) => {
+      if (
+        activeChat &&
+        (msg.chat_id === activeChat.id || msg.group_id === activeChat.id)
+      ) {
+        setMessages((prev) => [
+          ...prev,
+          {
+            ...msg,
+            isMyMessage: msg.sender_id === dbUser?.id,
+          },
+        ]);
+        if (msg.chat_id) api.put("/api/chats/read", { chatId: msg.chat_id });
+      }
+    };
+    socket.on("receive_message", handleReceive);
+    return () => socket.off("receive_message", handleReceive);
+  }, [socket, activeChat, dbUser]);
+
+  // Handle Edit/Delete Messages
+  useEffect(() => {
+    if (!socket) return;
+
+    const handleEdit = (msg) => {
+      setMessages((prev) =>
+        prev.map((m) =>
+          m.message_id === msg.message_id
+            ? { ...m, ...msg, isMyMessage: m.isMyMessage }
+            : m,
+        ),
+      );
     };
 
-    const handleCreateGroup = async (e) => {
-        e.preventDefault();
+    const handleDelete = ({ messageId }) => {
+      setMessages((prev) =>
+        prev.map((m) =>
+          m.message_id === messageId
+            ? {
+                ...m,
+                is_deleted: true,
+                text: "This message was deleted",
+                attachment_file_id: null,
+                attachment_url: null,
+              }
+            : m,
+        ),
+      );
+    };
+
+    socket.on("edit_message", handleEdit);
+    socket.on("delete_message", handleDelete);
+
+    return () => {
+      socket.off("edit_message", handleEdit);
+      socket.off("delete_message", handleDelete);
+    };
+  }, [socket]);
+
+  // Select Chat
+  const handleSelectChat = async (chat) => {
+    let chatId = chat.id;
+
+    if (chat.type === "dm") {
+      handleSetActiveChat(chat.id);
+      markChatRead(chat.id);
+      if (!chat.exists) {
         try {
-            console.log('📝 Creating group:', { name: newGroupName, description: newGroupDesc });
-            const res = await api.post('/api/chats/groups', { name: newGroupName, description: newGroupDesc });
-            console.log('✅ Group created:', res.data);
-            setShowCreateGroup(false);
-            setNewGroupName("");
-            setNewGroupDesc("");
-            setActiveTab('groups');
-            fetchData();
+          const res = await api.post("/api/chats", {
+            recipientId: chat.recipientId,
+          });
+          chatId = res.data.chat_id;
+          chat.id = chatId;
+          chat.exists = true;
         } catch (err) {
-            console.error('❌ Create group error:', {
-                status: err.response?.status,
-                message: err.response?.data?.message,
-                fullError: err.message,
-                response: err.response?.data
-            });
-            alert(err.response?.data?.message || err.message || "Failed to create group");
+          console.error("Create chat error:", err);
+          return;
         }
+      }
+      socket.emit("join_chat", chatId);
+    } else {
+      socket.emit("join_group", chatId);
+    }
+
+    setActiveChat(chat);
+    setLoadingMessages(true);
+    try {
+      const url =
+        chat.type === "dm"
+          ? `/api/chats/messages/${chatId}`
+          : `/api/chats/groups/${chatId}/messages`;
+      const res = await api.get(url);
+      setMessages(
+        res.data.map((m) => ({
+          ...m,
+          isMyMessage: m.sender_id === dbUser?.id,
+        })),
+      );
+      if (chat.type === "dm")
+        await api.put("/api/chats/read", { chatId: chatId });
+    } finally {
+      setLoadingMessages(false);
+    }
+  };
+
+  // Listen for meeting link and group updates
+  useEffect(() => {
+    if (!socket) return;
+
+    const handleMeetingUpdate = (data) => {
+      const { groupId, meetingLink } = data;
+
+      // Update in groups list
+      setGroups((prev) =>
+        prev.map((g) =>
+          g.id === groupId || g.group_id === groupId
+            ? { ...g, meeting_link: meetingLink }
+            : g,
+        ),
+      );
+
+      // Update active chat if it is this group
+      setActiveChat((prev) => {
+        if (prev?.id === groupId || prev?.group_id === groupId) {
+          return { ...prev, meeting_link: meetingLink };
+        }
+        return prev;
+      });
     };
 
-    const handleJoinGroup = async (groupId) => {
-        try {
-            await api.post(`/api/chats/groups/${groupId}/join`);
-            setActiveTab('groups');
-            fetchData();
-        } catch (err) {
-            alert(err.response?.data?.message || "Failed to join group");
+    const handleGroupUpdate = (updatedGroup) => {
+      const groupId = updatedGroup.group_id;
+
+      setGroups((prev) =>
+        prev.map((g) =>
+          g.id === groupId || g.group_id === groupId
+            ? { ...g, ...updatedGroup }
+            : g,
+        ),
+      );
+
+      setActiveChat((prev) => {
+        if (prev?.id === groupId || prev?.group_id === groupId) {
+          return { ...prev, ...updatedGroup };
         }
+        return prev;
+      });
     };
 
-    const handleEditMessage = async (messageId, newText) => {
-        try {
-            await api.put(`/api/chats/messages/${messageId}`, { text: newText });
-        } catch (err) {
-            console.error("Edit failed", err);
-            alert("Failed to edit message");
-        }
+    const handleRemovedFromGroup = ({ groupId }) => {
+      setGroups((prev) =>
+        prev.filter((g) => g.id !== groupId && g.group_id !== groupId),
+      );
+      setActiveChat((prev) =>
+        prev?.id === groupId || prev?.group_id === groupId ? null : prev,
+      );
+      alert("You have been removed from the group.");
     };
 
-    const handleDeleteMessage = async (messageId) => {
-        try {
-            if (!window.confirm("Are you sure you want to delete this message?")) return;
-            await api.delete(`/api/chats/messages/${messageId}`);
-        } catch (err) {
-            console.error("Delete failed", err);
-            alert("Failed to delete message");
-        }
+    const handleReactionUpdated = ({ messageId, reactions }) => {
+      setMessages((prev) =>
+        prev.map((m) => (m.message_id === messageId ? { ...m, reactions } : m)),
+      );
     };
 
-    const handleLeaveGroup = (groupId) => {
-        setGroups(prev => prev.filter(g => g.id !== groupId && g.group_id !== groupId));
-        if (activeChat?.id === groupId || activeChat?.group_id === groupId) {
-            setActiveChat(null);
-        }
+    const handleGroupDeleted = ({ groupId }) => {
+      setGroups((prev) =>
+        prev.filter((g) => g.id !== groupId && g.group_id !== groupId),
+      );
+      setActiveChat((prev) =>
+        prev?.id === groupId || prev?.group_id === groupId ? null : prev,
+      );
     };
 
-    const handleDeleteGroup = (groupId) => {
-        setGroups(prev => prev.filter(g => g.id !== groupId && g.group_id !== groupId));
-        if (activeChat?.id === groupId || activeChat?.group_id === groupId) {
-            setActiveChat(null);
-        }
+    socket.on("meeting_link_updated", handleMeetingUpdate);
+    socket.on("group_updated", handleGroupUpdate);
+    socket.on("group_deleted", handleGroupDeleted);
+    socket.on("removed_from_group", handleRemovedFromGroup);
+    socket.on("message_reaction_updated", handleReactionUpdated);
+
+    return () => {
+      socket.off("meeting_link_updated", handleMeetingUpdate);
+      socket.off("group_updated", handleGroupUpdate);
+      socket.off("group_deleted", handleGroupDeleted);
+      socket.off("removed_from_group", handleRemovedFromGroup);
+      socket.off("message_reaction_updated", handleReactionUpdated);
+    };
+  }, [socket]);
+
+  const handleSendMessage = async (text, file, replyToId = null) => {
+    let attachmentFileId = null;
+    let attachmentName = null;
+    let attachmentType = null;
+    let attachmentUrl = null;
+
+    if (file) {
+      try {
+        const formData = new FormData();
+        formData.append("file", file);
+        const res = await api.post("/api/chats/upload", formData, {
+          headers: { "Content-Type": "multipart/form-data" },
+        });
+        attachmentFileId = res.data.file_id;
+        attachmentName = file.name;
+        attachmentType = file.type;
+        attachmentUrl = URL.createObjectURL(file);
+      } catch (err) {
+        console.error("Upload failed:", err);
+        return;
+      }
+    }
+
+    const tempId = Date.now();
+    const parentMsg = replyToId
+      ? messages.find((m) => m.message_id === replyToId)
+      : null;
+
+    setMessages((prev) => [
+      ...prev,
+      {
+        message_id: tempId,
+        text,
+        isMyMessage: true,
+        created_at: new Date().toISOString(),
+        attachment_file_id: attachmentFileId,
+        attachment_name: attachmentName,
+        attachment_type: attachmentType,
+        attachment_url: attachmentUrl,
+        reply_to_message_id: replyToId,
+        parent_message_text: parentMsg?.text,
+        parent_message_sender_name: parentMsg?.sender_name,
+      },
+    ]);
+
+    const payload = {
+      text,
+      senderId: dbUser.id,
+      senderUid: dbUser.firebase_uid,
+      senderName: dbUser.displayName || dbUser.fullName || "Student",
+      attachment_file_id: attachmentFileId,
+      attachment_name: attachmentName,
+      attachment_type: attachmentType,
+      reply_to_message_id: replyToId,
     };
 
-    const handleReact = async (messageId, emoji) => {
-        try {
-            const res = await api.post(`/api/chats/messages/${messageId}/react`, { emoji });
-            setMessages(prev => prev.map(m => m.message_id === messageId ? { ...m, reactions: res.data.reactions } : m));
-        } catch (err) {
-            alert("Failed to react");
-        }
-    };
+    if (activeChat.type === "dm") {
+      payload.chatId = activeChat.id;
+      payload.recipientId = activeChat.recipientId;
+    } else {
+      payload.groupId = activeChat.id;
+    }
 
-    const handleRemoveReaction = async (messageId) => {
-        try {
-            const res = await api.delete(`/api/chats/messages/${messageId}/react`);
-            setMessages(prev => prev.map(m => m.message_id === messageId ? { ...m, reactions: res.data.reactions } : m));
-        } catch (err) {
-            alert("Failed to remove reaction");
-        }
-    };
+    socket.emit("send_message", payload, (serverMsg) => {
+      if (serverMsg) {
+        setMessages((prev) =>
+          prev.map((m) =>
+            m.message_id === tempId ? { ...serverMsg, isMyMessage: true } : m,
+          ),
+        );
+      }
+    });
+  };
 
-    return (
-        <div className="student-chat-page p-4 bg-slate-50/20 min-h-full">
-            <div className="flex flex-col md:flex-row justify-between items-start md:items-center mb-6 gap-4">
-                <div>
-                    <h2 className="text-3xl font-extrabold text-slate-800 tracking-tight">Messages & Groups</h2>
-                    <p className="text-slate-500 text-sm font-medium">Connect with instructors and {dbUser?.college || 'college'} peers</p>
-                </div>
-                <div className="flex bg-white shadow-sm border border-slate-200 p-1.5 rounded-[20px] gap-1">
-                    <button
-                        className={`px-5 py-2.5 rounded-[14px] text-sm font-bold transition-all ${activeTab === 'dm' ? 'bg-primary-900 text-white shadow-lg shadow-blue-900/20' : 'text-slate-400 hover:text-slate-600 hover:bg-slate-50'}`}
-                        onClick={() => setActiveTab('dm')}
-                    >
-                        Direct Messages
-                    </button>
-                    <button
-                        className={`px-5 py-2.5 rounded-[14px] text-sm font-bold transition-all ${activeTab === 'groups' ? 'bg-primary-900 text-white shadow-lg shadow-blue-900/20' : 'text-slate-400 hover:text-slate-600 hover:bg-slate-50'}`}
-                        onClick={() => setActiveTab('groups')}
-                    >
-                        Study Groups
-                    </button>
-                    <button
-                        className={`px-5 py-2.5 rounded-[14px] text-sm font-bold transition-all ${activeTab === 'discover' ? 'bg-indigo-600 text-white shadow-lg shadow-indigo-600/20' : 'text-slate-400 hover:text-slate-600 hover:bg-slate-50'}`}
-                        onClick={() => setActiveTab('discover')}
-                    >
-                        Explore Groups
-                    </button>
-                </div>
-            </div>
+  const handleCreateGroup = async (e) => {
+    e.preventDefault();
+    try {
+      console.log("📝 Creating group:", {
+        name: newGroupName,
+        description: newGroupDesc,
+      });
+      const res = await api.post("/api/chats/groups", {
+        name: newGroupName,
+        description: newGroupDesc,
+      });
+      console.log("✅ Group created:", res.data);
+      setShowCreateGroup(false);
+      setNewGroupName("");
+      setNewGroupDesc("");
+      setActiveTab("groups");
+      fetchData();
+    } catch (err) {
+      console.error("❌ Create group error:", {
+        status: err.response?.status,
+        message: err.response?.data?.message,
+        fullError: err.message,
+        response: err.response?.data,
+      });
+      alert(
+        err.response?.data?.message || err.message || "Failed to create group",
+      );
+    }
+  };
 
-            <div className="chat-container">
-                {activeTab === 'discover' ? (
-                    <div className="discover-groups p-8 bg-white rounded-3xl border border-slate-200 w-full h-full overflow-y-auto shadow-sm">
-                        <div className="flex items-center gap-4 mb-8">
-                            <div className="w-12 h-12 bg-indigo-600/10 text-indigo-600 rounded-2xl flex items-center justify-center">
-                                <Users size={24} />
-                            </div>
-                            <div>
-                                <h3 className="text-2xl font-extrabold text-slate-800">Explore Peer Groups</h3>
-                                <p className="text-slate-500 font-medium">Available Study Groups for <span className="text-indigo-600 font-bold">{dbUser?.college || "your college"}</span> students.</p>
-                            </div>
-                        </div>
+  const handleJoinGroup = async (groupId) => {
+    try {
+      await api.post(`/api/chats/groups/${groupId}/join`);
+      setActiveTab("groups");
+      fetchData();
+    } catch (err) {
+      alert(err.response?.data?.message || "Failed to join group");
+    }
+  };
 
-                        {!dbUser?.college && (
-                            <div className="bg-amber-50 border border-amber-200 text-amber-700 p-6 rounded-2xl mb-8 flex items-center gap-4">
-                                <span className="text-4xl">🎓</span>
-                                <div>
-                                    <h4 className="font-bold text-lg">College Information Required</h4>
-                                    <p className="text-sm opacity-90 font-medium">Please set your college name in <strong>Profile Settings</strong> to discover and join peer groups.</p>
-                                </div>
-                            </div>
-                        )}
+  const handleEditMessage = async (messageId, newText) => {
+    try {
+      await api.put(`/api/chats/messages/${messageId}`, { text: newText });
+    } catch (err) {
+      console.error("Edit failed", err);
+      alert("Failed to edit message");
+    }
+  };
 
-                        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-                            {availableGroups.map(group => (
-                                <div key={group.group_id} className="group-card-premium bg-slate-50 border border-slate-100 p-8 rounded-[32px] flex flex-col items-center text-center hover:bg-white hover:shadow-xl hover:border-indigo-100 transition-all group">
-                                    <div className="w-20 h-20 bg-white shadow-sm text-indigo-600 rounded-[24px] flex items-center justify-center text-3xl font-black mb-6 group-hover:bg-indigo-600 group-hover:text-white transition-all transform group-hover:rotate-6">
-                                        {group.name[0]}
-                                    </div>
-                                    <h4 className="text-xl font-extrabold text-slate-800 mb-2">{group.name}</h4>
-                                    <p className="text-slate-500 text-sm font-medium mb-8 line-clamp-2 leading-relaxed">{group.description || "Interactive study group for same-college students."}</p>
-                                    <button
-                                        onClick={() => handleJoinGroup(group.group_id)}
-                                        className="w-full py-4 bg-white text-slate-800 border-2 border-slate-100 rounded-2xl font-bold hover:bg-primary-900 hover:text-white hover:border-primary-900 transition-all shadow-sm"
-                                    >
-                                        Join Group
-                                    </button>
-                                </div>
-                            ))}
-                        </div>
-                        {availableGroups.length === 0 && dbUser?.college && (
-                            <div className="text-center py-20 bg-slate-50/50 rounded-3xl border-2 border-dashed border-slate-200">
-                                <p className="text-slate-400 font-bold text-lg mb-2">No groups found yet</p>
-                                <p className="text-slate-300 text-sm">Be the first to create a group for {dbUser.college}!</p>
-                            </div>
-                        )}
-                    </div>
-                ) : (
-                    <>
-                        <div className="flex flex-col h-full bg-white rounded-2xl border border-slate-200 overflow-hidden">
-                            {activeTab === 'groups' && (
-                                <button
-                                    onClick={() => setShowCreateGroup(true)}
-                                    className="m-4 py-3 bg-indigo-600/10 text-indigo-600 rounded-2xl font-bold hover:bg-indigo-600 hover:text-white transition-all flex items-center justify-center gap-2 border border-indigo-100 shadow-sm"
-                                >
-                                    <span className="text-xl">+</span> Create New Group
-                                </button>
-                            )}
-                            <ChatList
-                                chats={activeTab === 'dm' ? chats : groups}
-                                activeChat={activeChat}
-                                onSelectChat={handleSelectChat}
-                                unreadCounts={unreadCounts}
-                            />
-                        </div>
-                        <ChatWindow
-                            socket={socket}
-                            activeChat={activeChat}
-                            messages={messages}
-                            onSendMessage={handleSendMessage}
-                            loadingMessages={loadingMessages}
-                            onUpdateMeetingLink={async (link) => {
-                                try {
-                                    if (link) {
-                                        await api.put(`/api/chats/groups/${activeChat.id}/meeting`, { meetingLink: link });
-                                    } else {
-                                        await api.delete(`/api/chats/groups/${activeChat.id}/meeting`);
-                                    }
+  const handleDeleteMessage = async (messageId) => {
+    try {
+      if (!window.confirm("Are you sure you want to delete this message?"))
+        return;
+      await api.delete(`/api/chats/messages/${messageId}`);
+    } catch (err) {
+      console.error("Delete failed", err);
+      alert("Failed to delete message");
+    }
+  };
 
-                                    setActiveChat(prev => ({ ...prev, meeting_link: link }));
-                                    setGroups(prev => prev.map(g => g.id === activeChat.id ? { ...g, meeting_link: link } : g));
-                                    socket.emit('update_meeting_link', { groupId: activeChat.id, meetingLink: link });
-                                } catch (err) {
-                                    alert("Failed to update meeting status");
-                                }
-                            }}
-                            isCreator={activeChat?.creator_id === dbUser?.id}
-                            isAdmin={userRole === 'admin' || userRole === 'instructor'}
-                            onEditMessage={handleEditMessage}
-                            onDeleteMessage={handleDeleteMessage}
-                            currentUser={dbUser}
-                            onLeaveGroup={handleLeaveGroup}
-                            onDeleteGroup={handleDeleteGroup}
-                            onReact={handleReact}
-                            onRemoveReaction={handleRemoveReaction}
-                        />
-                    </>
-                )}
-            </div>
-
-            {showCreateGroup && (
-                <div className="fixed inset-0 bg-black/50 flex items-center justify-center z-[100] p-4">
-                    <div className="bg-white rounded-3xl p-8 max-w-md w-full shadow-2xl">
-                        <h3 className="text-2xl font-bold mb-6 text-primary-900">Create Study Group</h3>
-                        {!dbUser?.college && (
-                            <div className="bg-amber-50 border border-amber-200 text-amber-700 p-3 rounded-xl mb-6 text-sm">
-                                ⚠️ You must set your college in Profile Settings before creating a group.
-                            </div>
-                        )}
-                        <form onSubmit={handleCreateGroup} className="space-y-6">
-                            <div className="space-y-2">
-                                <label className="text-sm font-bold text-slate-700">Group Name</label>
-                                <input
-                                    required
-                                    className="w-full px-4 py-3 bg-slate-50 border border-slate-200 rounded-xl outline-none focus:ring-2 focus:ring-indigo-500/20"
-                                    value={newGroupName}
-                                    onChange={e => setNewGroupName(e.target.value)}
-                                    placeholder="e.g. Stanford AI Ethics"
-                                />
-                            </div>
-                            <div className="space-y-2">
-                                <label className="text-sm font-bold text-slate-700">Description</label>
-                                <textarea
-                                    className="w-full px-4 py-3 bg-slate-50 border border-slate-200 rounded-xl outline-none focus:ring-2 focus:ring-indigo-500/20 resize-none"
-                                    rows="3"
-                                    value={newGroupDesc}
-                                    onChange={e => setNewGroupDesc(e.target.value)}
-                                    placeholder="What's this group about?"
-                                />
-                            </div>
-                            <div className="flex gap-4 pt-4">
-                                <button
-                                    type="button"
-                                    onClick={() => setShowCreateGroup(false)}
-                                    className="flex-1 py-3 bg-slate-100 text-slate-600 rounded-xl font-bold hover:bg-slate-200"
-                                >
-                                    Cancel
-                                </button>
-                                <button
-                                    type="submit"
-                                    disabled={!dbUser?.college}
-                                    className="flex-1 py-3 bg-primary-900 text-white rounded-xl font-bold hover:bg-slate-800 disabled:opacity-50"
-                                >
-                                    Create
-                                </button>
-                            </div>
-                        </form>
-                    </div>
-                </div>
-            )}
-        </div>
+  const handleLeaveGroup = (groupId) => {
+    setGroups((prev) =>
+      prev.filter((g) => g.id !== groupId && g.group_id !== groupId),
     );
+    if (activeChat?.id === groupId || activeChat?.group_id === groupId) {
+      setActiveChat(null);
+    }
+  };
+
+  const handleDeleteGroup = (groupId) => {
+    setGroups((prev) =>
+      prev.filter((g) => g.id !== groupId && g.group_id !== groupId),
+    );
+    if (activeChat?.id === groupId || activeChat?.group_id === groupId) {
+      setActiveChat(null);
+    }
+  };
+
+  const handleReact = async (messageId, emoji) => {
+    try {
+      const res = await api.post(`/api/chats/messages/${messageId}/react`, {
+        emoji,
+      });
+      setMessages((prev) =>
+        prev.map((m) =>
+          m.message_id === messageId
+            ? { ...m, reactions: res.data.reactions }
+            : m,
+        ),
+      );
+    } catch (err) {
+      alert("Failed to react");
+    }
+  };
+
+  const handleRemoveReaction = async (messageId) => {
+    try {
+      const res = await api.delete(`/api/chats/messages/${messageId}/react`);
+      setMessages((prev) =>
+        prev.map((m) =>
+          m.message_id === messageId
+            ? { ...m, reactions: res.data.reactions }
+            : m,
+        ),
+      );
+    } catch (err) {
+      alert("Failed to remove reaction");
+    }
+  };
+
+  return (
+    <div className="student-chat-page p-4 bg-slate-50/20 min-h-full">
+      <div className="flex flex-col md:flex-row justify-between items-start md:items-center mb-6 gap-4">
+        <div>
+          <h2 className="text-3xl font-extrabold text-slate-800 tracking-tight">
+            Messages & Groups
+          </h2>
+          <p className="text-slate-500 text-sm font-medium">
+            Connect with instructors and {dbUser?.college || "college"} peers
+          </p>
+        </div>
+        <div className="flex bg-white shadow-sm border border-slate-200 p-1.5 rounded-[20px] gap-1">
+          <button
+            className={`px-5 py-2.5 rounded-[14px] text-sm font-bold transition-all ${activeTab === "dm" ? "bg-primary-900 text-white shadow-lg shadow-blue-900/20" : "text-slate-400 hover:text-slate-600 hover:bg-slate-50"}`}
+            onClick={() => setActiveTab("dm")}
+          >
+            Direct Messages
+          </button>
+          <button
+            className={`px-5 py-2.5 rounded-[14px] text-sm font-bold transition-all ${activeTab === "groups" ? "bg-primary-900 text-white shadow-lg shadow-blue-900/20" : "text-slate-400 hover:text-slate-600 hover:bg-slate-50"}`}
+            onClick={() => setActiveTab("groups")}
+          >
+            Study Groups
+          </button>
+          <button
+            className={`px-5 py-2.5 rounded-[14px] text-sm font-bold transition-all ${activeTab === "discover" ? "bg-indigo-600 text-white shadow-lg shadow-indigo-600/20" : "text-slate-400 hover:text-slate-600 hover:bg-slate-50"}`}
+            onClick={() => setActiveTab("discover")}
+          >
+            Explore Groups
+          </button>
+        </div>
+      </div>
+
+      <div className="chat-container">
+        {activeTab === "discover" ? (
+          <div className="discover-groups p-8 bg-white rounded-3xl border border-slate-200 w-full h-full overflow-y-auto shadow-sm">
+            <div className="flex items-center gap-4 mb-8">
+              <div className="w-12 h-12 bg-indigo-600/10 text-indigo-600 rounded-2xl flex items-center justify-center">
+                <Users size={24} />
+              </div>
+              <div>
+                <h3 className="text-2xl font-extrabold text-slate-800">
+                  Explore Peer Groups
+                </h3>
+                <p className="text-slate-500 font-medium">
+                  Available Study Groups for{" "}
+                  <span className="text-indigo-600 font-bold">
+                    {dbUser?.college || "your college"}
+                  </span>{" "}
+                  students.
+                </p>
+              </div>
+            </div>
+
+            {!dbUser?.college && (
+              <div className="bg-amber-50 border border-amber-200 text-amber-700 p-6 rounded-2xl mb-8 flex items-center gap-4">
+                <span className="text-4xl">🎓</span>
+                <div>
+                  <h4 className="font-bold text-lg">
+                    College Information Required
+                  </h4>
+                  <p className="text-sm opacity-90 font-medium">
+                    Please set your college name in{" "}
+                    <strong>Profile Settings</strong> to discover and join peer
+                    groups.
+                  </p>
+                </div>
+              </div>
+            )}
+
+            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+              {availableGroups.map((group) => (
+                <div
+                  key={group.group_id}
+                  className="group-card-premium bg-slate-50 border border-slate-100 p-8 rounded-[32px] flex flex-col items-center text-center hover:bg-white hover:shadow-xl hover:border-indigo-100 transition-all group"
+                >
+                  <div className="w-20 h-20 bg-white shadow-sm text-indigo-600 rounded-[24px] flex items-center justify-center text-3xl font-black mb-6 group-hover:bg-indigo-600 group-hover:text-white transition-all transform group-hover:rotate-6">
+                    {group.name[0]}
+                  </div>
+                  <h4 className="text-xl font-extrabold text-slate-800 mb-2">
+                    {group.name}
+                  </h4>
+                  <p className="text-slate-500 text-sm font-medium mb-8 line-clamp-2 leading-relaxed">
+                    {group.description ||
+                      "Interactive study group for same-college students."}
+                  </p>
+                  <button
+                    onClick={() => handleJoinGroup(group.group_id)}
+                    className="w-full py-4 bg-white text-slate-800 border-2 border-slate-100 rounded-2xl font-bold hover:bg-primary-900 hover:text-white hover:border-primary-900 transition-all shadow-sm"
+                  >
+                    Join Group
+                  </button>
+                </div>
+              ))}
+            </div>
+            {availableGroups.length === 0 && dbUser?.college && (
+              <div className="text-center py-20 bg-slate-50/50 rounded-3xl border-2 border-dashed border-slate-200">
+                <p className="text-slate-400 font-bold text-lg mb-2">
+                  No groups found yet
+                </p>
+                <p className="text-slate-300 text-sm">
+                  Be the first to create a group for {dbUser.college}!
+                </p>
+              </div>
+            )}
+          </div>
+        ) : (
+          <>
+            <div className="flex flex-col h-full bg-white rounded-2xl border border-slate-200 overflow-hidden">
+              {activeTab === "groups" && (
+                <button
+                  onClick={() => setShowCreateGroup(true)}
+                  className="m-4 py-3 bg-indigo-600/10 text-indigo-600 rounded-2xl font-bold hover:bg-indigo-600 hover:text-white transition-all flex items-center justify-center gap-2 border border-indigo-100 shadow-sm"
+                >
+                  <span className="text-xl">+</span> Create New Group
+                </button>
+              )}
+              <ChatList
+                chats={activeTab === "dm" ? chats : groups}
+                activeChat={activeChat}
+                onSelectChat={handleSelectChat}
+                unreadCounts={unreadCounts}
+              />
+            </div>
+            <ChatWindow
+              socket={socket}
+              activeChat={activeChat}
+              messages={messages}
+              onSendMessage={handleSendMessage}
+              loadingMessages={loadingMessages}
+              onUpdateMeetingLink={async (link) => {
+                try {
+                  if (link) {
+                    await api.put(
+                      `/api/chats/groups/${activeChat.id}/meeting`,
+                      { meetingLink: link },
+                    );
+                  } else {
+                    await api.delete(
+                      `/api/chats/groups/${activeChat.id}/meeting`,
+                    );
+                  }
+
+                  setActiveChat((prev) => ({ ...prev, meeting_link: link }));
+                  setGroups((prev) =>
+                    prev.map((g) =>
+                      g.id === activeChat.id ? { ...g, meeting_link: link } : g,
+                    ),
+                  );
+                  socket.emit("update_meeting_link", {
+                    groupId: activeChat.id,
+                    meetingLink: link,
+                  });
+                } catch (err) {
+                  alert("Failed to update meeting status");
+                }
+              }}
+              isCreator={activeChat?.creator_id === dbUser?.id}
+              isAdmin={userRole === "admin" || userRole === "instructor"}
+              onEditMessage={handleEditMessage}
+              onDeleteMessage={handleDeleteMessage}
+              currentUser={dbUser}
+              onLeaveGroup={handleLeaveGroup}
+              onDeleteGroup={handleDeleteGroup}
+              onReact={handleReact}
+              onRemoveReaction={handleRemoveReaction}
+            />
+          </>
+        )}
+      </div>
+
+      {showCreateGroup && (
+        <div className="fixed inset-0 bg-black/50 flex items-center justify-center z-[100] p-4">
+          <div className="bg-white rounded-3xl p-8 max-w-md w-full shadow-2xl">
+            <h3 className="text-2xl font-bold mb-6 text-primary-900">
+              Create Study Group
+            </h3>
+            {!dbUser?.college && (
+              <div className="bg-amber-50 border border-amber-200 text-amber-700 p-3 rounded-xl mb-6 text-sm">
+                ⚠️ You must set your college in Profile Settings before creating
+                a group.
+              </div>
+            )}
+            <form onSubmit={handleCreateGroup} className="space-y-6">
+              <div className="space-y-2">
+                <label className="text-sm font-bold text-slate-700">
+                  Group Name
+                </label>
+                <input
+                  required
+                  className="w-full px-4 py-3 bg-slate-50 border border-slate-200 rounded-xl outline-none focus:ring-2 focus:ring-indigo-500/20"
+                  value={newGroupName}
+                  onChange={(e) => setNewGroupName(e.target.value)}
+                  placeholder="e.g. Stanford AI Ethics"
+                />
+              </div>
+              <div className="space-y-2">
+                <label className="text-sm font-bold text-slate-700">
+                  Description
+                </label>
+                <textarea
+                  className="w-full px-4 py-3 bg-slate-50 border border-slate-200 rounded-xl outline-none focus:ring-2 focus:ring-indigo-500/20 resize-none"
+                  rows="3"
+                  value={newGroupDesc}
+                  onChange={(e) => setNewGroupDesc(e.target.value)}
+                  placeholder="What's this group about?"
+                />
+              </div>
+              <div className="flex gap-4 pt-4">
+                <button
+                  type="button"
+                  onClick={() => setShowCreateGroup(false)}
+                  className="flex-1 py-3 bg-slate-100 text-slate-600 rounded-xl font-bold hover:bg-slate-200"
+                >
+                  Cancel
+                </button>
+                <button
+                  type="submit"
+                  disabled={!dbUser?.college}
+                  className="flex-1 py-3 bg-primary-900 text-white rounded-xl font-bold hover:bg-slate-800 disabled:opacity-50"
+                >
+                  Create
+                </button>
+              </div>
+            </form>
+          </div>
+        </div>
+      )}
+    </div>
+  );
 };
 
 export default StudentChat;
