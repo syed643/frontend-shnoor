@@ -27,6 +27,7 @@ const StudentChat = () => {
             if (activeTab === 'dm') {
                 // Get existing chats
                 const chatsRes = await api.get('/api/chats');
+                console.log('📥 Fetched chats:', chatsRes.data);
                 const existingChats = chatsRes.data.map(c => ({
                     id: c.chat_id,
                     name: c.recipient_name,
@@ -59,8 +60,12 @@ const StudentChat = () => {
                 });
                 setChats(mergedChats);
             } else if (activeTab === 'groups') {
+                console.log('📥 Fetching my groups...');
                 const groupsRes = await api.get('/api/chats/groups/my');
-                setGroups(groupsRes.data.map(g => ({
+                console.log('📥 Fetched groups raw:', groupsRes.data);
+                const groupsData = Array.isArray(groupsRes.data) ? groupsRes.data : [];
+                console.log('📥 Groups array:', groupsData);
+                setGroups(groupsData.map(g => ({
                     id: g.group_id,
                     name: g.name,
                     description: g.description,
@@ -74,11 +79,18 @@ const StudentChat = () => {
                     type: 'group'
                 })));
             } else if (activeTab === 'discover') {
+                console.log('📥 Fetching available groups...');
                 const discoverRes = await api.get('/api/chats/groups/available');
+                console.log('📥 Fetched available groups:', discoverRes.data);
                 setAvailableGroups(discoverRes.data);
             }
         } catch (err) {
-            console.error("Fetch Student Chat Error:", err);
+            console.error("❌ Fetch Student Chat Error:", {
+                status: err.response?.status,
+                message: err.response?.data?.message,
+                error: err.message,
+                fullError: err
+            });
         }
     };
 
