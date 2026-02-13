@@ -4,7 +4,7 @@ import { useParams, Link } from 'react-router-dom';
 import api from '../../api/axios';
 import { ArrowLeft, Users, Loader2, AlertCircle } from 'lucide-react';
 import { useSocket } from '../../context/SocketContext';
-import ChatWindow from '../../components/chat/ChatWindow';
+import ChatWindow from '../../components/Chat/ChatWindow';
 
 const GroupChat = () => {
   const { groupId } = useParams();

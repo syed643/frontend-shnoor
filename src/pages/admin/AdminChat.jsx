@@ -4,7 +4,7 @@ import api from '../../api/axios';
 import { useSocket } from '../../context/SocketContext';
 import { useAuth } from '../../auth/AuthContext';
 import ChatList from '../../components/Chat/ChatList';
-import ChatWindow from '../../components/chat/ChatWindow';
+import ChatWindow from '../../components/Chat/ChatWindow';
 import '../../styles/Chat.css';
 
 const AdminChat = () => {
