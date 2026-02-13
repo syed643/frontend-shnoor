@@ -2,7 +2,7 @@ import React, { useState, useEffect } from "react";
 import api from "../../api/axios";
 import { useSocket } from "../../context/SocketContext";
 import { useAuth } from "../../auth/AuthContext";
-import ChatList from "../../components/chat/ChatList";
+import ChatList from "../../components/Chat/ChatList";
 import ChatWindow from "../../components/chat/ChatWindow";
 import { Users } from "lucide-react";
 import "../../styles/Chat.css";
@@ -87,6 +87,7 @@ const StudentChat = () => {
             unread: 0,
             exists: true,
             type: "group",
+            groupType: "student",
           })),
         );
       } else if (activeTab === "discover") {
@@ -116,12 +117,14 @@ const StudentChat = () => {
   }, [unreadCounts]);
 
   // Listen for global new_notification
-  {/*useEffect(() => {
+  {
+    /*useEffect(() => {
     if (!socket) return;
     const handleGlobalNotification = () => fetchData();
     socket.on("new_notification", handleGlobalNotification);
     return () => socket.off("new_notification", handleGlobalNotification);
-  }, [socket, activeTab]);*/}
+  }, [socket, activeTab]);*/
+  }
 
   // Handle Message Receive
   useEffect(() => {
@@ -206,16 +209,20 @@ const StudentChat = () => {
       }
       socket.emit("join_chat", chatId);
     } else {
-      socket.emit("join_group", chatId);
+      socket.emit(
+        chat.groupType === "admin" ? "join_admin_group" : "join_group",
+        chatId,
+      );
     }
-
     setActiveChat(chat);
     setLoadingMessages(true);
     try {
       const url =
         chat.type === "dm"
           ? `/api/chats/messages/${chatId}`
-          : `/api/chats/groups/${chatId}/messages`;
+          : chat.groupType === "admin"
+            ? `/api/admin/groups/${chatId}/messages`
+            : `/api/chats/groups/${chatId}/messages`;
       const res = await api.get(url);
       setMessages(
         res.data.map((m) => ({
@@ -375,6 +382,7 @@ const StudentChat = () => {
       payload.recipientId = activeChat.recipientId;
     } else {
       payload.groupId = activeChat.id;
+      payload.groupType = activeChat.groupType || "student";
     }
 
     socket.emit("send_message", payload, (serverMsg) => {

@@ -11,6 +11,7 @@ import {
   Users,
   Menu,
   Award,
+  MessageSquare,
 } from "lucide-react";
 import markLogo from "../../../assets/just_logo.jpeg";
 import { useNavigate } from "react-router-dom";
@@ -115,6 +116,11 @@ const AdminLayoutView = ({
                 path="approve-users"
                 icon={UserCircle}
                 label="Approve Users"
+              />
+                <NavItem
+                path="chat-students"
+                icon={MessageSquare}
+                label="Chat with Students"
               />
               <NavItem path="certificates" icon={Award} label="Certificates" />
               <NavItem path="settings" icon={Settings} label="Settings" />

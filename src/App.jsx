@@ -63,6 +63,7 @@ import ContestResult from "./pages/student/ContestResult";
 import ContestLeaderboard from "./pages/student/ContestLeaderboard";
 import CookieBanner from "./components/CookieBanner";
 import CookiePolicy from "./pages/CookiePolicy";
+import ChatWithStudents from "./pages/admin/ChatWithStudents";
 // import Leaderboard from './pages/student/Leaderboard';
 
 function App() {
@@ -100,6 +101,8 @@ function App() {
               <Route path="groups/edit/:groupId" element={<EditGroup />} />
               <Route path="groups/:groupId/users" element={<GroupUsers />} />
               <Route path="settings" element={<ProfileSettings />} />
+              <Route path="chat-students" element={<ChatWithStudents />} />
+
 
               <Route
                 path="profile-management"
