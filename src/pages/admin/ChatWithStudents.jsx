@@ -28,12 +28,7 @@ const ChatWithStudents = () => {
   const [selectedCollege, setSelectedCollege] = useState('');
   const [loadingColleges, setLoadingColleges] = useState(false);
   const fetchExecuted = useRef(false);
-  useEffect(() => {
-  if (fetchExecuted.current) return;
-  fetchExecuted.current = true;
-
-  // Inside fetchData (replace the existing chats fetch block)
-const fetchData = async () => {
+  const fetchData = async () => {
   try {
     setLoadingChats(true);
     setError(null);
@@ -93,8 +88,12 @@ const fetchData = async () => {
   }
 };
 
-  fetchData();
-}, [unreadCounts]);
+  useEffect(() => {
+    if (fetchExecuted.current) return;
+    fetchExecuted.current = true;
+
+    fetchData();
+  }, [unreadCounts]);
 
   useEffect(() => {
     if (!socket) return;

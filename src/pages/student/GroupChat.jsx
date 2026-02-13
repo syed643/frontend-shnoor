@@ -169,8 +169,9 @@ const GroupChat = () => {
           activeChat={{
             id: groupId,
             type: 'group',
+            name: group.name,
             recipientName: group.name,
-            memberCount: group.member_count || 0,
+            member_count: group.member_count || 0,
             // Add more props if ChatWindow uses them (description, avatar, etc.)
           }}
           messages={messages}
