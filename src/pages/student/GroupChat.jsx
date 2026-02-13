@@ -32,11 +32,11 @@ const GroupChat = () => {
         setError(null);
 
         // 1. Fetch group info
-        const groupRes = await api.get(`/api/groups/${groupId}`);
+        const groupRes = await api.get(`/api/admingroups/${groupId}`);
         setGroup(groupRes.data);
 
         // 2. Fetch messages
-        const msgRes = await api.get(`/api/groups/${groupId}/messages`);
+        const msgRes = await api.get(`/api/admingroups/${groupId}/messages`);
         setMessages(
           msgRes.data.map(msg => ({
             ...msg,

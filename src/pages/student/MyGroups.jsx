@@ -26,7 +26,7 @@ const MyGroups = () => {
     const freshToken = await user.getIdToken(true);
     console.log('[MyGroups] Fresh token generated');
 
-    const res = await api.get('/api/groups/my-groups', {
+    const res = await api.get('/api/admingroups/my-groups', {
       headers: {
         Authorization: `Bearer ${freshToken}`
       }
