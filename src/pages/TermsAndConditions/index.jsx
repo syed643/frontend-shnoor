@@ -6,7 +6,7 @@ import {
     Twitter, Facebook, Linkedin, Instagram,
 } from 'lucide-react';
 import markLogo from '../../assets/image.png';
-import WhatsAppContactButton from '../../components/WhatsAppContactButton';
+import WhatsAppContactButton from "../../components/WhatsAppButton";
 
 const TermsAndConditions = () => {
     const BrandLogo = ({ titleColor = 'text-slate-900', subtitleColor = 'text-slate-500' }) => (
