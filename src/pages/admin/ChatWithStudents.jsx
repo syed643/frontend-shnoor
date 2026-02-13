@@ -286,7 +286,7 @@ useEffect(() => {
 useEffect(() => {
   if (showGroupModal) {
     setLoadingColleges(true);
-    api.get('/api/groups/colleges')
+    api.get('/api/admingroups/colleges')
       .then(res => setColleges(res.data))
       .catch(err => console.error(err))
       .finally(() => setLoadingColleges(false));
@@ -297,7 +297,7 @@ useEffect(() => {
 useEffect(() => {
   if (showGroupModal && addMode === 'college') {
     setLoadingColleges(true);
-    api.get('/api/groups/colleges')
+    api.get('/api/admingroups/colleges')
       .then(res => setColleges(res.data))
       .catch(err => console.error('Failed to load colleges:', err))
       .finally(() => setLoadingColleges(false));
