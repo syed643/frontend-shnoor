@@ -429,7 +429,7 @@ const MessageItem = ({ messageId, msg, showName, onEdit, onDelete, onReply, onRe
         if (!msg.attachment_url && !msg.attachment_file_id) return null;
         
         const API_URL = import.meta.env.VITE_API_URL || 'http://localhost:5000';
-        const url = msg.attachment_url || `${API_URL}/api/media/${msg.attachment_file_id}`;
+        const url = msg.attachment_url || `${API_URL}/api/chats/media/${msg.attachment_file_id}`;
         const type = msg.attachment_type || 'file';
         
         if (type.includes('image')) {
