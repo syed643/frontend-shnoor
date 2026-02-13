@@ -43,6 +43,7 @@ const fetchData = async () => {
     const oneOnOneChats = chatsRes.data.map(c => ({
       id: c.chat_id,
       type: '1on1',
+      name: c.recipient_name,
       recipientName: c.recipient_name,
       recipientId: c.recipient_id,
       lastMessage: c.last_message || 'No messages yet',
@@ -59,6 +60,7 @@ const fetchData = async () => {
         mergedOneOnOne.push({
           id: `new_${s.user_id}`,
           type: '1on1',
+          name: s.full_name || s.email?.split('@')[0],
           recipientName: s.full_name || s.email?.split('@')[0],
           recipientId: s.user_id,
           lastMessage: 'Start a conversation',
@@ -72,6 +74,7 @@ const fetchData = async () => {
     const adminGroups = groupsRes.data.map(g => ({
       id: g.group_id,
       type: 'group',
+      name: g.name,
       recipientName: g.name,
       lastMessage: 'Group chat', // can improve later with real last msg
       unread: 0,
