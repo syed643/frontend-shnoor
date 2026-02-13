@@ -102,8 +102,8 @@ const GroupChat = () => {
 
   // Emit to backend
   if (socket) {
-    console.log('[Student Socket] Emitting send_group_message', payload);
-    socket.emit('send_group_message', payload);
+    console.log('[Student Socket] Emitting send_message with groupId', payload);
+    socket.emit('send_message', payload);
   } else {
     console.warn('[Student Socket] Socket not ready');
   }
