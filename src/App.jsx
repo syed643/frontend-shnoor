@@ -66,6 +66,8 @@ import CookiePolicy from "./pages/CookiePolicy";
 import ChatWithStudents from "./pages/admin/ChatWithStudents";
 import MyGroups from "./pages/student/MyGroups";
 import GroupChat from "./pages/student/GroupChat";
+import PrivacyPolicy from "./pages/PrivacyPolicy";
+import TermsAndConditions from "./pages/TermsAndConditions";
 // import Leaderboard from './pages/student/Leaderboard';
 
 function App() {
@@ -78,6 +80,9 @@ function App() {
             <Route path="/" element={<Landing />} />
             <Route path="/contact" element={<Contact />} />
             <Route path="/cookie-policy" element={<CookiePolicy />} />
+            <Route path="/terms-and-conditions" element={<TermsAndConditions />} />
+            <Route path="/privacy-policy" element={<PrivacyPolicy />} />
+
             <Route path="/login" element={<Login />} />
             <Route path="/register" element={<Register />} />
             <Route path="/forgot-password" element={<ForgotPassword />} />
