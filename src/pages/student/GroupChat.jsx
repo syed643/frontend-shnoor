@@ -82,12 +82,39 @@ const GroupChat = () => {
   const handleSendMessage = async (text, file = null) => {
   if (!text.trim() && !file) return;
 
+  // Handle file upload
+  let attachmentFileId = null;
+  let attachmentName = null;
+  let attachmentType = null;
+  let attachmentUrl = null;
+
+  if (file) {
+    try {
+      const formData = new FormData();
+      formData.append("file", file);
+      const res = await api.post("/api/chats/upload", formData, {
+        headers: { "Content-Type": "multipart/form-data" },
+      });
+      attachmentFileId = res.data.file_id;
+      attachmentName = file.name;
+      attachmentType = file.type;
+      attachmentUrl = URL.createObjectURL(file);
+    } catch (err) {
+      console.error("Upload failed:", err);
+      alert('Failed to upload file');
+      return;
+    }
+  }
+
   const payload = {
     groupId,
     text: text.trim(),
     senderId: dbUser.id,
+    senderUid: dbUser.firebase_uid,
     senderName: dbUser.full_name || 'You',
-    // file handling if needed...
+    attachment_file_id: attachmentFileId,
+    attachment_name: attachmentName,
+    attachment_type: attachmentType,
   };
 
   // Optimistic UI
@@ -98,6 +125,7 @@ const GroupChat = () => {
     sender_id: dbUser.id,
     sender_name: payload.senderName,
     isMyMessage: true,
+    attachment_url: attachmentUrl,
   }]);
 
   // Emit to backend

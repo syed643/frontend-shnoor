@@ -200,6 +200,30 @@ useEffect(() => {
     }
   }
 
+  // ── 1.5. Handle file upload ──────────────────────────────────────────────────
+  let attachmentFileId = null;
+  let attachmentName = null;
+  let attachmentType = null;
+  let attachmentUrl = null;
+
+  if (file) {
+    try {
+      const formData = new FormData();
+      formData.append("file", file);
+      const res = await api.post("/api/chats/upload", formData, {
+        headers: { "Content-Type": "multipart/form-data" },
+      });
+      attachmentFileId = res.data.file_id;
+      attachmentName = file.name;
+      attachmentType = file.type;
+      attachmentUrl = URL.createObjectURL(file);
+    } catch (err) {
+      console.error("Upload failed:", err);
+      alert('Failed to upload file');
+      return;
+    }
+  }
+
   // ── 2. Prepare payload according to chat type ───────────────────────────────
   const payload = {
     // Common fields
@@ -214,10 +238,10 @@ useEffect(() => {
       : { chatId, recipientId: activeChat.recipientId }  // 1-on-1 → chatId + recipient
     ),
 
-    // Attachments (add when you implement file upload)
-    // attachment_file_id: file?.id || null,
-    // attachment_type: file?.type || null,
-    // attachment_name: file?.name || null,
+    // Attachments
+    attachment_file_id: attachmentFileId,
+    attachment_type: attachmentType,
+    attachment_name: attachmentName,
   };
 
   // ── 3. Optimistic UI update ─────────────────────────────────────────────────
@@ -227,6 +251,10 @@ useEffect(() => {
     sender_id: dbUser?.id,
     sender_name: dbUser?.full_name || 'You',
     isMyMessage: true,
+    attachment_file_id: attachmentFileId,
+    attachment_name: attachmentName,
+    attachment_type: attachmentType,
+    attachment_url: attachmentUrl,
     // Optional: group-specific fields for rendering
     ...(isGroupChat && { group_id: chatId }),
   };

@@ -138,7 +138,41 @@ const AdminChat = () => {
 
   console.log('[SEND DEBUG] Emitting send_message with chatId:', activeChat.id);
 
-  // ... your existing upload / optimistic UI code ...
+  // Handle file upload
+  let attachmentFileId = null;
+  let attachmentName = null;
+  let attachmentType = null;
+  let attachmentUrl = null;
+
+  if (file) {
+    try {
+      const formData = new FormData();
+      formData.append('file', file);
+      const res = await api.post('/api/chats/upload', formData, {
+        headers: { 'Content-Type': 'multipart/form-data' }
+      });
+      attachmentFileId = res.data.file_id;
+      attachmentName = file.name;
+      attachmentType = file.type;
+      attachmentUrl = URL.createObjectURL(file);
+    } catch (err) {
+      console.error("Upload failed:", err);
+      alert('Failed to upload file');
+      return;
+    }
+  }
+
+  // Optimistic UI
+  setMessages(prev => [...prev, {
+    message_id: Date.now(),
+    text,
+    isMyMessage: true,
+    created_at: new Date().toISOString(),
+    attachment_file_id: attachmentFileId,
+    attachment_name: attachmentName,
+    attachment_type: attachmentType,
+    attachment_url: attachmentUrl
+  }]);
 
   socket.emit('send_message', {
     chatId: activeChat.id,
@@ -147,7 +181,9 @@ const AdminChat = () => {
     senderUid: dbUser?.firebase_uid,
     senderName: dbUser?.fullName,
     recipientId: activeChat.recipientId,
-    // attachment fields if any
+    attachment_file_id: attachmentFileId,
+    attachment_type: attachmentType,
+    attachment_name: attachmentName,
   });
 
   console.log('[SEND DEBUG] emit("send_message") was called');
