@@ -133,7 +133,7 @@ const fetchData = async () => {
         console.log(`[Admin] Joined group room: ${chat.id}`);
       }
 
-      res = await api.get(`/api/groups/${chat.id}/messages`);
+      res = await api.get(`/api/admingroups/${chat.id}/messages`);
     } else {
       res = await api.get(`/api/chats/messages/${chat.id}`);
     }
