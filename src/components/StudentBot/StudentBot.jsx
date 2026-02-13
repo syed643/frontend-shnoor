@@ -208,9 +208,9 @@ const StudentBot = () => {
               </div>
               <div className="flex-1">
                 <div className="font-semibold text-sm">Study Assistant</div>
-                <div className="text-xs text-slate-400">
+                {/* <div className="text-xs text-slate-400">
                   Click to open the assistant
-                </div>
+                </div> */}
               </div>
             </div>
           </div>
