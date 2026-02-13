@@ -221,7 +221,7 @@ const StudentChat = () => {
         chat.type === "dm"
           ? `/api/chats/messages/${chatId}`
           : chat.groupType === "admin"
-            ? `/api/admin/groups/${chatId}/messages`
+            ? `/api/admingroups/${chatId}/messages`
             : `/api/chats/groups/${chatId}/messages`;
       const res = await api.get(url);
       setMessages(
