@@ -68,7 +68,7 @@ const fetchData = async () => {
     });
 
     // ADD THIS: Fetch all groups for admin
-    const groupsRes = await api.get('/api/groups');
+    const groupsRes = await api.get('/api/admingroups');
     const adminGroups = groupsRes.data.map(g => ({
       id: g.group_id,
       type: 'group',
@@ -253,12 +253,12 @@ useEffect(() => {
       description: groupDescription.trim() || null,
     };
 
-    let endpoint = '/api/groups'; // default for manual
+    let endpoint = '/api/admingroups'; // default for manual
 
     if (addMode === 'college') {
       if (!selectedCollege) return alert('Please select a college');
       payload.college_id = selectedCollege;
-      endpoint = '/api/groups/by-college';
+      endpoint = '/api/admingroups/by-college';
     } else {
       // Manual mode
       if (selectedMembers.length === 0) return alert('Select at least one student');
