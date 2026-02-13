@@ -13,6 +13,7 @@ import {
   Settings,
   MessageSquare,
   Award,
+  Users,
 } from "lucide-react";
 import markLogo from "../../../assets/just_logo.jpeg";
 import NotificationToast from "../../common/NotificationToast";
@@ -105,6 +106,11 @@ const StudentLayoutView = ({
               <NavItem path="dashboard" icon={TrendingUp} label="Dashboard" />
               <NavItem path="courses" icon={List} label="My Courses" />
               <NavItem path="exams" icon={ClipboardList} label="Exams" />
+               <NavItem 
+                path="groups" 
+                icon={Users} 
+                label="My Groups" 
+              />
               <NavItem path="certificates" icon={Trophy} label="Certificates" />
               <NavItem path="practice" icon={Code} label="Practice Arena" />
               <NavItem path="contests" icon={Trophy} label="Weekly Contests" />

@@ -64,6 +64,8 @@ import ContestLeaderboard from "./pages/student/ContestLeaderboard";
 import CookieBanner from "./components/CookieBanner";
 import CookiePolicy from "./pages/CookiePolicy";
 import ChatWithStudents from "./pages/admin/ChatWithStudents";
+import MyGroups from "./pages/student/MyGroups";
+import GroupChat from "./pages/student/GroupChat";
 // import Leaderboard from './pages/student/Leaderboard';
 
 function App() {
@@ -166,6 +168,8 @@ function App() {
               <Route path="settings" element={<ProfileSettings />} />
               <Route path="certificates" element={<MyCertificates />} />
               <Route path="chat" element={<StudentChat />} />
+               <Route path="/student/groups" element={<MyGroups />} />
+              <Route path="/student/groups/:groupId" element={<GroupChat />} />
 
               {/* <Route path="leaderboard" element={<Leaderboard />} /> */}
             </Route>
