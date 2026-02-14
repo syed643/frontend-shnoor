@@ -5,6 +5,7 @@ import api from '../../api/axios';
 import { ArrowLeft, Users, Loader2, AlertCircle } from 'lucide-react';
 import { useSocket } from '../../context/SocketContext';
 import ChatWindow from '../../components/chat/ChatWindow';
+import '../../styles/Chat.css';
 
 const GroupChat = () => {
   const { groupId } = useParams();
