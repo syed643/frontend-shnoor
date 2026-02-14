@@ -1,5 +1,5 @@
 // src/pages/student/GroupChat.jsx
-import React, { useState, useEffect, useRef } from 'react';
+{/*import React, { useState, useEffect, useRef } from 'react';
 import { useParams, Link } from 'react-router-dom';
 import api from '../../api/axios';
 import { ArrowLeft, Users, Loader2, AlertCircle } from 'lucide-react';
@@ -21,7 +21,7 @@ const GroupChat = () => {
   // Auto-scroll to bottom when messages update
   useEffect(() => {
     messagesEndRef.current?.scrollIntoView({ behavior: 'smooth' });
-  }, [messages]);
+  }, [messages]); 
 
   // Fetch group details + messages
   useEffect(() => {
@@ -173,7 +173,6 @@ const GroupChat = () => {
 
   return (
     <div className="flex flex-col h-screen bg-gray-50">
-      {/* Header */}
       <div className="bg-white border-b shadow-sm px-5 py-4 flex items-center justify-between">
         <div className="flex items-center gap-4">
           <Link 
@@ -192,7 +191,6 @@ const GroupChat = () => {
         </div>
       </div>
 
-      {/* Chat Area */}
       <div className="flex-1 overflow-hidden">
         <ChatWindow
           activeChat={{
@@ -209,8 +207,203 @@ const GroupChat = () => {
         />
       </div>
 
-      {/* Scroll anchor */}
       <div ref={messagesEndRef} />
+    </div>
+  );
+};
+
+export default GroupChat*/}
+
+// src/pages/student/GroupChat.jsx
+import React, { useState, useEffect, useRef } from 'react';
+import { useParams, Link } from 'react-router-dom';
+import api from '../../api/axios';
+import { ArrowLeft, Users, Loader2, AlertCircle } from 'lucide-react';
+import { useSocket } from '../../context/SocketContext';
+import ChatWindow from '../../components/chat/ChatWindow';
+import '../../styles/Chat.css';
+
+const GroupChat = () => {
+  const { groupId } = useParams();
+  const { socket, dbUser } = useSocket();
+
+  const [group, setGroup] = useState(null);
+  const [messages, setMessages] = useState([]);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState(null);
+
+  const messagesEndRef = useRef(null);
+
+  // Auto scroll
+  useEffect(() => {
+    messagesEndRef.current?.scrollIntoView({ behavior: 'smooth' });
+  }, [messages]);
+
+  // Fetch group + messages
+  useEffect(() => {
+    const fetchGroupAndMessages = async () => {
+      if (!groupId || !dbUser?.id) return;
+
+      try {
+        setLoading(true);
+        setError(null);
+
+        const groupRes = await api.get(`/api/admingroups/${groupId}`);
+        setGroup(groupRes.data);
+
+        const msgRes = await api.get(`/api/admingroups/${groupId}/messages`);
+        setMessages(
+          msgRes.data.map(msg => ({
+            ...msg,
+            isMyMessage: msg.sender_id === dbUser.id,
+            senderName: msg.sender_name || 'Unknown',
+          }))
+        );
+      } catch (err) {
+        console.error(err);
+        setError('Failed to load group chat');
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    fetchGroupAndMessages();
+  }, [groupId, dbUser?.id]);
+
+  // Socket join + listen
+  useEffect(() => {
+    if (!socket || !groupId) return;
+
+    socket.emit('join_group', groupId);
+
+    const handleNewMessage = (msg) => {
+      setMessages(prev => [
+        ...prev,
+        {
+          ...msg,
+          isMyMessage: msg.sender_id === dbUser?.id,
+          senderName: msg.sender_name || 'Unknown',
+        },
+      ]);
+    };
+
+    socket.on('group_message', handleNewMessage);
+
+    return () => {
+      socket.emit('leave_group', groupId);
+      socket.off('group_message', handleNewMessage);
+    };
+  }, [socket, groupId, dbUser?.id]);
+
+  // Send message
+  const handleSendMessage = async (text, file = null) => {
+    if (!text.trim() && !file) return;
+
+    let attachmentFileId = null;
+    let attachmentName = null;
+    let attachmentType = null;
+    let attachmentUrl = null;
+
+    if (file) {
+      try {
+        const formData = new FormData();
+        formData.append('file', file);
+        const res = await api.post('/api/chats/upload', formData);
+        attachmentFileId = res.data.file_id;
+        attachmentName = file.name;
+        attachmentType = file.type;
+        attachmentUrl = URL.createObjectURL(file);
+      } catch {
+        alert('File upload failed');
+        return;
+      }
+    }
+
+    const payload = {
+      groupId,
+      text: text.trim(),
+      senderId: dbUser.id,
+      senderUid: dbUser.firebase_uid,
+      senderName: dbUser.full_name || 'You',
+      attachment_file_id: attachmentFileId,
+      attachment_name: attachmentName,
+      attachment_type: attachmentType,
+    };
+
+    // Optimistic UI
+    setMessages(prev => [
+      ...prev,
+      {
+        ...payload,
+        message_id: `temp-${Date.now()}`,
+        created_at: new Date().toISOString(),
+        sender_id: dbUser.id,
+        sender_name: payload.senderName,
+        isMyMessage: true,
+        attachment_url: attachmentUrl,
+      },
+    ]);
+
+    socket?.emit('send_message', payload);
+  };
+
+  // ── STATES ─────────────────────────────────────────────
+
+  if (loading) {
+    return (
+      <div className="chat-container no-chat-selected">
+        <Loader2 className="h-10 w-10 animate-spin" />
+      </div>
+    );
+  }
+
+  if (error || !group) {
+    return (
+      <div className="chat-container no-chat-selected">
+        <AlertCircle size={40} />
+        <p>{error || 'Group not found'}</p>
+        <Link to="/student/groups">Back to groups</Link>
+      </div>
+    );
+  }
+
+  // ── MAIN UI ─────────────────────────────────────────────
+
+  return (
+    <div className="chat-container">
+      {/* MAIN CHAT */}
+      <div className="chat-main">
+        {/* HEADER */}
+        <div className="chat-header">
+          <div style={{ display: 'flex', alignItems: 'center', gap: '12px' }}>
+            <Link to="/student/groups">
+              <ArrowLeft size={18} />
+            </Link>
+            <div>
+              <h3>{group.name}</h3>
+              <small style={{ display: 'flex', alignItems: 'center', gap: '6px' }}>
+                <Users size={14} />
+                {group.member_count || 0} members
+              </small>
+            </div>
+          </div>
+        </div>
+
+        {/* CHAT WINDOW */}
+        <ChatWindow
+          activeChat={{
+            id: groupId,
+            type: 'group',
+            name: group.name,
+            recipientName: group.name,
+          }}
+          messages={messages}
+          onSendMessage={handleSendMessage}
+          loadingMessages={false}
+        />
+
+        <div ref={messagesEndRef} />
+      </div>
     </div>
   );
 };
