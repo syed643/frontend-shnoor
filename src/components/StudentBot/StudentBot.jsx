@@ -149,7 +149,7 @@ const StudentBot = () => {
   };
 
   return (
-    <div className="fixed right-6 bottom-6 z-50">
+    <div className="fixed left-6 bottom-6 z-50">
       <style>{`
         @keyframes fadeInUp { from { transform: translateY(8px); opacity: 0 } to { transform: translateY(0); opacity: 1 } }
         @keyframes pulseRing { 0% { box-shadow: 0 0 0 0 rgba(24, 27, 155, 0.35); } 70% { box-shadow: 0 0 0 8px rgba(99,102,241,0); } 100% { box-shadow: 0 0 0 0 rgba(99,102,241,0); } }
@@ -191,11 +191,11 @@ const StudentBot = () => {
           </button>
 
           {/* small online indicator */}
-          <span className="absolute -right-0 -top-0 w-3.5 h-3.5 bg-emerald-400 rounded-full ring-2 ring-white animate-pulse" />
+          <span className="absolute -left-0 -top-0 w-3.5 h-3.5 bg-emerald-400 rounded-full ring-2 ring-white animate-pulse" />
 
           {/* Hover preview */}
           <div
-            className={`absolute -right-0 -top-20 w-40 bg-white rounded-lg shadow-xl p-2 z-50 transform origin-bottom-right ${showPreview ? "preview-fade show" : "preview-fade"}`}
+            className={`absolute -left-0 -top-20 w-40 bg-white rounded-lg shadow-xl p-2 z-50 transform origin-bottom-left ${showPreview ? "preview-fade show" : "preview-fade"}`}
           >
             <div className="w-full flex items-center gap-3">
               <div className="w-12 h-12 rounded-full bg-slate-900 overflow-hidden flex items-center justify-center">
