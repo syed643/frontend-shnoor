@@ -149,7 +149,7 @@ const StudentBot = () => {
   };
 
   return (
-    <div className="fixed left-6 bottom-6 z-50">
+    <div className="fixed left-6 bottom-24 z-50">
       <style>{`
         @keyframes fadeInUp { from { transform: translateY(8px); opacity: 0 } to { transform: translateY(0); opacity: 1 } }
         @keyframes pulseRing { 0% { box-shadow: 0 0 0 0 rgba(24, 27, 155, 0.35); } 70% { box-shadow: 0 0 0 8px rgba(99,102,241,0); } 100% { box-shadow: 0 0 0 0 rgba(99,102,241,0); } }
