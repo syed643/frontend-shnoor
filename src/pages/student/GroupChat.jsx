@@ -199,6 +199,7 @@ const GroupChat = () => {
             name: group.name,
             recipientName: group.name,
             member_count: group.member_count || 0,
+            groupType: 'admin',
             // Add more props if ChatWindow uses them (description, avatar, etc.)
           }}
           messages={messages}

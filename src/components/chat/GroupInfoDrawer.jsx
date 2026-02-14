@@ -12,6 +12,8 @@ const GroupInfoDrawer = ({ chat, isOpen, onClose, onLeaveSuccess, onDeleteSucces
     const [editDesc, setEditDesc] = useState(chat.description || "");
     const [saving, setSaving] = useState(false);
 
+    const isAdminGroup = chat?.groupType === 'admin';
+    const apiBase = isAdminGroup ? '/api/admingroups' : '/api/chats/groups';
     const currentUserMember = members.find(m => m.id === dbUser?.id);
     const isAdmin = currentUserMember?.group_role === 'admin';
 
@@ -26,7 +28,7 @@ const GroupInfoDrawer = ({ chat, isOpen, onClose, onLeaveSuccess, onDeleteSucces
     const fetchMembers = async () => {
         setLoading(true);
         try {
-            const res = await api.get(`/api/chats/groups/${chat.id}/members`);
+            const res = await api.get(`${apiBase}/${chat.id}/members`);
             setMembers(res.data);
         } catch (err) {
             console.error("Failed to fetch members", err);
@@ -38,7 +40,7 @@ const GroupInfoDrawer = ({ chat, isOpen, onClose, onLeaveSuccess, onDeleteSucces
     const handleSave = async () => {
         setSaving(true);
         try {
-            await api.put(`/api/chats/groups/${chat.id}`, {
+            await api.put(`${apiBase}/${chat.id}`, {
                 name: editName,
                 description: editDesc
             });
@@ -55,7 +57,7 @@ const GroupInfoDrawer = ({ chat, isOpen, onClose, onLeaveSuccess, onDeleteSucces
     const handlePromote = async (userId) => {
         if (!window.confirm("Make this member a Group Admin?")) return;
         try {
-            await api.put(`/api/chats/groups/${chat.id}/promote/${userId}`);
+            await api.put(`${apiBase}/${chat.id}/promote/${userId}`);
             fetchMembers();
         } catch (err) {
             alert(err.response?.data?.message || "Failed to promote member");
@@ -65,7 +67,7 @@ const GroupInfoDrawer = ({ chat, isOpen, onClose, onLeaveSuccess, onDeleteSucces
     const handleLeave = async () => {
         if (!window.confirm("Are you sure you want to leave this group?")) return;
         try {
-            await api.post(`/api/chats/groups/${chat.id}/leave`);
+            await api.post(`${apiBase}/${chat.id}/leave`);
             onClose();
             if (onLeaveSuccess) onLeaveSuccess(chat.id);
         } catch (err) {
@@ -76,7 +78,7 @@ const GroupInfoDrawer = ({ chat, isOpen, onClose, onLeaveSuccess, onDeleteSucces
     const handleDelete = async () => {
         if (!window.confirm("CRITICAL: This will delete the group and all messages for everyone. Continue?")) return;
         try {
-            await api.delete(`/api/chats/groups/${chat.id}`);
+            await api.delete(`${apiBase}/${chat.id}`);
             onClose();
             if (onDeleteSuccess) onDeleteSuccess(chat.id);
         } catch (err) {
@@ -87,7 +89,7 @@ const GroupInfoDrawer = ({ chat, isOpen, onClose, onLeaveSuccess, onDeleteSucces
     const handleRemoveMember = async (userId) => {
         if (!window.confirm("Remove this member from the group?")) return;
         try {
-            await api.delete(`/api/chats/groups/${chat.id}/members/${userId}`);
+            await api.delete(`${apiBase}/${chat.id}/members/${userId}`);
             fetchMembers();
         } catch (err) {
             alert(err.response?.data?.message || "Failed to remove member");

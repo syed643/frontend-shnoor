@@ -43,6 +43,7 @@ const ChatWithStudents = () => {
       lastMessage: 'Group chat',
       unread: 0,
       memberCount: g.member_count || 0,
+      groupType: 'admin',
     }));
 
     setChats(adminGroups);
