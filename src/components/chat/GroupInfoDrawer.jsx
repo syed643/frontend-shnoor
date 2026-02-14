@@ -7,13 +7,17 @@ const GroupInfoDrawer = ({ chat, isOpen, onClose, onLeaveSuccess, onDeleteSucces
     const { dbUser } = useSocket();
     const [members, setMembers] = useState([]);
     const [loading, setLoading] = useState(false);
+    const [errorMsg, setErrorMsg] = useState(null);
+    const [resolvedBase, setResolvedBase] = useState(null);
     const [isEditing, setIsEditing] = useState(false);
     const [editName, setEditName] = useState(chat.name);
     const [editDesc, setEditDesc] = useState(chat.description || "");
     const [saving, setSaving] = useState(false);
 
     const isAdminGroup = chat?.groupType === 'admin';
-    const apiBase = isAdminGroup ? '/api/admingroups' : '/api/chats/groups';
+    const primaryBase = isAdminGroup ? '/api/admingroups' : '/api/chats/groups';
+    const fallbackBase = '/api/admingroups';
+    const apiBase = resolvedBase || primaryBase;
     const currentUserMember = members.find(m => m.id === dbUser?.id);
     const isAdmin = currentUserMember?.group_role === 'admin';
 
@@ -26,12 +30,31 @@ const GroupInfoDrawer = ({ chat, isOpen, onClose, onLeaveSuccess, onDeleteSucces
     }, [isOpen, chat]);
 
     const fetchMembers = async () => {
+        if (!chat?.id) return;
         setLoading(true);
+        setErrorMsg(null);
+
         try {
-            const res = await api.get(`${apiBase}/${chat.id}/members`);
-            setMembers(res.data);
+            const res = await api.get(`${primaryBase}/${chat.id}/members`);
+            setMembers(res.data || []);
+            setResolvedBase(primaryBase);
         } catch (err) {
-            console.error("Failed to fetch members", err);
+            const status = err?.response?.status;
+            const shouldFallback = !isAdminGroup && (status === 403 || status === 404);
+
+            if (shouldFallback) {
+                try {
+                    const fallbackRes = await api.get(`${fallbackBase}/${chat.id}/members`);
+                    setMembers(fallbackRes.data || []);
+                    setResolvedBase(fallbackBase);
+                } catch (fallbackErr) {
+                    console.error("Failed to fetch members (fallback)", fallbackErr);
+                    setErrorMsg(fallbackErr?.response?.data?.message || "Failed to load members");
+                }
+            } else {
+                console.error("Failed to fetch members", err);
+                setErrorMsg(err?.response?.data?.message || "Failed to load members");
+            }
         } finally {
             setLoading(false);
         }
@@ -184,6 +207,8 @@ const GroupInfoDrawer = ({ chat, isOpen, onClose, onLeaveSuccess, onDeleteSucces
                         <div className="space-y-1">
                             {loading ? (
                                 <p className="text-sm text-slate-400 italic text-center py-4">Loading members...</p>
+                            ) : errorMsg ? (
+                                <p className="text-sm text-red-500 text-center py-4">{errorMsg}</p>
                             ) : (
                                 members.map(member => (
                                     <div key={member.id} className="flex items-center gap-3 p-3 hover:bg-slate-50 rounded-2xl transition-all border border-transparent hover:border-slate-100 cursor-default group/member">
