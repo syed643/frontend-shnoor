@@ -370,40 +370,35 @@ const GroupChat = () => {
   // ── MAIN UI ─────────────────────────────────────────────
 
   return (
-    <div className="chat-container">
-      {/* MAIN CHAT */}
-      <div className="chat-main">
-        {/* HEADER */}
-        <div className="chat-header">
-          <div style={{ display: 'flex', alignItems: 'center', gap: '12px' }}>
-            <Link to="/student/groups">
-              <ArrowLeft size={18} />
-            </Link>
-            <div>
-              <h3>{group.name}</h3>
-              <small style={{ display: 'flex', alignItems: 'center', gap: '6px' }}>
-                <Users size={14} />
-                {group.member_count || 0} members
-              </small>
-            </div>
-          </div>
-        </div>
+    <div className="student-chat-page p-4 bg-slate-50/20 min-h-screen">
+      {/* Back Button */}
+      <div className="mb-4">
+        <Link 
+          to="/student/groups" 
+          className="inline-flex items-center gap-2 px-4 py-2 bg-white rounded-lg hover:bg-gray-50 transition-colors text-gray-700 shadow-sm border border-gray-200"
+        >
+          <ArrowLeft size={18} />
+          <span className="font-medium">Back to Groups</span>
+        </Link>
+      </div>
 
-        {/* CHAT WINDOW */}
+      {/* Chat Container - matches StudentChat.jsx structure */}
+      <div className="chat-container">
         <ChatWindow
           activeChat={{
             id: groupId,
             type: 'group',
             name: group.name,
             recipientName: group.name,
+            member_count: group.member_count || 0,
           }}
           messages={messages}
           onSendMessage={handleSendMessage}
           loadingMessages={false}
         />
-
-        <div ref={messagesEndRef} />
       </div>
+
+      <div ref={messagesEndRef} />
     </div>
   );
 };
