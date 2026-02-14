@@ -523,7 +523,7 @@ useEffect(() => {
               </button>
               <button
                 onClick={handleCreateGroup}
-                disabled={creatingGroup || !groupName.trim() || !selectedCollege || loadingColleges}
+                disabled={creatingGroup || !groupName.trim() || (addMode === 'college' && (!selectedCollege || loadingColleges)) || (addMode === 'manual' && selectedMembers.length === 0)}
                 className="px-6 py-3 bg-gradient-to-r from-orange-500 to-amber-500 hover:from-orange-600 hover:to-amber-600 text-white rounded-lg font-medium shadow-sm transition-all disabled:opacity-50 disabled:cursor-not-allowed flex items-center gap-2"
               >
                 {creatingGroup && <Loader2 className="h-5 w-5 animate-spin" />}
