@@ -33,56 +33,22 @@ const ChatWithStudents = () => {
     setLoadingChats(true);
     setError(null);
 
-    // 1-on-1 chats (existing)
-    const chatsRes = await api.get('/api/chats');
-    const oneOnOneChats = chatsRes.data.map(c => ({
-      id: c.chat_id,
-      type: '1on1',
-      name: c.recipient_name,
-      recipientName: c.recipient_name,
-      recipientId: c.recipient_id,
-      lastMessage: c.last_message || 'No messages yet',
-      unread: c.unread_count || 0,
-    }));
-
-    // Available students for new 1-on-1 (existing)
-    const studentsRes = await api.get('/api/chats/available-students');
-    const allStudents = studentsRes.data;
-
-    const mergedOneOnOne = [...oneOnOneChats];
-    allStudents.forEach(s => {
-      if (!oneOnOneChats.some(c => c.recipientId === s.user_id)) {
-        mergedOneOnOne.push({
-          id: `new_${s.user_id}`,
-          type: '1on1',
-          name: s.full_name || s.email?.split('@')[0],
-          recipientName: s.full_name || s.email?.split('@')[0],
-          recipientId: s.user_id,
-          lastMessage: 'Start a conversation',
-          unread: 0,
-        });
-      }
-    });
-
-    // ADD THIS: Fetch all groups for admin
+    // Fetch only group chats for admin
     const groupsRes = await api.get('/api/admingroups');
     const adminGroups = groupsRes.data.map(g => ({
       id: g.group_id,
       type: 'group',
       name: g.name,
       recipientName: g.name,
-      lastMessage: 'Group chat', // can improve later with real last msg
+      lastMessage: 'Group chat',
       unread: 0,
       memberCount: g.member_count || 0,
     }));
 
-    // Combine both
-    const allChats = [...mergedOneOnOne, ...adminGroups];
-
-    setChats(allChats);
+    setChats(adminGroups);
   } catch (err) {
-    console.error('Failed to load admin data:', err);
-    setError('Failed to load chats & groups');
+    console.error('Failed to load admin groups:', err);
+    setError('Failed to load groups');
   } finally {
     setLoadingChats(false);
   }
