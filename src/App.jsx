@@ -68,6 +68,7 @@ import MyGroups from "./pages/student/MyGroups";
 import GroupChat from "./pages/student/GroupChat";
 import PrivacyPolicy from "./pages/PrivacyPolicy";
 import TermsAndConditions from "./pages/TermsAndConditions";
+import AddStudent from "./pages/admin/AddStudent";
 // import Leaderboard from './pages/student/Leaderboard';
 
 function App() {
@@ -98,6 +99,7 @@ function App() {
               <Route index element={<Navigate to="dashboard" replace />} />
               <Route path="dashboard" element={<AdminDashboard />} />
               <Route path="add-instructor" element={<AddInstructor />} />
+              <Route path="add-student" element={<AddStudent />} />
               <Route path="approve-users" element={<ApproveUsers />} />
               <Route path="approve-courses" element={<ApproveCourses />} />
               <Route path="assign-course" element={<AssignCourse />} />

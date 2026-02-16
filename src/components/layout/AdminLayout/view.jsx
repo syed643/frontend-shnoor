@@ -94,6 +94,11 @@ const AdminLayoutView = ({
                 icon={GraduationCap}
                 label="Add Instructor"
               />
+              <NavItem
+                path="add-student"
+                icon={UserPlus}
+                label="Add Student"
+              />
             </ul>
 
             <div className="text-xs font-bold text-slate-400 uppercase tracking-wider mb-3 px-2">
