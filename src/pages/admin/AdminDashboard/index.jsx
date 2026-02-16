@@ -3,6 +3,7 @@ import { useNavigate } from "react-router-dom";
 import { auth } from "../../../auth/firebase";
 import api from "../../../api/axios";
 import AdminDashboardView from "./view";
+import DateRangeFilter from "../../../components/DateRangeFilter";
 
 const AdminDashboard = () => {
   const navigate = useNavigate();
@@ -17,16 +18,17 @@ const AdminDashboard = () => {
 
   const [searchResults, setSearchResults] = useState([]);
   const [searchLoading, setSearchLoading] = useState(false);
+  const [dateRange, setDateRange] = useState(null);
   const debounceTimer = useRef(null);
 
   /* =========================
      FETCH DASHBOARD STATS
   ========================= */
   useEffect(() => {
-    fetchStats();
-  }, []);
+    fetchStats(dateRange);
+  }, [dateRange]);
 
-  const fetchStats = async () => {
+  const fetchStats = async (range) => {
     try {
       setLoading(true);
 
@@ -40,6 +42,7 @@ const AdminDashboard = () => {
         headers: {
           Authorization: `Bearer ${token}`,
         },
+        params: range || {},
       });
 
       setStats(res.data);
@@ -128,6 +131,8 @@ const AdminDashboard = () => {
       goToAddInstructor={goToAddInstructor}
       goToApproveCourses={goToApproveCourses}
       goToAssignCourse={goToAssignCourse}
+      dateRange={dateRange}
+      setDateRange={setDateRange}
     />
   );
 };

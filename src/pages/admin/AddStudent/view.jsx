@@ -1,12 +1,12 @@
 import React from 'react';
-import { User, Mail, BookOpen, Phone, Info, GraduationCap, CheckCircle2, Upload, Download, FileText, AlertCircle, X, FileCheck, Loader2 } from 'lucide-react';
+import { User, Mail, Phone, Info, Users, CheckCircle2, Upload, Download, FileText, AlertCircle, X, FileCheck, Loader2 } from 'lucide-react';
 
-const AddInstructorView = ({ 
+const AddStudentView = ({ 
     loading, 
     data, 
     handleChange, 
     handleSubmit, 
-    navigate,
+    navigate, 
     showSuccessPopup, 
     setShowSuccessPopup,
     activeTab,
@@ -26,7 +26,7 @@ const AddInstructorView = ({
             <div className="flex flex-col items-center gap-4">
                 <div className="w-12 h-12 border-4 border-[var(--color-indigo-600)] border-t-transparent rounded-full animate-spin"></div>
                 <p className="text-slate-500 font-medium tracking-tight">
-                    {activeTab === 'bulk' ? 'Processing CSV file...' : 'Adding instructor...'}
+                    {activeTab === 'bulk' ? 'Processing CSV file...' : 'Adding student...'}
                 </p>
             </div>
         </div>
@@ -36,12 +36,12 @@ const AddInstructorView = ({
         <div className="p-2 w-full h-full flex flex-col font-sans">
             <div className="bg-white rounded-2xl shadow-sm border border-slate-200 overflow-hidden">
                 <div className="p-6 border-b border-slate-100 flex items-center gap-4 bg-slate-50/50">
-                    <div className="w-12 h-12 rounded-xl bg-indigo-50 text-[var(--color-indigo-600)] flex items-center justify-center shadow-sm border border-indigo-100">
-                        <GraduationCap size={24} />
+                    <div className="w-12 h-12 rounded-xl bg-blue-50 text-[var(--color-indigo-600)] flex items-center justify-center shadow-sm border border-blue-100">
+                        <Users size={24} />
                     </div>
                     <div>
-                        <h2 className="text-xl font-bold text-slate-900 tracking-tight">Instructor Management</h2>
-                        <p className="text-base text-slate-500 font-medium">Add instructors individually or in bulk.</p>
+                        <h2 className="text-xl font-bold text-slate-900 tracking-tight">Student Management</h2>
+                        <p className="text-base text-slate-500 font-medium">Add students individually or in bulk.</p>
                     </div>
                 </div>
 
@@ -57,7 +57,7 @@ const AddInstructorView = ({
                             }`}
                         >
                             <User className="inline mr-2" size={16} />
-                            Single Instructor
+                            Single Student
                         </button>
                         <button
                             onClick={() => setActiveTab('bulk')}
@@ -73,7 +73,7 @@ const AddInstructorView = ({
                     </div>
                 </div>
 
-                {/* Single Instructor Form */}
+                {/* Single Student Form */}
                 {activeTab === 'single' && (
                     <form onSubmit={handleSubmit} className="p-8">
                         <div className="grid grid-cols-1 md:grid-cols-2 gap-8 mb-8">
@@ -86,7 +86,7 @@ const AddInstructorView = ({
                                         value={data.fullName}
                                         onChange={handleChange}
                                         required
-                                        placeholder="Enter User name"
+                                        placeholder="Enter student name"
                                         className="input-field !pl-12 text-base"
                                     />
                                 </div>
@@ -102,22 +102,7 @@ const AddInstructorView = ({
                                         value={data.email}
                                         onChange={handleChange}
                                         required
-                                        placeholder="Enter your gmail"
-                                        className="input-field !pl-12 text-base"
-                                    />
-                                </div>
-                            </div>
-
-                            <div className="space-y-2">
-                                <label className="text-xs font-black text-slate-500 uppercase tracking-[0.2em]">Subject / Specialization</label>
-                                <div className="relative">
-                                    <BookOpen className="absolute left-4 top-1/2 -translate-y-1/2 text-slate-400" size={20} />
-                                    <input
-                                        name="subject"
-                                        value={data.subject}
-                                        onChange={handleChange}
-                                        required
-                                        placeholder="Mathematics, ReactJS..."
+                                        placeholder="Enter email address"
                                         className="input-field !pl-12 text-base"
                                     />
                                 </div>
@@ -165,7 +150,7 @@ const AddInstructorView = ({
                                 type="submit"
                                 className="px-8 py-3 bg-[var(--color-primary)] hover:bg-slate-800 text-white rounded-xl font-bold shadow-lg shadow-slate-900/10 transform transition-all active:scale-[0.98] text-sm"
                             >
-                                Add Instructor
+                                Add Student
                             </button>
                         </div>
                     </form>
@@ -182,7 +167,7 @@ const AddInstructorView = ({
                             </h3>
                             <ul className="text-sm text-blue-800 space-y-1 ml-6 list-disc">
                                 <li>Download the CSV template below</li>
-                                <li>Fill in instructor details (required: fullName, email, subject)</li>
+                                <li>Fill in student details (required: fullName, email)</li>
                                 <li>Phone and bio are optional fields</li>
                                 <li>Email addresses must be unique</li>
                                 <li>Maximum file size: 5MB</li>
@@ -207,14 +192,14 @@ const AddInstructorView = ({
                             </label>
                             <div className="relative">
                                 <input
-                                    id="csv-file-input"
+                                    id="csv-file-input-student"
                                     type="file"
                                     accept=".csv"
                                     onChange={handleFileSelect}
                                     className="hidden"
                                 />
                                 <label
-                                    htmlFor="csv-file-input"
+                                    htmlFor="csv-file-input-student"
                                     className="flex flex-col items-center justify-center w-full h-48 border-2 border-dashed border-slate-300 rounded-xl cursor-pointer hover:border-indigo-500 hover:bg-indigo-50/50 transition-all"
                                 >
                                     <Upload className="w-12 h-12 text-slate-400 mb-3" />
@@ -342,8 +327,8 @@ const AddInstructorView = ({
                         <div className="w-16 h-16 bg-green-100 text-green-600 rounded-full flex items-center justify-center mx-auto mb-4">
                             <CheckCircle2 size={32} />
                         </div>
-                        <h3 className="text-xl font-bold text-slate-900 mb-2">Instructor Added Successfully!</h3>
-                        <p className="text-slate-500 mb-6">The instructor has been created and an invite email has been sent.</p>
+                        <h3 className="text-xl font-bold text-slate-900 mb-2">Student Added Successfully!</h3>
+                        <p className="text-slate-500 mb-6">The student has been created and an invite email has been sent.</p>
                         <button
                             onClick={() => setShowSuccessPopup()}
                             className="w-full bg-[var(--color-primary)] hover:bg-slate-800 text-white font-bold py-3 rounded-xl transition-all shadow-lg shadow-indigo-500/20"
@@ -357,4 +342,4 @@ const AddInstructorView = ({
     );
 };
 
-export default AddInstructorView;
+export default AddStudentView;

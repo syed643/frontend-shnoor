@@ -2,20 +2,19 @@ import { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { auth } from "../../../auth/firebase";
 import api from "../../../api/axios";
-import AddInstructorView from "./view";
+import AddStudentView from "./view";
 
-const AddInstructor = () => {
+const AddStudent = () => {
   const navigate = useNavigate();
   const [activeTab, setActiveTab] = useState("single"); // 'single' or 'bulk'
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState("");
   const [showSuccessPopup, setShowSuccessPopup] = useState(false);
 
-  // Single instructor state
+  // Single student state
   const [data, setData] = useState({
     fullName: "",
     email: "",
-    subject: "",
     phone: "",
     bio: "",
   });
@@ -37,11 +36,10 @@ const AddInstructor = () => {
       const token = await auth.currentUser.getIdToken();
 
       await api.post(
-        "/api/users/instructors",
+        "/api/users/students",
         {
           fullName: data.fullName,
           email: data.email,
-          subject: data.subject,
           phone: data.phone,
           bio: data.bio,
         },
@@ -53,8 +51,8 @@ const AddInstructor = () => {
       );
       setShowSuccessPopup(true);
     } catch (err) {
-      console.error("Error adding instructor:", err);
-      setError(err.response?.data?.message || "Failed to add instructor");
+      console.error("Error adding student:", err);
+      setError(err.response?.data?.message || "Failed to add student");
     } finally {
       setLoading(false);
     }
@@ -94,7 +92,7 @@ const AddInstructor = () => {
       const formData = new FormData();
       formData.append("csv", file);
 
-      const response = await api.post("/api/users/instructors/bulk", formData, {
+      const response = await api.post("/api/users/students/bulk", formData, {
         headers: {
           Authorization: `Bearer ${token}`,
           "Content-Type": "multipart/form-data",
@@ -104,7 +102,7 @@ const AddInstructor = () => {
       setBulkResults(response.data);
       setFile(null);
       
-      const fileInput = document.getElementById("csv-file-input");
+      const fileInput = document.getElementById("csv-file-input-student");
       if (fileInput) {
         fileInput.value = "";
       }
@@ -118,16 +116,16 @@ const AddInstructor = () => {
   };
 
   const handleDownloadTemplate = () => {
-    const csvContent = `fullName,email,subject,phone,bio
-"John Doe","john.doe@example.com","Mathematics & Statistics","+1-555-0100","PhD in Applied Mathematics with 15 years of teaching experience"
-"Jane Smith","jane.smith@company.com","Web Development","","Full-stack developer specializing in React and Node.js"
-"Dr. Ahmad Khan","ahmad@university.edu","Data Science","+44-20-1234-5678","Expert in machine learning and statistical analysis"`;
+    const csvContent = `fullName,email,phone,bio
+"John Doe","john.doe@student.edu","+1-555-0100","Passionate about learning and technology"
+"Jane Smith","jane.smith@college.edu","","Interested in computer science and mathematics"
+"Ahmad Khan","ahmad.khan@university.edu","+44-20-1234-5678","Aspiring software engineer"`;
 
     const blob = new Blob([csvContent], { type: "text/csv" });
     const url = window.URL.createObjectURL(blob);
     const a = document.createElement("a");
     a.href = url;
-    a.download = "instructor_template.csv";
+    a.download = "student_template.csv";
     document.body.appendChild(a);
     a.click();
     document.body.removeChild(a);
@@ -138,7 +136,7 @@ const AddInstructor = () => {
     setFile(null);
     setBulkResults(null);
     setError("");
-    const fileInput = document.getElementById("csv-file-input");
+    const fileInput = document.getElementById("csv-file-input-student");
     if (fileInput) fileInput.value = "";
   };
 
@@ -152,7 +150,7 @@ const AddInstructor = () => {
   };
 
   return (
-    <AddInstructorView
+    <AddStudentView
       activeTab={activeTab}
       setActiveTab={setActiveTab}
       data={data}
@@ -174,4 +172,4 @@ const AddInstructor = () => {
   );
 };
 
-export default AddInstructor;
+export default AddStudent;

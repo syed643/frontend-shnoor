@@ -9,12 +9,15 @@ export const InstructorDashboard = () => {
     const [stats, setStats] = useState({
         myCourses: 0,
         totalStudents: 0,
-        avgRating: 0
+        avgRating: 0,
+        coursesChange: 0,
+      studentsChange: 0
     });
     const [loading, setLoading] = useState(true);
     const [userName, setUserName] = useState('Instructor');
-      const [searchResults, setSearchResults] = useState([]);
+    const [searchResults, setSearchResults] = useState([]);
     const [searchLoading, setSearchLoading] = useState(false);
+    const [dateRange, setDateRange] = useState(null);
     const debounceTimer = useRef(null);
   useEffect(() => {
     const fetchDashboardStats = async () => {
@@ -35,6 +38,8 @@ export const InstructorDashboard = () => {
           myCourses: Number(courseRes.data.total_courses),
           totalStudents: Number(studentRes.data.total_students),
           avgRating: 4.8, // keep static
+             coursesChange: courseRes.data.coursesChange || 0,
+          studentsChange: studentRes.data.studentsChange || 0
         });
       } catch (err) {
         console.error("Dashboard stats error:", err);
@@ -113,6 +118,8 @@ export const InstructorDashboard = () => {
             searchLoading={searchLoading}
             onSearch={handleSearch}
             navigate={navigate}
+            dateRange={dateRange}
+            setDateRange={setDateRange}
         />
     );
 };
