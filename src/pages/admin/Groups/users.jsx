@@ -4,7 +4,7 @@ import { useParams } from "react-router-dom";
 import api from "../../../api/axios";
 
 const GroupUsers = () => {
-  const { id } = useParams();
+  const { groupId } = useParams();
   const [users, setUsers] = useState([]);
   const [allStudents, setAllStudents] = useState([]);
   const [group, setGroup] = useState(null);
@@ -29,11 +29,11 @@ const GroupUsers = () => {
     setError(null);
     try {
       setLoading(true);
-      console.log('Fetching group users for id:', id);
+      console.log('Fetching group users for id:', groupId);
       const [usersRes, studentsRes, groupRes] = await Promise.all([
-        api.get(`/api/admin/groups/${id}/users`),
+        api.get(`/api/admin/groups/${groupId}/users`),
         api.get(`/api/admin/users`),
-        api.get(`/api/admin/groups/${id}`)
+        api.get(`/api/admin/groups/${groupId}`)
       ]);
       setUsers(usersRes.data || []);
       setAllStudents(studentsRes.data.filter(u => u.role === 'student' && u.status === 'active') || []);
@@ -44,7 +44,7 @@ const GroupUsers = () => {
     } finally {
       setLoading(false);
     }
-  }, [id]);
+  }, [groupId]);
 
   useEffect(() => {
     fetchData();
@@ -73,7 +73,7 @@ const GroupUsers = () => {
         }
       }
 
-      await api.post(`/api/admin/groups/${id}/users/${selectedStudent.user_id}`, data);
+      await api.post(`/api/admin/groups/${groupId}/users/${selectedStudent.user_id}`, data);
       setShowAddModal(false);
       setSelectedStudent(null);
       fetchData(); // Refresh
@@ -88,7 +88,7 @@ const GroupUsers = () => {
     if (isInGroup) {
       setProcessing(userId);
       try {
-        await api.delete(`/api/admin/groups/${id}/users/${userId}`);
+        await api.delete(`/api/admin/groups/${groupId}/users/${userId}`);
         fetchData(); // Refresh
       } catch (err) {
         alert(err.response?.data?.message || `Failed to remove student`);

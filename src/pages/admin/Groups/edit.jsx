@@ -4,7 +4,7 @@ import { useNavigate, useParams } from "react-router-dom";
 import api from "../../../api/axios";
 
 const EditGroup = () => {
-  const { id } = useParams();
+  const { groupId } = useParams();
   const navigate = useNavigate();
   
   const [loading, setLoading] = useState(true);
@@ -23,7 +23,7 @@ const EditGroup = () => {
       setLoading(true);
       setError(null);
       try {
-        const res = await api.get(`/api/admin/groups/${id}`);
+        const res = await api.get(`/api/admin/groups/${groupId}`);
         
         const group = res.data;
         
@@ -48,10 +48,10 @@ const EditGroup = () => {
       }
     };
 
-    if (id) {
+    if (groupId) {
       fetchGroup();
     }
-  }, [id]);
+  }, [groupId]);
 
   const handleChange = (e) => {
     const { name, value } = e.target;
@@ -95,7 +95,7 @@ const EditGroup = () => {
         payload.end_date = formData.end_date;
       }
 
-      const res = await api.put(`/api/admin/groups/${id}`, payload);
+      const res = await api.put(`/api/admin/groups/${groupId}`, payload);
       
       navigate("/admin/groups");
     } catch (err) {
