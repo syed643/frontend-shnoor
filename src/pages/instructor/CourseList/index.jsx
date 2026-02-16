@@ -98,6 +98,30 @@ export const CourseList = () => {
     }
   };
 
+  const unarchiveCourse = async (courseId) => {
+    if (!window.confirm("Unarchive this course?")) return;
+
+    try {
+      const token = await auth.currentUser.getIdToken();
+      await api.patch(
+        `/api/courses/${courseId}/unarchive`,
+        {},
+        {
+          headers: { Authorization: `Bearer ${token}` },
+        }
+      );
+
+      setCourses((prev) =>
+        prev.map((c) =>
+          c.courses_id === courseId ? { ...c, status: "approved" } : c
+        )
+      );
+    } catch (err) {
+      console.error("Failed to unarchive course", err);
+      alert("Failed to unarchive course");
+    }
+  };
+
   return (
     <CourseListView
       loading={loading}
@@ -108,6 +132,7 @@ export const CourseList = () => {
       onEdit={editCourse}
       onDelete={deleteCourse}
       onArchive={archiveCourse}
+      onUnarchive={unarchiveCourse}
       onCreate={() => navigate("/instructor/add-course")}
     />
   );
