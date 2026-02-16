@@ -107,10 +107,10 @@ const InstructorDashboardView = ({
   };
 
   return (
-    <div className="min-h-screen bg-[#f8fafc] px-6 py-4 font-sans text-primary-900">
+    <div className="min-h-screen bg-[#f8fafc] px-6 py-6 font-sans text-primary-900">
       <div className="max-w-7xl mx-auto space-y-10">
         {/* HEADER */}
-        <div className="flex justify-between items-end border-b border-slate-200 pb-6">
+        <div className="flex flex-col gap-4 lg:flex-row lg:items-end lg:justify-between border-b border-slate-200 pb-6">
           <div>
             <h1 className="text-3xl font-semibold tracking-tight">
               Instructor Portal
@@ -132,8 +132,8 @@ const InstructorDashboardView = ({
                 />
                 <input
                   type="text"
-                  className="pl-10 pr-10 py-2 bg-white border border-slate-200 rounded-lg text-sm focus:ring-2 focus:ring-indigo-500/20 focus:border-indigo-500 w-full transition-all"
-                  placeholder="Search your courses & modules..."
+                  className="pl-10 pr-10 py-2.5 bg-white border border-slate-200 rounded-xl text-sm focus:ring-2 focus:ring-indigo-500/20 focus:border-indigo-500 w-full transition-all shadow-sm"
+                  placeholder="Search parameters..."
                   value={searchQuery}
                   onChange={handleSearchChange}
                   onFocus={() => setIsSearchExpanded(true)}
@@ -253,7 +253,6 @@ const InstructorDashboardView = ({
                 </div>
               )}
             </div>
-            <DateRangeFilter value={dateRange} onChange={setDateRange} />
           </div>
         </div>
 
@@ -294,7 +293,7 @@ const InstructorDashboardView = ({
         {/* MAIN GRID */}
         <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
           {/* ENGAGEMENT TRENDS */}
-          <div className="lg:col-span-2 bg-white rounded-lg border border-slate-200 shadow-sm p-6 h-[380px] flex flex-col">
+          <div className="lg:col-span-2 bg-white rounded-xl border border-slate-200 shadow-sm p-6 h-[380px] flex flex-col">
             <div className="flex justify-between items-center mb-4">
               <h3 className="font-semibold text-base">Engagement Trends</h3>
               <span className="text-xs text-indigo-600">Student Activity</span>
@@ -309,38 +308,57 @@ const InstructorDashboardView = ({
             </div>
           </div>
 
-          {/* QUICK ACTIONS */}
-          <div className="bg-white rounded-lg border border-slate-200 shadow-sm p-6 h-[380px]">
-            <h3 className="font-semibold text-base mb-6">Quick Actions</h3>
-
-            <div className="space-y-4">
-              <ActionButton
-                icon={<Plus size={18} />}
-                title="Create New Course"
-                description="Start building content"
-                onClick={() => navigate("/instructor/add-course")}
-                color="indigo"
-              />
-              <ActionButton
-                icon={<Folder size={18} />}
-                title="Manage Courses"
-                description="View and edit library"
-                onClick={() => navigate("/instructor/courses")}
-                color="amber"
-              />
-              <ActionButton
-                icon={<MessageSquare size={18} />}
-                title="Message Students"
-                description="Broadcast announcements"
-                onClick={() => navigate("/instructor/chat")}
-                color="emerald"
-              />
+          <div className="flex flex-col gap-6">
+            {/* DOWNLOAD ANALYTICS */}
+            <div className="bg-white rounded-xl border border-slate-200 shadow-sm p-6">
+              <div className="flex items-start justify-between">
+                <div>
+                  <h3 className="text-sm font-semibold text-slate-900 uppercase tracking-wide">
+                    Download Analytics
+                  </h3>
+                  <p className="text-xs text-slate-500 mt-1">
+                    Export performance data by date.
+                  </p>
+                </div>
+              </div>
+              <div className="mt-4 rounded-lg border border-slate-200 p-4">
+                <DateRangeFilter value={dateRange} onChange={setDateRange} />
+              </div>
               <button
                 onClick={handleDownload}
-                className="w-full mt-4 py-3 bg-primary-900 text-white rounded-lg text-sm font-bold"
+                className="w-full mt-4 py-2.5 bg-indigo-600 hover:bg-indigo-700 text-white rounded-lg text-sm font-semibold"
               >
                 Download Analytics
               </button>
+            </div>
+
+            {/* QUICK ACTIONS */}
+            <div className="bg-white rounded-xl border border-slate-200 shadow-sm p-6">
+              <h3 className="font-semibold text-base mb-6">Quick Actions</h3>
+
+              <div className="space-y-4">
+                <ActionButton
+                  icon={<Plus size={18} />}
+                  title="Create New Course"
+                  description="Start building content"
+                  onClick={() => navigate("/instructor/add-course")}
+                  color="indigo"
+                />
+                <ActionButton
+                  icon={<Folder size={18} />}
+                  title="Manage Courses"
+                  description="View and edit library"
+                  onClick={() => navigate("/instructor/courses")}
+                  color="amber"
+                />
+                <ActionButton
+                  icon={<MessageSquare size={18} />}
+                  title="Message Students"
+                  description="Broadcast announcements"
+                  onClick={() => navigate("/instructor/chat")}
+                  color="emerald"
+                />
+              </div>
             </div>
           </div>
         </div>
@@ -406,15 +424,17 @@ export default InstructorDashboardView;
 /* ---------- SUB COMPONENTS ---------- */
 
 const KpiCard = ({ title, value, trend, isPositive, icon }) => (
-  <div className="bg-white rounded-lg border border-slate-200 shadow-sm p-6 h-[140px] flex flex-col justify-between">
-    <div className="flex justify-between">
+  <div className="bg-white rounded-xl border border-slate-200 shadow-sm p-6 h-[140px] flex flex-col justify-between">
+    <div className="flex justify-between items-start">
       <div>
         <p className="text-xs font-semibold uppercase text-slate-500">
           {title}
         </p>
-        <h3 className="text-3xl font-semibold mt-1">{value}</h3>
+        <h3 className="text-3xl font-semibold mt-1 text-slate-900">
+          {value}
+        </h3>
       </div>
-      <div className="text-slate-400">{icon}</div>
+      <div className="text-slate-300">{icon}</div>
     </div>
     <div className="flex items-center gap-1.5 text-sm mt-3">
       {isPositive ? (
