@@ -27,6 +27,8 @@ const ChatWithStudents = () => {
   const [colleges, setColleges] = useState([]);
   const [selectedCollege, setSelectedCollege] = useState('');
   const [loadingColleges, setLoadingColleges] = useState(false);
+  const [students, setStudents] = useState([]);
+  const [loadingStudents, setLoadingStudents] = useState(false);
   const fetchExecuted = useRef(false);
   const fetchData = async () => {
   try {
@@ -301,6 +303,20 @@ useEffect(() => {
   }
 }, [showGroupModal, addMode]);
 
+// Fetch students only when needed for manual selection
+useEffect(() => {
+  if (showGroupModal && addMode === 'manual') {
+    setLoadingStudents(true);
+    api.get('/api/admin/users')
+      .then(res => {
+        const list = Array.isArray(res.data) ? res.data : [];
+        setStudents(list.filter(u => u.role === 'student' && u.status === 'active'));
+      })
+      .catch(err => console.error('Failed to load students:', err))
+      .finally(() => setLoadingStudents(false));
+  }
+}, [showGroupModal, addMode]);
+
  return (
     <div className="flex h-screen bg-gray-50">
       <div className="w-80 md:w-96 flex-shrink-0 border-r border-gray-200 bg-white flex flex-col">
@@ -453,25 +469,32 @@ useEffect(() => {
         Select Students <span className="text-red-500">*</span>
       </label>
       <div className="max-h-64 overflow-y-auto border border-gray-200 rounded-lg p-3 bg-gray-50 space-y-2">
-        {chats
-          .filter(chat => chat.type === '1on1')
-          .map(student => (
-            <label key={student.recipientId} className="flex items-center gap-3 p-3 hover:bg-white rounded cursor-pointer">
+        {loadingStudents ? (
+          <div className="flex items-center gap-2 text-gray-500">
+            <Loader2 className="h-5 w-5 animate-spin" />
+            Loading students...
+          </div>
+        ) : students.length === 0 ? (
+          <p className="text-red-600">No active students found</p>
+        ) : (
+          students.map(student => (
+            <label key={student.user_id} className="flex items-center gap-3 p-3 hover:bg-white rounded cursor-pointer">
               <input
                 type="checkbox"
-                checked={selectedMembers.includes(student.recipientId)}
+                checked={selectedMembers.includes(student.user_id)}
                 onChange={e => {
                   if (e.target.checked) {
-                    setSelectedMembers([...selectedMembers, student.recipientId]);
+                    setSelectedMembers([...selectedMembers, student.user_id]);
                   } else {
-                    setSelectedMembers(selectedMembers.filter(id => id !== student.recipientId));
+                    setSelectedMembers(selectedMembers.filter(id => id !== student.user_id));
                   }
                 }}
                 className="h-5 w-5 text-orange-500 rounded border-gray-300 focus:ring-orange-500"
               />
-              <span className="text-gray-900 font-medium">{student.recipientName}</span>
+              <span className="text-gray-900 font-medium">{student.full_name || student.name || student.email}</span>
             </label>
-          ))}
+          ))
+        )}
       </div>
       <p className="mt-2 text-sm text-gray-500">
         {selectedMembers.length} student{selectedMembers.length !== 1 ? 's' : ''} selected
