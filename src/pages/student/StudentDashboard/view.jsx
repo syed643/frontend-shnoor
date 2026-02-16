@@ -36,6 +36,7 @@ const StudentDashboardView = ({
     };
 
     const handleCourseClick = (courseId) => {
+        if (!courseId) return;
         navigate(`/student/course/${courseId}`);
         handleClearSearch();
     };
@@ -89,9 +90,9 @@ const StudentDashboardView = ({
                                     <div className="divide-y divide-slate-100">
                                         {searchResults.map((course) => (
                                             <div 
-                                                key={course.courses_id} 
+                                                key={course.id} 
                                                 className="p-4 hover:bg-slate-50 transition-colors cursor-pointer"
-                                                onClick={() => handleCourseClick(course.courses_id)}
+                                                onClick={() => handleCourseClick(course.course_id || course.id)}
                                             >
                                                 <div className="flex items-start gap-3">
                                                     {course.thumbnail_url ? (

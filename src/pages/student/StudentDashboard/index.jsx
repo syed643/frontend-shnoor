@@ -1,5 +1,6 @@
 import { useState, useEffect, useRef, useCallback } from "react";
 import { useNavigate, useSearchParams } from "react-router-dom";
+import { auth } from "../../../auth/firebase";
 import api from "../../../api/axios";
 import StudentDashboardView from "./view";
 
@@ -111,7 +112,7 @@ const StudentDashboard = () => {
     fetchProfile();
   }, []);
 
-    const performSearch = async (query) => {
+  const performSearch = async (query) => {
     if (!query.trim()) {
       setSearchResults([]);
       setSearchLoading(false);
