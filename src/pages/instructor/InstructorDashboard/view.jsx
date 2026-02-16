@@ -39,6 +39,15 @@ const InstructorDashboardView = ({
   const [searchQuery, setSearchQuery] = useState("");
   const debounceRef = useRef(null);
 
+  useEffect(() => {
+    const handleEsc = (e) => {
+      if (e.key === "Escape") setIsSearchExpanded(false);
+    };
+
+    window.addEventListener("keydown", handleEsc);
+    return () => window.removeEventListener("keydown", handleEsc);
+  }, []);
+
   if (loading) {
     return (
       <div className="flex items-center justify-center min-h-[400px] text-slate-500 font-medium animate-pulse">
@@ -57,14 +66,6 @@ const InstructorDashboardView = ({
     }, 400);
   };
 
-  useEffect(() => {
-    const handleEsc = (e) => {
-      if (e.key === "Escape") setIsSearchExpanded(false);
-    };
-
-    window.addEventListener("keydown", handleEsc);
-    return () => window.removeEventListener("keydown", handleEsc);
-  }, []);
   const handleClearSearch = () => {
     setSearchQuery("");
     setIsSearchExpanded(false);
