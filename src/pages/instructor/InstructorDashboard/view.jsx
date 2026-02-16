@@ -37,6 +37,7 @@ const InstructorDashboardView = ({
   const [searchTerm, setSearchTerm] = useState("");
   const [isSearchExpanded, setIsSearchExpanded] = useState(false);
   const [searchQuery, setSearchQuery] = useState("");
+  const debounceRef = useRef(null);
 
   if (loading) {
     return (
@@ -45,7 +46,6 @@ const InstructorDashboardView = ({
       </div>
     );
   }
-  const debounceRef = useRef(null);
 
   const handleSearchChange = (e) => {
     const value = e.target.value;
