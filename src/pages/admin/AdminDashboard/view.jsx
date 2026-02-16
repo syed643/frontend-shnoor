@@ -122,42 +122,43 @@ const AdminDashboardView = ({
   };
 
   return (
-    <div className="space-y-8 animate-in fade-in duration-700 font-sans">
-      <div className="flex justify-between items-end">
-        <div>
-          <h1 className="text-3xl font-semibold text-primary-900 tracking-tight">
-            Analytics Overview
-          </h1>
-          <p className="text-slate-500 mt-1 font-medium text-base">
-            Real-time performance metrics across the platform.
-          </p>
-        </div>
-        <div className="flex items-end gap-4">
-          {/* Search Component */}
-          <div className="relative">
-            <div
-              className={`relative transition-all duration-300 ${isSearchExpanded ? "w-96" : "w-64"}`}
-            >
-              <Search
-                className="absolute left-3 top-1/2 -translate-y-1/2 text-slate-400"
-                size={16}
-              />
-              <input
-                className="pl-10 pr-10 py-2 bg-white border border-slate-200 rounded-lg text-sm focus:ring-2 focus:ring-indigo-500/20 focus:border-indigo-500 w-full transition-all"
-                placeholder="Search courses & modules..."
-                value={searchQuery}
-                onChange={handleSearchChange}
-                onFocus={() => setIsSearchExpanded(true)}
-              />
-            </div>
-            {searchQuery && (
-              <button
-                onClick={handleClearSearch}
-                className="absolute right-3 top-1/2 -translate-y-1/2 text-slate-400 hover:text-slate-600"
+    <div className="min-h-screen bg-[#f8fafc] px-6 py-6 font-sans text-primary-900">
+      <div className="max-w-7xl mx-auto space-y-8 animate-in fade-in duration-700">
+        <div className="flex flex-col gap-4 lg:flex-row lg:items-end lg:justify-between">
+          <div>
+            <h1 className="text-3xl font-semibold tracking-tight">
+              Analytics Overview
+            </h1>
+            <p className="text-slate-500 mt-1 font-medium text-base">
+              Real-time performance metrics across the platform.
+            </p>
+          </div>
+          <div className="flex items-end gap-4">
+            {/* Search Component */}
+            <div className="relative">
+              <div
+                className={`relative transition-all duration-300 ${isSearchExpanded ? "w-96" : "w-64"}`}
               >
-                <X size={16} />
-              </button>
-            )}
+                <Search
+                  className="absolute left-3 top-1/2 -translate-y-1/2 text-slate-400"
+                  size={16}
+                />
+                <input
+                  className="pl-10 pr-10 py-2.5 bg-white border border-slate-200 rounded-xl text-sm focus:ring-2 focus:ring-indigo-500/20 focus:border-indigo-500 w-full transition-all shadow-sm"
+                  placeholder="Search parameters..."
+                  value={searchQuery}
+                  onChange={handleSearchChange}
+                  onFocus={() => setIsSearchExpanded(true)}
+                />
+              </div>
+              {searchQuery && (
+                <button
+                  onClick={handleClearSearch}
+                  className="absolute right-3 top-1/2 -translate-y-1/2 text-slate-400 hover:text-slate-600"
+                >
+                  <X size={16} />
+                </button>
+              )}
 
             {/* Search Results Dropdown */}
             {isSearchExpanded && searchQuery && (
@@ -261,10 +262,9 @@ const AdminDashboardView = ({
                 )}
               </div>
             )}
+            </div>
           </div>
-          <DateRangeFilter value={dateRange} onChange={setDateRange} />
         </div>
-      </div>
 
       {/* Click outside to close search */}
       {isSearchExpanded && (
@@ -274,116 +274,101 @@ const AdminDashboardView = ({
         />
       )}
 
-      <div className="grid grid-cols-1 md:grid-cols-4 gap-6">
-        <StatCard
-          label="Active Students"
+        <div className="grid grid-cols-1 md:grid-cols-4 gap-6">
+          <StatCard
+            label="Total Students"
           value={stats?.totalStudents ?? 0}
           icon={Users}
           color="bg-indigo-50 text-indigo-600"
-        />
-        <StatCard
-          label="Completion Rates"
-          value={`${stats?.completionRate ?? 0}%`}
-          icon={BookOpen}
-          color="bg-emerald-50 text-emerald-600"
-        />
-        <StatCard
-          label="Total Learning Hours"
-          value={stats?.totalHours ?? 0}
-          icon={Clock}
-          color="bg-amber-50 text-amber-600"
-        />
-        <StatCard
-          label="Certificates Issued"
-          value={stats?.certificates ?? 0}
-          icon={Award}
-          color="bg-rose-50 text-rose-600"
-        />
-      </div>
-
-      <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
-        <div className="lg:col-span-2 bg-white p-6 rounded-lg border border-slate-200 shadow-sm h-[450px] flex flex-col">
-          <div className="flex justify-between items-center mb-10">
-            <h3 className="text-base font-semibold text-primary-900 uppercase tracking-wide">
-              Learning Activity
-            </h3>
-            <div className="flex gap-2">
-              <div className="flex items-center gap-2 text-xs font-bold text-slate-500">
-                <div className="w-2 h-2 rounded-full bg-indigo-600"></div>{" "}
-                Lessons Completed
-              </div>
-            </div>
-          </div>
-          <div className="flex-1">
-            {(!chartData || chartData.length === 0) && (
-              <div className="flex items-center justify-center h-full text-slate-400">
-                No activity in selected date range
-              </div>
-            )}
-            {chartData?.length > 0 && (
-              <ResponsiveContainer width="100%" height="100%">
-                <BarChart data={chartData}>
-                  <XAxis
-                    dataKey="name"
-                    axisLine={false}
-                    tickLine={false}
-                    tick={{ fill: "#64748b", fontSize: 11, fontWeight: 500 }}
-                    dy={10}
-                  />
-                  <Tooltip
-                    cursor={{ fill: "#f8fafc" }}
-                    contentStyle={{
-                      borderRadius: "8px",
-                      border: "1px solid #e2e8f0",
-                      boxShadow: "0 4px 6px -1px rgb(0 0 0 / 0.1)",
-                    }}
-                  />
-                  <Bar
-                    dataKey="lessons"
-                    fill="#0f172a"
-                    radius={[4, 4, 0, 0]}
-                    barSize={40}
-                  />
-                </BarChart>
-              </ResponsiveContainer>
-            )}
-          </div>
+          />
+          <StatCard
+            label="Completion Rates"
+            value={`${stats?.completionRate ?? 0}%`}
+            icon={BookOpen}
+            color="bg-emerald-50 text-emerald-600"
+          />
+          <StatCard
+            label="Total Learning Hours"
+            value={stats?.totalHours ?? 0}
+            icon={Clock}
+            color="bg-amber-50 text-amber-600"
+          />
+          <StatCard
+            label="Certificates Issued"
+            value={stats?.certificates ?? 0}
+            icon={Award}
+            color="bg-rose-50 text-rose-600"
+          />
         </div>
 
-        <div className="bg-primary-900 p-8 rounded-lg text-white flex flex-col justify-between relative overflow-hidden shadow-lg">
-          <div className="absolute top-0 right-0 w-32 h-32 bg-white/5 rounded-full -mr-16 -mt-16 blur-2xl"></div>
-          <div>
+        <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
+          <div className="lg:col-span-2 bg-white p-6 rounded-xl border border-slate-200 shadow-sm h-[420px] flex flex-col">
+            <div className="flex justify-between items-center mb-8">
+              <h3 className="text-xs font-semibold text-slate-600 uppercase tracking-wide">
+                Learning Activity
+              </h3>
+              <div className="flex gap-2">
+                <div className="flex items-center gap-2 text-xs font-semibold text-slate-500">
+                  <div className="w-2 h-2 rounded-full bg-indigo-600"></div>
+                  Lessons Completed
+                </div>
+              </div>
+            </div>
+            <div className="flex-1">
+              {(!chartData || chartData.length === 0) && (
+                <div className="flex items-center justify-center h-full text-slate-400">
+                  No activity in selected date range
+                </div>
+              )}
+              {chartData?.length > 0 && (
+                <ResponsiveContainer width="100%" height="100%">
+                  <BarChart data={chartData}>
+                    <XAxis
+                      dataKey="name"
+                      axisLine={false}
+                      tickLine={false}
+                      tick={{ fill: "#64748b", fontSize: 11, fontWeight: 500 }}
+                      dy={10}
+                    />
+                    <Tooltip
+                      cursor={{ fill: "#f8fafc" }}
+                      contentStyle={{
+                        borderRadius: "8px",
+                        border: "1px solid #e2e8f0",
+                        boxShadow: "0 4px 6px -1px rgb(0 0 0 / 0.1)",
+                      }}
+                    />
+                    <Bar
+                      dataKey="lessons"
+                      fill="#0f172a"
+                      radius={[4, 4, 0, 0]}
+                      barSize={40}
+                    />
+                  </BarChart>
+                </ResponsiveContainer>
+              )}
+            </div>
+          </div>
+
+          <div className="bg-white p-6 rounded-xl border border-slate-200 shadow-sm flex flex-col gap-5">
+            <div>
+              <h3 className="text-sm font-semibold text-slate-800">
+                Download Analytics
+              </h3>
+              <p className="text-xs text-slate-500 mt-1">
+                Export reports for selected date range.
+              </p>
+            </div>
+            <div className="rounded-lg border border-slate-200 p-4">
+              <DateRangeFilter value={dateRange} onChange={setDateRange} />
+            </div>
             <button
               onClick={handleDownload}
-              className="w-full mt-3 py-3 bg-indigo-600 hover:bg-indigo-700 text-white rounded-md text-sm font-bold"
+              className="w-full py-2.5 bg-indigo-600 hover:bg-indigo-700 text-white rounded-lg text-sm font-semibold"
             >
               Download CSV Report
             </button>
-
-            <div className="space-y-8">
-              <div>
-                <div className="flex justify-between text-xs font-semibold mb-2 text-indigo-100">
-                  <span>Cloud Storage</span>
-                  <span>65%</span>
-                </div>
-                <div className="w-full bg-white/10 h-2 rounded-full overflow-hidden">
-                  <div className="bg-indigo-500 h-full w-[65%]"></div>
-                </div>
-              </div>
-              <div>
-                <div className="flex justify-between text-xs font-semibold mb-2 text-indigo-100">
-                  <span>Server Uptime</span>
-                  <span>99.9%</span>
-                </div>
-                <div className="w-full bg-white/10 h-2 rounded-full overflow-hidden">
-                  <div className="bg-emerald-500 h-full w-[99%]"></div>
-                </div>
-              </div>
-            </div>
           </div>
-          <button className="w-full py-3 bg-white text-primary-900 hover:bg-slate-50 rounded-md text-sm font-bold transition-all shadow-md">
-            View Full System Report
-          </button>
         </div>
       </div>
     </div>
