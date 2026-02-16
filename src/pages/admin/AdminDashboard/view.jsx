@@ -160,138 +160,147 @@ const AdminDashboardView = ({
                 </button>
               )}
 
-            {/* Search Results Dropdown */}
-            {isSearchExpanded && searchQuery && (
-              <div className="absolute top-full right-0 mt-2 w-96 bg-white border border-slate-200 rounded-lg shadow-lg max-h-96 overflow-y-auto z-50">
-                {searchLoading ? (
-                  <div className="p-4 text-center text-slate-500">
-                    Searching...
-                  </div>
-                ) : searchResults && searchResults.length > 0 ? (
-                  <div className="divide-y divide-slate-100">
-                    {searchResults.map((result) => (
-                      <div
-                        key={result.id}
-                        onClick={() => {
-                          window.location.href =
-                            result.type === "course"
-                              ? `/admin/courses/${result.id}`
-                              : `/admin/modules/${result.id}`;
-                        }}
-                        className="p-4 hover:bg-slate-50 transition-colors cursor-pointer"
-                      >
-                        <div className="flex items-start gap-3">
-                          {result.thumbnail_url ? (
-                            <img
-                              src={result.thumbnail_url}
-                              alt={result.title}
-                              className="w-16 h-16 rounded-lg object-cover flex-shrink-0"
-                            />
-                          ) : (
-                            <div className="w-16 h-16 rounded-lg bg-indigo-100 flex items-center justify-center flex-shrink-0">
-                              <BookOpen className="text-indigo-600" size={24} />
-                            </div>
-                          )}
-
-                          <div className="flex-1 min-w-0">
-                            <div className="flex items-center gap-2 mb-1">
-                              <h4 className="font-semibold text-sm text-slate-900 truncate">
-                                {result.title}
-                              </h4>
-                              <span
-                                className={`inline-flex items-center px-2 py-0.5 rounded text-xs font-bold ${result.type === "module" ? "bg-purple-100 text-purple-700" : "bg-blue-100 text-blue-700"}`}
-                              >
-                                {result.type === "module" ? "Module" : "Course"}
-                              </span>
-                            </div>
-
-                            {result.instructor_name && (
-                              <p className="text-xs text-indigo-600 font-medium mb-1">
-                                👤 {result.instructor_name}
-                              </p>
+              {/* Search Results Dropdown */}
+              {isSearchExpanded && searchQuery && (
+                <div className="absolute top-full right-0 mt-2 w-96 bg-white border border-slate-200 rounded-lg shadow-lg max-h-96 overflow-y-auto z-50">
+                  {searchLoading ? (
+                    <div className="p-4 text-center text-slate-500">
+                      Searching...
+                    </div>
+                  ) : searchResults && searchResults.length > 0 ? (
+                    <div className="divide-y divide-slate-100">
+                      {searchResults.map((result) => (
+                        <div
+                          key={result.id}
+                          onClick={() => {
+                            window.location.href =
+                              result.type === "course"
+                                ? `/admin/courses/${result.id}`
+                                : `/admin/modules/${result.id}`;
+                          }}
+                          className="p-4 hover:bg-slate-50 transition-colors cursor-pointer"
+                        >
+                          <div className="flex items-start gap-3">
+                            {result.thumbnail_url ? (
+                              <img
+                                src={result.thumbnail_url}
+                                alt={result.title}
+                                className="w-16 h-16 rounded-lg object-cover flex-shrink-0"
+                              />
+                            ) : (
+                              <div className="w-16 h-16 rounded-lg bg-indigo-100 flex items-center justify-center flex-shrink-0">
+                                <BookOpen
+                                  className="text-indigo-600"
+                                  size={24}
+                                />
+                              </div>
                             )}
 
-                            {result.type === "module" &&
-                              result.course_title && (
-                                <p className="text-xs text-slate-500 font-medium mb-1">
-                                  📚 In Course: {result.course_title}
+                            <div className="flex-1 min-w-0">
+                              <div className="flex items-center gap-2 mb-1">
+                                <h4 className="font-semibold text-sm text-slate-900 truncate">
+                                  {result.title}
+                                </h4>
+                                <span
+                                  className={`inline-flex items-center px-2 py-0.5 rounded text-xs font-bold ${result.type === "module" ? "bg-purple-100 text-purple-700" : "bg-blue-100 text-blue-700"}`}
+                                >
+                                  {result.type === "module"
+                                    ? "Module"
+                                    : "Course"}
+                                </span>
+                              </div>
+
+                              {result.instructor_name && (
+                                <p className="text-xs text-indigo-600 font-medium mb-1">
+                                  👤 {result.instructor_name}
                                 </p>
                               )}
 
-                            <p className="text-xs text-slate-600 line-clamp-2 mb-2">
-                              {result.description || "No description available"}
-                            </p>
+                              {result.type === "module" &&
+                                result.course_title && (
+                                  <p className="text-xs text-slate-500 font-medium mb-1">
+                                    📚 In Course: {result.course_title}
+                                  </p>
+                                )}
 
-                            <div className="flex flex-wrap items-center gap-2">
-                              {result.category && (
-                                <span className="inline-flex items-center px-2 py-0.5 rounded text-xs font-medium bg-indigo-100 text-indigo-700">
-                                  {result.category}
-                                </span>
-                              )}
-                              {result.difficulty && (
-                                <span
-                                  className={`inline-flex items-center px-2 py-0.5 rounded text-xs font-medium ${getDifficultyColor(result.difficulty)}`}
-                                >
-                                  {result.difficulty}
-                                </span>
-                              )}
-                              {result.status && (
-                                <span
-                                  className={`inline-flex items-center px-2 py-0.5 rounded text-xs font-medium ${getStatusColor(result.status)}`}
-                                >
-                                  {result.status}
-                                </span>
-                              )}
-                            </div>
-
-                            {result.validity_value && result.validity_unit && (
-                              <p className="text-xs text-slate-500 mt-2">
-                                Valid for: {result.validity_value}{" "}
-                                {result.validity_unit}
+                              <p className="text-xs text-slate-600 line-clamp-2 mb-2">
+                                {result.description ||
+                                  "No description available"}
                               </p>
-                            )}
+
+                              <div className="flex flex-wrap items-center gap-2">
+                                {result.category && (
+                                  <span className="inline-flex items-center px-2 py-0.5 rounded text-xs font-medium bg-indigo-100 text-indigo-700">
+                                    {result.category}
+                                  </span>
+                                )}
+                                {result.difficulty && (
+                                  <span
+                                    className={`inline-flex items-center px-2 py-0.5 rounded text-xs font-medium ${getDifficultyColor(result.difficulty)}`}
+                                  >
+                                    {result.difficulty}
+                                  </span>
+                                )}
+                                {result.status && (
+                                  <span
+                                    className={`inline-flex items-center px-2 py-0.5 rounded text-xs font-medium ${getStatusColor(result.status)}`}
+                                  >
+                                    {result.status}
+                                  </span>
+                                )}
+                              </div>
+
+                              {result.validity_value &&
+                                result.validity_unit && (
+                                  <p className="text-xs text-slate-500 mt-2">
+                                    Valid for: {result.validity_value}{" "}
+                                    {result.validity_unit}
+                                  </p>
+                                )}
+                            </div>
                           </div>
                         </div>
-                      </div>
-                    ))}
-                  </div>
-                ) : (
-                  <div className="p-4 text-center text-slate-500">
-                    No courses or modules found
-                  </div>
-                )}
-              </div>
-            )}
+                      ))}
+                    </div>
+                  ) : (
+                    <div className="p-4 text-center text-slate-500">
+                      No courses or modules found
+                    </div>
+                  )}
+                </div>
+              )}
             </div>
           </div>
         </div>
 
-      {/* Click outside to close search */}
-      {isSearchExpanded && (
-        <div
-          className="fixed inset-0 z-40 bg-transparent"
-          onClick={() => setIsSearchExpanded(false)}
-        />
-      )}
+        {/* Click outside to close search */}
+        {isSearchExpanded && (
+          <div
+            className="fixed inset-0 z-40 bg-transparent"
+            onClick={() => setIsSearchExpanded(false)}
+          />
+        )}
 
         <div className="grid grid-cols-1 md:grid-cols-4 gap-6">
           <StatCard
             label="Total Students"
-          value={stats?.totalStudents ?? 0}
-          icon={Users}
-          color="bg-indigo-50 text-indigo-600"
+            value={stats?.totalStudents ?? 0}
+            icon={Users}
+            color="bg-indigo-50 text-indigo-600"
           />
           <StatCard
-            label="Completion Rates"
-            value={`${stats?.completionRate ?? 0}%`}
-            icon={BookOpen}
+            label="Total Instructors"
+            value={stats?.totalInstructors ?? 0}
+            icon={Users}
             color="bg-emerald-50 text-emerald-600"
+            change={stats?.instructorsChange}
           />
           <StatCard
-            label="Total Learning Hours"
-            value={stats?.totalHours ?? 0}
-            icon={Clock}
+            label="Pending Courses"
+            value={stats?.pendingCourses ?? 0}
+            icon={BookOpen}
             color="bg-amber-50 text-amber-600"
+            change={stats?.pendingCoursesChange}
           />
           <StatCard
             label="Certificates Issued"
