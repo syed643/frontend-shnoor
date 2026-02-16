@@ -33,6 +33,7 @@ const AdminDashboardView = ({
 }) => {
   const [isSearchExpanded, setIsSearchExpanded] = useState(false);
   const [searchQuery, setSearchQuery] = useState("");
+  const debounceRef = useRef(null);
   useEffect(() => {
     const handleEsc = (e) => {
       if (e.key === "Escape") {
@@ -49,8 +50,6 @@ const AdminDashboardView = ({
         Syncing data...
       </div>
     );
-
-  const debounceRef = useRef(null);
 
   const handleSearchChange = (e) => {
     const value = e.target.value;
