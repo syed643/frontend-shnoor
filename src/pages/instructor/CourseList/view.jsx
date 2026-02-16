@@ -1,5 +1,5 @@
 import React from "react";
-import { Plus, Trash2, Edit, BookOpen, Search, Archive } from "lucide-react";
+import { Plus, Trash2, BookOpen, Search, Archive } from "lucide-react";
 import { FaFileAlt, FaVideo } from "react-icons/fa";
 
 const CourseListView = ({
@@ -213,7 +213,7 @@ const CourseListView = ({
                             >
                               <Archive size={16} />
                             </button>
-                          ) : null}
+                          )}
                           <button
                             onClick={(e) => {
                               e.stopPropagation();
