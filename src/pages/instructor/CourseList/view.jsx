@@ -1,5 +1,5 @@
 import React from "react";
-import { Plus, Trash2, Edit, BookOpen, Search } from "lucide-react";
+import { Plus, Trash2, Edit, BookOpen, Search, Archive } from "lucide-react";
 import { FaFileAlt, FaVideo } from "react-icons/fa";
 
 const CourseListView = ({
@@ -10,6 +10,7 @@ const CourseListView = ({
   onBack,
   onEdit,
   onDelete,
+  onArchive,
   onCreate,
 }) => {
   const getStatusColor = (status) => {
@@ -20,6 +21,8 @@ const CourseListView = ({
         return "bg-amber-100 text-amber-700";
       case "rejected":
         return "bg-rose-100 text-rose-700";
+      case "archived":
+        return "bg-slate-200 text-slate-700";
       default:
         return "bg-slate-100 text-slate-700";
     }
@@ -187,16 +190,18 @@ const CourseListView = ({
                       </td>
                       <td className="px-6 py-4 text-right">
                         <div className="flex justify-end gap-2">
-                          <button
-                            onClick={(e) => {
-                              e.stopPropagation();
-                              onEdit(course);
-                            }}
-                            className="p-1.5 text-slate-400 hover:text-indigo-600 hover:bg-indigo-50 rounded transition-colors"
-                            title="Edit"
-                          >
-                            <Edit size={16} />
-                          </button>
+                          {course.status !== "archived" ? (
+                            <button
+                              onClick={(e) => {
+                                e.stopPropagation();
+                                onArchive(course.courses_id);
+                              }}
+                              className="p-1.5 text-slate-400 hover:text-amber-600 hover:bg-amber-50 rounded transition-colors"
+                              title="Archive"
+                            >
+                              <Archive size={16} />
+                            </button>
+                          ) : null}
                           <button
                             onClick={(e) => {
                               e.stopPropagation();

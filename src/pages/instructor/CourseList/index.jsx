@@ -74,6 +74,30 @@ export const CourseList = () => {
     }
   };
 
+  const archiveCourse = async (courseId) => {
+    if (!window.confirm("Archive this course?")) return;
+
+    try {
+      const token = await auth.currentUser.getIdToken();
+      await api.patch(
+        `/api/courses/${courseId}/archive`,
+        {},
+        {
+          headers: { Authorization: `Bearer ${token}` },
+        }
+      );
+
+      setCourses((prev) =>
+        prev.map((c) =>
+          c.courses_id === courseId ? { ...c, status: "archived" } : c
+        )
+      );
+    } catch (err) {
+      console.error("Failed to archive course", err);
+      alert("Failed to archive course");
+    }
+  };
+
   return (
     <CourseListView
       loading={loading}
@@ -83,6 +107,7 @@ export const CourseList = () => {
       onBack={backToList}
       onEdit={editCourse}
       onDelete={deleteCourse}
+      onArchive={archiveCourse}
       onCreate={() => navigate("/instructor/add-course")}
     />
   );
