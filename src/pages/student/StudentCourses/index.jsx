@@ -17,6 +17,8 @@ const StudentCourses = () => {
   const [selectedCategory, setSelectedCategory] = useState("All");
   const [selectedLevel, setSelectedLevel] = useState("All");
   const [isFreeOnly, setIsFreeOnly] = useState(false); // NEW
+  const [searchResults, setSearchResults] = useState([]);
+  const [searchLoading, setSearchLoading] = useState(false);
 
   // 🔑 derive enrolledIds for the VIEW
   const enrolledIds = myCourses.map((c) => c.courses_id || c.id);
@@ -61,6 +63,32 @@ const StudentCourses = () => {
     fetchCourses();
   }, []);
 
+  useEffect(() => {
+    const performSearch = async () => {
+      if (!searchTerm.trim()) {
+        setSearchResults([]);
+        return;
+      }
+
+      try {
+        setSearchLoading(true);
+        const token = await auth.currentUser.getIdToken(true);
+        const res = await api.get("/api/student/search-courses", {
+          params: { query: searchTerm },
+          headers: { Authorization: `Bearer ${token}` },
+        });
+        setSearchResults(res.data || []);
+      } catch (err) {
+        console.error("Search failed:", err);
+        setSearchResults([]);
+      } finally {
+        setSearchLoading(false);
+      }
+    };
+
+    performSearch();
+  }, [searchTerm]);
+
   const getDisplayCourses = () => {
     switch (activeTab) {
       case "my-learning":
@@ -76,10 +104,11 @@ const StudentCourses = () => {
         return allCourses.filter((c) => c.price_type === "paid");
 
       case "recommended":
-         const userCategories = myCourses.map(c => c.category);
-        return allCourses.filter(c =>
-          userCategories.includes(c.category) &&
-          !enrolledIds.includes(c.courses_id || c.id)
+        const userCategories = myCourses.map((c) => c.category);
+        return allCourses.filter(
+          (c) =>
+            userCategories.includes(c.category) &&
+            !enrolledIds.includes(c.courses_id || c.id),
         );
 
       case "upcoming":
@@ -175,6 +204,7 @@ const StudentCourses = () => {
       navigate={navigate}
       isFreeOnly={isFreeOnly} // NEW
       setIsFreeOnly={setIsFreeOnly} // NEW
+      searchLoading={searchLoading}
     />
   );
 };

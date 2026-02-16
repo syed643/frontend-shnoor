@@ -15,6 +15,10 @@ const AdminDashboard = () => {
   });
   const [error, setError] = useState("");
 
+  const [searchResults, setSearchResults] = useState([]);
+  const [searchLoading, setSearchLoading] = useState(false);
+  const debounceTimer = useRef(null);
+
   /* =========================
      FETCH DASHBOARD STATS
   ========================= */
@@ -47,6 +51,64 @@ const AdminDashboard = () => {
     }
   };
 
+  const performSearch = async (query) => {
+    if (!query.trim()) {
+      setSearchResults([]);
+      setSearchLoading(false);
+      return;
+    }
+
+    try {
+      if (!auth.currentUser) {
+        throw new Error("Not authenticated");
+      }
+
+      const token = await auth.currentUser.getIdToken();
+
+      const res = await api.get("/api/admin/search-courses", {
+        params: { query },
+        headers: {
+          Authorization: `Bearer ${token}`,
+        },
+      });
+
+      setSearchResults(res.data || []);
+      
+    } catch (err) {
+      setSearchResults([]);
+    } finally {
+      setSearchLoading(false);
+    }
+  };
+
+  const handleSearch = useCallback((query) => {
+    // Clear existing timer
+    if (debounceTimer.current) {
+      clearTimeout(debounceTimer.current);
+    }
+
+    if (!query.trim()) {
+      setSearchResults([]);
+      setSearchLoading(false);
+      return;
+    }
+
+    setSearchLoading(true);
+
+    // Set new timer for debounced search (300ms delay)
+    debounceTimer.current = setTimeout(() => {
+      performSearch(query);
+    }, 300);
+  }, []);
+
+  // Cleanup debounce timer on unmount
+  useEffect(() => {
+    return () => {
+      if (debounceTimer.current) {
+        clearTimeout(debounceTimer.current);
+      }
+    };
+  }, []);
   /* =========================
      NAVIGATION HANDLERS
   ========================= */
@@ -59,6 +121,10 @@ const AdminDashboard = () => {
       loading={loading}
       error={error}
       stats={stats}
+      chartData={[]} // Add your actual chart data here if you have it
+      onSearch={handleSearch}
+      searchResults={searchResults}
+      searchLoading={searchLoading}
       goToAddInstructor={goToAddInstructor}
       goToApproveCourses={goToApproveCourses}
       goToAssignCourse={goToAssignCourse}

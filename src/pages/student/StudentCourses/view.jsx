@@ -1,5 +1,13 @@
 import React, { useState } from "react";
-import { BookOpen, Search, Filter, ArrowRight, Library, Star, Check } from "lucide-react";
+import {
+  BookOpen,
+  Search,
+  Filter,
+  ArrowRight,
+  Library,
+  Star,
+  Check,
+} from "lucide-react";
 import ReviewModal from "../../../components/student/ReviewModal";
 
 const StudentCoursesView = ({
@@ -19,6 +27,7 @@ const StudentCoursesView = ({
   navigate,
   isFreeOnly, // NEW
   setIsFreeOnly, // NEW
+  searchLoading, // NEW
 }) => {
   const [reviewModal, setReviewModal] = useState({
     isOpen: false,
@@ -195,6 +204,71 @@ const StudentCoursesView = ({
           </select>
         </div>
       </div>
+
+      {activeTab === "search" && searchTerm && (
+        <div className="space-y-3">
+          {searchLoading ? (
+            <div className="flex items-center justify-center py-12">
+              <div className="w-8 h-8 border-3 border-indigo-600 border-t-transparent rounded-full animate-spin"></div>
+            </div>
+          ) : displayCourses.length > 0 ? (
+            <div className="space-y-3 max-h-96 overflow-y-auto">
+              {displayCourses.map((result) => (
+                <div
+                  key={result.id}
+                  className="bg-white border border-slate-200 rounded-lg p-4 hover:border-indigo-300 hover:shadow-md transition-all cursor-pointer"
+                  onClick={() => {
+                    if (result.type === "module") {
+                      navigate(`/student/course/${result.course_id}`);
+                    } else {
+                      navigate(`/student/course/${result.id}`);
+                    }
+                  }}
+                >
+                  <div className="flex gap-4">
+                    <div className="w-16 h-16 rounded-lg bg-indigo-100 flex items-center justify-center flex-shrink-0">
+                      <BookOpen className="text-indigo-600" size={24} />
+                    </div>
+
+                    <div className="flex-1 min-w-0">
+                      <div className="flex items-center gap-2 mb-1">
+                        <h4 className="font-semibold text-sm text-slate-900 truncate">
+                          {result.title}
+                        </h4>
+                        <span
+                          className={`inline-flex items-center px-2 py-0.5 rounded text-xs font-bold ${result.type === "module" ? "bg-purple-100 text-purple-700" : "bg-blue-100 text-blue-700"}`}
+                        >
+                          {result.type === "module" ? "Module" : "Course"}
+                        </span>
+                      </div>
+
+                      {result.instructor_name && (
+                        <p className="text-xs text-indigo-600 font-medium mb-1">
+                          👤 {result.instructor_name}
+                        </p>
+                      )}
+
+                      {result.type === "module" && result.course_title && (
+                        <p className="text-xs text-slate-500 font-medium mb-1">
+                          📚 In Course: {result.course_title}
+                        </p>
+                      )}
+
+                      <p className="text-xs text-slate-600 line-clamp-2">
+                        {result.description || "No description available"}
+                      </p>
+                    </div>
+                  </div>
+                </div>
+              ))}
+            </div>
+          ) : (
+            <div className="p-8 text-center text-slate-500 bg-slate-50 rounded-lg">
+              <p>No courses or modules found for "{searchTerm}"</p>
+            </div>
+          )}
+        </div>
+      )}
       {/* Grid */}
       {displayCourses.length === 0 ? (
         <div className="bg-slate-50 border border-slate-200 rounded-lg p-16 text-center">
