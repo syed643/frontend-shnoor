@@ -292,44 +292,21 @@ const InstructorDashboardView = ({
 
         {/* MAIN GRID */}
         <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
-          {/* ENGAGEMENT TRENDS */}
-          <div className="lg:col-span-2 bg-white rounded-xl border border-slate-200 shadow-sm p-6 h-[380px] flex flex-col">
-            <div className="flex justify-between items-center mb-4">
-              <h3 className="font-semibold text-base">Engagement Trends</h3>
-              <span className="text-xs text-indigo-600">Student Activity</span>
-            </div>
-
-            <div className="flex-1 border border-dashed border-slate-200 rounded-md flex items-center justify-center text-slate-400 text-sm">
-              <ResponsiveContainer width="100%" height="100%">
-                <LineChart data={performanceData}>
-                  <Line dataKey="students" stroke="#6366f1" />
-                </LineChart>
-              </ResponsiveContainer>
-            </div>
-          </div>
-
-          <div className="flex flex-col gap-6">
-            {/* DOWNLOAD ANALYTICS */}
-            <div className="bg-white rounded-xl border border-slate-200 shadow-sm p-6">
-              <div className="flex items-start justify-between">
-                <div>
-                  <h3 className="text-sm font-semibold text-slate-900 uppercase tracking-wide">
-                    Download Analytics
-                  </h3>
-                  <p className="text-xs text-slate-500 mt-1">
-                    Export performance data by date.
-                  </p>
-                </div>
+          <div className="lg:col-span-2 flex flex-col gap-6">
+            {/* ENGAGEMENT TRENDS */}
+            <div className="bg-white rounded-xl border border-slate-200 shadow-sm p-6 h-[380px] flex flex-col">
+              <div className="flex justify-between items-center mb-4">
+                <h3 className="font-semibold text-base">Engagement Trends</h3>
+                <span className="text-xs text-indigo-600">Student Activity</span>
               </div>
-              <div className="mt-4 rounded-lg border border-slate-200 p-4">
-                <DateRangeFilter value={dateRange} onChange={setDateRange} />
+
+              <div className="flex-1 border border-dashed border-slate-200 rounded-md flex items-center justify-center text-slate-400 text-sm">
+                <ResponsiveContainer width="100%" height="100%">
+                  <LineChart data={performanceData}>
+                    <Line dataKey="students" stroke="#6366f1" />
+                  </LineChart>
+                </ResponsiveContainer>
               </div>
-              <button
-                onClick={handleDownload}
-                className="w-full mt-4 py-2.5 bg-indigo-600 hover:bg-indigo-700 text-white rounded-lg text-sm font-semibold"
-              >
-                Download Analytics
-              </button>
             </div>
 
             {/* QUICK ACTIONS */}
@@ -359,6 +336,31 @@ const InstructorDashboardView = ({
                   color="emerald"
                 />
               </div>
+            </div>
+          </div>
+
+          <div className="flex flex-col gap-6">
+            {/* DOWNLOAD ANALYTICS */}
+            <div className="bg-white rounded-xl border border-slate-200 shadow-sm p-6">
+              <div className="flex items-start justify-between">
+                <div>
+                  <h3 className="text-sm font-semibold text-slate-900 uppercase tracking-wide">
+                    Download Analytics
+                  </h3>
+                  <p className="text-xs text-slate-500 mt-1">
+                    Export performance data by date.
+                  </p>
+                </div>
+              </div>
+              <div className="mt-4 rounded-lg border border-slate-200 p-4">
+                <DateRangeFilter value={dateRange} onChange={setDateRange} />
+              </div>
+              <button
+                onClick={handleDownload}
+                className="w-full mt-4 py-2.5 bg-indigo-600 hover:bg-indigo-700 text-white rounded-lg text-sm font-semibold"
+              >
+                Download Analytics
+              </button>
             </div>
           </div>
         </div>
