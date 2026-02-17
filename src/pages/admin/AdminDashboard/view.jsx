@@ -109,13 +109,28 @@ const AdminDashboardView = ({
   );
 
   const handleDownload = () => {
-    const csv = Papa.unparse([stats]);
+    // Format the data with proper headers for CSV
+    const formattedData = {
+      "Report Type": "Admin Dashboard Report",
+      "Generated": new Date().toLocaleString(),
+      "Date Range": dateRange 
+        ? `${dateRange.startDate} to ${dateRange.endDate}` 
+        : "All Time",
+      "": "", // Empty row for spacing
+      "Metric": "Value",
+      "Total Students": stats?.totalStudents ?? 0,
+      "Total Instructors": stats?.totalInstructors ?? 0,
+      "Pending Courses": stats?.pendingCourses ?? 0,
+      "Certificates Issued": stats?.certificates ?? 0,
+    };
+
+    const csv = Papa.unparse([formattedData]);
     const blob = new Blob([csv], { type: "text/csv;charset=utf-8;" });
     const url = URL.createObjectURL(blob);
 
     const link = document.createElement("a");
     link.href = url;
-    link.download = "admin-dashboard.csv";
+    link.download = `admin-dashboard-${new Date().toISOString().split('T')[0]}.csv`;
     link.click();
 
     URL.revokeObjectURL(url);

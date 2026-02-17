@@ -72,13 +72,29 @@ const InstructorDashboardView = ({
     onSearch("");
   };
   const handleDownload = () => {
-    const csv = Papa.unparse([stats]);
+    // Format the data with proper headers for CSV
+    const formattedData = {
+      "Report Type": "Instructor Dashboard Report",
+      "Generated": new Date().toLocaleString(),
+      "Date Range": dateRange 
+        ? `${dateRange.startDate} to ${dateRange.endDate}` 
+        : "All Time",
+      "": "", // Empty row for spacing
+      "Metric": "Value",
+      "My Courses": stats.myCourses,
+      "Total Students": stats.totalStudents,
+      "Average Rating": stats.avgRating,
+      "Courses Change (%)": stats.coursesChange,
+      "Students Change (%)": stats.studentsChange,
+    };
+
+    const csv = Papa.unparse([formattedData]);
     const blob = new Blob([csv], { type: "text/csv;charset=utf-8;" });
     const url = URL.createObjectURL(blob);
 
     const link = document.createElement("a");
     link.href = url;
-    link.download = "instructor-report.csv";
+    link.download = `instructor-report-${new Date().toISOString().split('T')[0]}.csv`;
     link.click();
 
     URL.revokeObjectURL(url);
