@@ -495,7 +495,20 @@ const MessageItem = ({ messageId, msg, showName, onEdit, onDelete, onReply, onRe
     if (msg.is_deleted) {
         return (
             <div id={`msg-${messageId}`} className={`message ${isMe ? 'sent' : 'received'} flex flex-col opacity-60 mb-1`}>
-                {showName && !isMe && <span className="text-[10px] font-bold text-slate-400 ml-2 mb-1">{msg.sender_name}</span>}
+                {showName && !isMe && (
+                    <div className="flex items-center gap-2 ml-2 mb-1">
+                        <span className="text-[10px] font-bold text-slate-400">{msg.sender_name}</span>
+                        {msg.sender_role && (
+                            <span className={`text-[8px] font-bold px-1.5 py-0.5 rounded uppercase tracking-widest ${
+                                msg.sender_role === 'admin' ? 'bg-amber-100 text-amber-700' :
+                                msg.sender_role === 'instructor' ? 'bg-blue-100 text-blue-700' :
+                                'bg-slate-100 text-slate-700'
+                            }`}>
+                                {msg.sender_role}
+                            </span>
+                        )}
+                    </div>
+                )}
                 <div className="message-bubble bg-slate-100 text-slate-400 italic border border-slate-200 py-2 px-4 rounded-2xl">
                     <p className="m-0 text-xs flex items-center gap-1"><FaTrash size={10} /> This message was deleted</p>
                 </div>
@@ -505,7 +518,20 @@ const MessageItem = ({ messageId, msg, showName, onEdit, onDelete, onReply, onRe
 
     return (
         <div id={`msg-${messageId}`} className={`message ${isMe ? 'sent' : 'received'} flex flex-col group relative mb-2 max-w-[85%] ${isMe ? 'ml-auto' : 'mr-auto'}`}>
-            {showName && !isMe && <span className="text-[10px] font-black text-slate-400 ml-3 mb-1 uppercase tracking-tighter">{msg.sender_name}</span>}
+            {showName && !isMe && (
+                <div className="flex items-center gap-2 ml-3 mb-1">
+                    <span className="text-[10px] font-black text-slate-400 uppercase tracking-tighter">{msg.sender_name}</span>
+                    {msg.sender_role && (
+                        <span className={`text-[8px] font-bold px-1.5 py-0.5 rounded uppercase tracking-widest ${
+                            msg.sender_role === 'admin' ? 'bg-amber-100 text-amber-700' :
+                            msg.sender_role === 'instructor' ? 'bg-blue-100 text-blue-700' :
+                            'bg-slate-100 text-slate-700'
+                        }`}>
+                            {msg.sender_role}
+                        </span>
+                    )}
+                </div>
+            )}
 
             <div className={`flex items-start gap-1 ${isMe ? 'flex-row-reverse' : 'flex-row'}`}>
                 <div className={`message-bubble relative shadow-sm ${isEditing ? 'w-full' : ''} ${isMe ? 'bg-indigo-600 text-white rounded-tr-none' : 'bg-white text-slate-800 rounded-tl-none border border-slate-100'}`}>

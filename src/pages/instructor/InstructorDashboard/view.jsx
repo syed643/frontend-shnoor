@@ -357,30 +357,30 @@ const InstructorDashboardView = ({
               </div>
               <button
                 onClick={handleDownload}
-                className="w-full mt-4 py-2.5 bg-indigo-600 hover:bg-indigo-700 text-white rounded-lg text-sm font-semibold"
+                className="w-full mt-4 py-2.5 bg-slate-900 hover:bg-slate-800 text-white rounded-lg text-sm font-semibold"
               >
-                Download Analytics
+                Download Report
               </button>
-            </div>
 
-            {/* CURRENT RANGE SUMMARY */}
-            <div className="bg-white rounded-xl border border-slate-200 shadow-sm p-6">
-              <h3 className="text-sm font-semibold text-slate-900 uppercase tracking-wide mb-4">
-                Current Range Summary
-              </h3>
-              
-              <div className="space-y-3">
-                <div className="flex items-center justify-between pb-3 border-b border-slate-100">
-                  <span className="text-sm text-slate-600">My Courses:</span>
-                  <span className="text-sm font-semibold text-slate-900">{stats.myCourses}</span>
-                </div>
-                <div className="flex items-center justify-between pb-3 border-b border-slate-100">
-                  <span className="text-sm text-slate-600">Total Students:</span>
-                  <span className="text-sm font-semibold text-slate-900">{stats.totalStudents}</span>
-                </div>
-                <div className="flex items-center justify-between">
-                  <span className="text-sm text-slate-600">Avg Rating:</span>
-                  <span className="text-sm font-semibold text-slate-900">{stats.avgRating}</span>
+              {/* CURRENT RANGE SUMMARY */}
+              <div className="pt-4 border-t border-slate-200">
+                <h3 className="text-xs font-semibold text-slate-600 uppercase tracking-wide mb-3">
+                  Current Range Summary
+                </h3>
+                
+                <div className="space-y-2.5">
+                  <div className="flex items-center justify-between pb-2.5 border-b border-slate-100">
+                    <span className="text-sm text-slate-600">My Courses:</span>
+                    <span className="text-sm font-semibold text-slate-900">{stats.myCourses}</span>
+                  </div>
+                  <div className="flex items-center justify-between pb-2.5 border-b border-slate-100">
+                    <span className="text-sm text-slate-600">Total Students:</span>
+                    <span className="text-sm font-semibold text-slate-900">{stats.totalStudents}</span>
+                  </div>
+                  <div className="flex items-center justify-between">
+                    <span className="text-sm text-slate-600">Avg Rating:</span>
+                    <span className="text-sm font-semibold text-slate-900">{stats.avgRating}</span>
+                  </div>
                 </div>
               </div>
             </div>
