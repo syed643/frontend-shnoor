@@ -362,6 +362,28 @@ const InstructorDashboardView = ({
                 Download Analytics
               </button>
             </div>
+
+            {/* CURRENT RANGE SUMMARY */}
+            <div className="bg-white rounded-xl border border-slate-200 shadow-sm p-6">
+              <h3 className="text-sm font-semibold text-slate-900 uppercase tracking-wide mb-4">
+                Current Range Summary
+              </h3>
+              
+              <div className="space-y-3">
+                <div className="flex items-center justify-between pb-3 border-b border-slate-100">
+                  <span className="text-sm text-slate-600">My Courses:</span>
+                  <span className="text-sm font-semibold text-slate-900">{stats.myCourses}</span>
+                </div>
+                <div className="flex items-center justify-between pb-3 border-b border-slate-100">
+                  <span className="text-sm text-slate-600">Total Students:</span>
+                  <span className="text-sm font-semibold text-slate-900">{stats.totalStudents}</span>
+                </div>
+                <div className="flex items-center justify-between">
+                  <span className="text-sm text-slate-600">Avg Rating:</span>
+                  <span className="text-sm font-semibold text-slate-900">{stats.avgRating}</span>
+                </div>
+              </div>
+            </div>
           </div>
         </div>
 
