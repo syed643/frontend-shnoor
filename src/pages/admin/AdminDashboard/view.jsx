@@ -311,102 +311,98 @@ const AdminDashboardView = ({
         </div>
 
         <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
-          <div className="lg:col-span-2 flex flex-col gap-6">
-            <div className="bg-white p-6 rounded-xl border border-slate-200 shadow-sm h-[420px] flex flex-col">
-              <div className="flex justify-between items-center mb-8">
-                <h3 className="text-xs font-semibold text-slate-600 uppercase tracking-wide">
-                  Learning Activity
-                </h3>
-                <div className="flex gap-2">
-                  <div className="flex items-center gap-2 text-xs font-semibold text-slate-500">
-                    <div className="w-2 h-2 rounded-full bg-indigo-600"></div>
-                    Lessons Completed
-                  </div>
+          <div className="lg:col-span-2 bg-white p-6 rounded-xl border border-slate-200 shadow-sm h-[420px] flex flex-col">
+            <div className="flex justify-between items-center mb-8">
+              <h3 className="text-xs font-semibold text-slate-600 uppercase tracking-wide">
+                Learning Activity
+              </h3>
+              <div className="flex gap-2">
+                <div className="flex items-center gap-2 text-xs font-semibold text-slate-500">
+                  <div className="w-2 h-2 rounded-full bg-indigo-600"></div>
+                  Lessons Completed
                 </div>
               </div>
-              <div className="flex-1">
-                {(!chartData || chartData.length === 0) && (
-                  <div className="flex items-center justify-center h-full text-slate-400">
-                    No activity in selected date range
-                  </div>
-                )}
-                {chartData?.length > 0 && (
-                  <ResponsiveContainer width="100%" height="100%">
-                    <BarChart data={chartData}>
-                      <XAxis
-                        dataKey="name"
-                        axisLine={false}
-                        tickLine={false}
-                        tick={{ fill: "#64748b", fontSize: 11, fontWeight: 500 }}
-                        dy={10}
-                      />
-                      <Tooltip
-                        cursor={{ fill: "#f8fafc" }}
-                        contentStyle={{
-                          borderRadius: "8px",
-                          border: "1px solid #e2e8f0",
-                          boxShadow: "0 4px 6px -1px rgb(0 0 0 / 0.1)",
-                        }}
-                      />
-                      <Bar
-                        dataKey="lessons"
-                        fill="#0f172a"
-                        radius={[4, 4, 0, 0]}
-                        barSize={40}
-                      />
-                    </BarChart>
-                  </ResponsiveContainer>
-                )}
-              </div>
             </div>
-
-            <div className="bg-white p-6 rounded-xl border border-slate-200 shadow-sm flex flex-col gap-5">
-              <div>
-                <h3 className="text-sm font-semibold text-slate-800">
-                  Download Analytics
-                </h3>
-                <p className="text-xs text-slate-500 mt-1">
-                  Export reports for selected date range.
-                </p>
-              </div>
-              <div className="rounded-lg border border-slate-200 p-4">
-                <DateRangeFilter value={dateRange} onChange={setDateRange} />
-              </div>
-              <button
-                onClick={handleDownload}
-                className="w-full py-2.5 bg-indigo-600 hover:bg-indigo-700 text-white rounded-lg text-sm font-semibold"
-              >
-                Download CSV Report
-              </button>
+            <div className="flex-1">
+              {(!chartData || chartData.length === 0) && (
+                <div className="flex items-center justify-center h-full text-slate-400">
+                  No activity in selected date range
+                </div>
+              )}
+              {chartData?.length > 0 && (
+                <ResponsiveContainer width="100%" height="100%">
+                  <BarChart data={chartData}>
+                    <XAxis
+                      dataKey="name"
+                      axisLine={false}
+                      tickLine={false}
+                      tick={{ fill: "#64748b", fontSize: 11, fontWeight: 500 }}
+                      dy={10}
+                    />
+                    <Tooltip
+                      cursor={{ fill: "#f8fafc" }}
+                      contentStyle={{
+                        borderRadius: "8px",
+                        border: "1px solid #e2e8f0",
+                        boxShadow: "0 4px 6px -1px rgb(0 0 0 / 0.1)",
+                      }}
+                    />
+                    <Bar
+                      dataKey="lessons"
+                      fill="#0f172a"
+                      radius={[4, 4, 0, 0]}
+                      barSize={40}
+                    />
+                  </BarChart>
+                </ResponsiveContainer>
+              )}
             </div>
+          </div>
 
-            <div className="bg-white rounded-xl border border-slate-200 shadow-sm p-6">
-              <h3 className="text-sm font-semibold text-slate-900 uppercase tracking-wide mb-4">
+          <div className="bg-white rounded-xl border border-slate-200 shadow-sm p-6 flex flex-col gap-5">
+            <div>
+              <h3 className="text-sm font-semibold text-slate-900 uppercase tracking-wide">
+                Download Analytics
+              </h3>
+              <p className="text-xs text-slate-500 mt-1">
+                Export reports for selected date range.
+              </p>
+            </div>
+            <div className="rounded-lg border border-slate-200 p-4">
+              <DateRangeFilter value={dateRange} onChange={setDateRange} />
+            </div>
+            <button
+              onClick={handleDownload}
+              className="w-full py-2.5 bg-slate-900 hover:bg-slate-800 text-white rounded-lg text-sm font-semibold"
+            >
+              Download Report
+            </button>
+
+            <div className="pt-2 border-t border-slate-200">
+              <h3 className="text-xs font-semibold text-slate-600 uppercase tracking-wide mb-3">
                 Current Range Summary
               </h3>
               
-              <div className="space-y-3">
-                <div className="flex items-center justify-between pb-3 border-b border-slate-100">
-                  <span className="text-sm text-slate-600">Total Students:</span>
+              <div className="space-y-2.5">
+                <div className="flex items-center justify-between pb-2.5 border-b border-slate-100">
+                  <span className="text-sm text-slate-600">Students:</span>
                   <span className="text-sm font-semibold text-slate-900">{stats?.totalStudents ?? 0}</span>
                 </div>
-                <div className="flex items-center justify-between pb-3 border-b border-slate-100">
-                  <span className="text-sm text-slate-600">Total Instructors:</span>
+                <div className="flex items-center justify-between pb-2.5 border-b border-slate-100">
+                  <span className="text-sm text-slate-600">Instructors:</span>
                   <span className="text-sm font-semibold text-slate-900">{stats?.totalInstructors ?? 0}</span>
                 </div>
-                <div className="flex items-center justify-between pb-3 border-b border-slate-100">
+                <div className="flex items-center justify-between pb-2.5 border-b border-slate-100">
                   <span className="text-sm text-slate-600">Pending Courses:</span>
                   <span className="text-sm font-semibold text-slate-900">{stats?.pendingCourses ?? 0}</span>
                 </div>
                 <div className="flex items-center justify-between">
-                  <span className="text-sm text-slate-600">Certificates Issued:</span>
+                  <span className="text-sm text-slate-600">Certificates:</span>
                   <span className="text-sm font-semibold text-slate-900">{stats?.certificates ?? 0}</span>
                 </div>
               </div>
             </div>
           </div>
-
-          <div></div>
         </div>
       </div>
     </div>
