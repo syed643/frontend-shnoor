@@ -1,6 +1,15 @@
-import React from "react";
-import { Plus, Trash2, BookOpen, Search, Archive } from "lucide-react";
+import React, { useState } from "react";
+import {
+  Plus,
+  Trash2,
+  BookOpen,
+  Search,
+  Archive,
+  MessageSquare,
+  X,
+} from "lucide-react";
 import { FaFileAlt, FaVideo } from "react-icons/fa";
+import CourseComments from "../../../components/CourseComments";
 
 const CourseListView = ({
   loading,
@@ -14,6 +23,20 @@ const CourseListView = ({
   onUnarchive,
   onCreate,
 }) => {
+  const [commentsModalOpen, setCommentsModalOpen] = useState(false);
+  const [selectedCourseForComments, setSelectedCourseForComments] =
+    useState(null);
+
+  const openCommentsModal = (course, e) => {
+    e.stopPropagation();
+    setSelectedCourseForComments(course);
+    setCommentsModalOpen(true);
+  };
+
+  const closeCommentsModal = () => {
+    setCommentsModalOpen(false);
+    setSelectedCourseForComments(null);
+  };
   const getStatusColor = (status) => {
     switch (status) {
       case "approved":
@@ -131,6 +154,9 @@ const CourseListView = ({
                   <th className="px-6 py-3 text-sm font-bold text-slate-700 uppercase tracking-wide">
                     Status
                   </th>
+                  <th className="px-6 py-3 text-sm font-bold text-slate-700 uppercase tracking-wide">
+                    Comments
+                  </th>
                   <th className="px-6 py-3 text-sm font-bold text-slate-700 uppercase tracking-wide text-right">
                     Last Updated
                   </th>
@@ -143,7 +169,7 @@ const CourseListView = ({
                 {courses.length === 0 ? (
                   <tr>
                     <td
-                      colSpan="6"
+                      colSpan="7"
                       className="px-6 py-12 text-center text-slate-500"
                     >
                       <BookOpen
@@ -184,6 +210,16 @@ const CourseListView = ({
                           {course.status}
                         </span>
                       </td>
+                      <td className="px-6 py-4">
+                        <button
+                          onClick={(e) => openCommentsModal(course, e)}
+                          className="flex items-center gap-2 px-3 py-1.5 text-sm text-white bg-indigo-600 dark:bg-[#22c55e] hover:bg-indigo-700 dark:hover:bg-[#16a34a] rounded-md transition-colors font-medium shadow-sm"
+                        >
+                          <MessageSquare size={16} />
+                          View
+                        </button>
+                      </td>
+
                       <td className="px-6 py-4 text-sm text-slate-500 text-right tabular-nums">
                         {course.created_at
                           ? new Date(course.created_at).toLocaleDateString()
@@ -235,6 +271,35 @@ const CourseListView = ({
           </div>
         </div>
       </div>
+        {/* Comments Modal */}
+      {commentsModalOpen && selectedCourseForComments && (
+        <div className="fixed inset-0 bg-black/50 backdrop-blur-sm z-50 flex items-center justify-center p-4">
+          <div className="bg-white dark:bg-[#0a0a0a] rounded-xl shadow-2xl w-full max-w-4xl max-h-[90vh] flex flex-col border border-slate-200 dark:border-[#2a2a2a]">
+            {/* Modal Header */}
+            <div className="flex items-center justify-between px-6 py-4 border-b border-slate-200 dark:border-[#2a2a2a] shrink-0">
+              <div>
+                <h2 className="text-xl font-bold text-slate-900 dark:text-[#e5e7eb]">
+                  Course Discussion
+                </h2>
+                <p className="text-sm text-slate-500 dark:text-[#9ca3af] mt-1">
+                  {selectedCourseForComments.title}
+                </p>
+              </div>
+              <button
+                onClick={closeCommentsModal}
+                className="p-2 text-slate-400 hover:text-slate-600 dark:hover:text-[#e5e7eb] hover:bg-slate-100 dark:hover:bg-[#1a1a1a] rounded-lg transition-colors"
+              >
+                <X size={20} />
+              </button>
+            </div>
+
+            {/* Modal Body */}
+            <div className="flex-1 overflow-auto p-6">
+              <CourseComments courseId={selectedCourseForComments.courses_id} />
+            </div>
+          </div>
+        </div>
+      )}
     </div>
   );
 };

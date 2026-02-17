@@ -13,6 +13,7 @@ import {
   ArrowLeft,
   Check,
 } from "lucide-react";
+import CourseComments from "../../../components/CourseComments";
 
 const CourseDetailView = ({
   course,
@@ -246,6 +247,9 @@ const CourseDetailView = ({
                 </p>
               </div>
             </div>
+          </div>
+          <div className="bg-white p-8 rounded-2xl border border-slate-200 shadow-sm">
+            <CourseComments courseId={course.courses_id} />
           </div>
         </div>
 
