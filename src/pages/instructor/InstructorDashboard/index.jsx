@@ -19,37 +19,48 @@ export const InstructorDashboard = () => {
     const [searchLoading, setSearchLoading] = useState(false);
     const [dateRange, setDateRange] = useState(null);
     const debounceTimer = useRef(null);
+
+  // ==========================================
+  // Fetch stats when dateRange changes
+  // ==========================================
   useEffect(() => {
-    const fetchDashboardStats = async () => {
-      try {
-        setLoading(true);
-        const token = await auth.currentUser.getIdToken(true);
+    fetchDashboardStats(dateRange);
+  }, [dateRange]);
 
-        const [courseRes, studentRes] = await Promise.all([
-          api.get("/api/courses/instructor/stats", {
-            headers: { Authorization: `Bearer ${token}` },
-          }),
-          api.get("/api/assignments/instructor/students/count", {
-            headers: { Authorization: `Bearer ${token}` },
-          }),
-        ]);
+  const fetchDashboardStats = async (range) => {
+    try {
+      setLoading(true);
+      const token = await auth.currentUser?.getIdToken(true);
 
-        setStats({
-          myCourses: Number(courseRes.data.total_courses),
-          totalStudents: Number(studentRes.data.total_students),
-          avgRating: 4.8, // keep static
-             coursesChange: courseRes.data.coursesChange || 0,
-          studentsChange: studentRes.data.studentsChange || 0
-        });
-      } catch (err) {
-        console.error("Dashboard stats error:", err);
-      } finally {
-        setLoading(false);
-      }
-    };
+      const params = range ? {
+        startDate: range.startDate,
+        endDate: range.endDate
+      } : {};
 
-    if (auth.currentUser) fetchDashboardStats();
-  }, []);
+      const [courseRes, studentRes] = await Promise.all([
+        api.get("/api/courses/instructor/stats", {
+          headers: { Authorization: `Bearer ${token}` },
+          params
+        }),
+        api.get("/api/assignments/instructor/students/count", {
+          headers: { Authorization: `Bearer ${token}` },
+          params
+        }),
+      ]);
+
+      setStats({
+        myCourses: Number(courseRes.data.total_courses),
+        totalStudents: Number(studentRes.data.total_students),
+        avgRating: courseRes.data.avg_rating || 4.8,
+        coursesChange: courseRes.data.coursesChange || 0,
+        studentsChange: studentRes.data.studentsChange || 0
+      });
+    } catch (err) {
+      console.error("Dashboard stats error:", err);
+    } finally {
+      setLoading(false);
+    }
+  };
 
     const performSearch = async (query) => {
         if (!query.trim()) {
