@@ -115,7 +115,7 @@ useEffect(() => {
       // Use cached token for socket connection
       const token = await auth.currentUser.getIdToken(false);
 
-      const socket = io("http://localhost:5000", {
+      const socket = io(import.meta.env.VITE_API_URL || 'http://localhost:5000', {
         auth: { token },
         reconnection: true,
         reconnectionDelay: 1000,
