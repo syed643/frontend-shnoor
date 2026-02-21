@@ -12,6 +12,7 @@ import {
   Menu,
   Award,
   MessageSquare,
+  Clock,
 } from "lucide-react";
 import markLogo from "../../../assets/just_logo.jpeg";
 import { useNavigate } from "react-router-dom";
@@ -94,11 +95,7 @@ const AdminLayoutView = ({
                 icon={GraduationCap}
                 label="Add Instructor"
               />
-              <NavItem
-                path="add-student"
-                icon={UserPlus}
-                label="Add Student"
-              />
+              <NavItem path="add-student" icon={UserPlus} label="Add Student" />
             </ul>
 
             <div className="text-xs font-bold text-slate-400 uppercase tracking-wider mb-3 px-2">
@@ -122,7 +119,9 @@ const AdminLayoutView = ({
                 icon={UserCircle}
                 label="Approve Users"
               />
-                <NavItem
+              <NavItem path="exam-timers" icon={Clock} label="Exam Timers" />
+
+              <NavItem
                 path="chat-students"
                 icon={MessageSquare}
                 label="Chat with Students"

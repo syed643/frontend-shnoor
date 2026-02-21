@@ -69,6 +69,7 @@ import GroupChat from "./pages/student/GroupChat";
 import PrivacyPolicy from "./pages/PrivacyPolicy";
 import TermsAndConditions from "./pages/TermsAndConditions";
 import AddStudent from "./pages/admin/AddStudent";
+import AdminExamTimer from "./pages/admin/ExamTimer/AdminExamTimer";
 // import Leaderboard from './pages/student/Leaderboard';
 
 function App() {
@@ -111,6 +112,8 @@ function App() {
               <Route path="groups/:groupId/users" element={<GroupUsers />} />
               <Route path="settings" element={<ProfileSettings />} />
               <Route path="chat-students" element={<ChatWithStudents />} />
+              <Route path="/admin/exam-timers" element={<AdminExamTimer />} />
+
 
 
               <Route

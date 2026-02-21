@@ -1,185 +1,3 @@
-{/*import React, { useState, useEffect, useRef, useCallback } from "react";
-import { useParams, useNavigate } from "react-router-dom";
-import { auth } from "../../../auth/firebase";
-import ExamRunnerView from "./view.jsx";
-import api from "../../../api/axios";
-import { onAuthStateChanged } from "firebase/auth";
-
-const ExamRunner = () => {
-  const { examId } = useParams();
-  const navigate = useNavigate();
-
-  const [exam, setExam] = useState(null);
-  const [currentQIndex, setCurrentQIndex] = useState(0);
-  const [answers, setAnswers] = useState({});
-  const [timeLeft, setTimeLeft] = useState(0);
-  const [isSubmitted, setIsSubmitted] = useState(false);
-  const [result, setResult] = useState(null);
-  const [loading, setLoading] = useState(true);
-  const [submitting, setSubmitting] = useState(false);
-
-  // refs to avoid stale closures in interval/submit
-  const answersRef = useRef(answers);
-  answersRef.current = answers;
-
-  const mountedRef = useRef(true);
-  useEffect(() => {
-    mountedRef.current = true;
-    return () => {
-      mountedRef.current = false;
-    };
-  }, []);
-
-
-  useEffect(() => {
-    const unsubscribe = onAuthStateChanged(auth, async (user) => {
-      if (!user) {
-        navigate("/login");
-        return;
-      }
-
-      try {
-        const token = await user.getIdToken();
-        const res = await api.get(`/api/student/exams/${examId}`, {
-          headers: { Authorization: `Bearer ${token}` },
-        });
-
-        if (!mountedRef.current) return;
-        setExam(res.data);
-
-        if (typeof res.data.duration === "number" && res.data.duration > 0) {
-          // duration assumed in minutes
-          setTimeLeft(res.data.duration * 60);
-        }
-      } catch (err) {
-        console.error("Failed to load exam:", err);
-        if (!mountedRef.current) return;
-
-        const status = err?.response?.status;
-        if (status === 403) {
-          alert("You are not enrolled in this exam.");
-          navigate("/student/exams");
-        } else if (status === 404) {
-          alert("Exam not found.");
-          navigate("/student/exams");
-        } else {
-          alert("Unable to load exam.");
-          navigate(-1);
-        }
-      } finally {
-        if (mountedRef.current) setLoading(false);
-      }
-    });
-
-    return () => unsubscribe();
-  }, [examId, navigate]);
-
-
-  const submitExam = useCallback(async () => {
-    if (isSubmitted || submitting) return;
-    setSubmitting(true);
-
-    try {
-      const user = auth.currentUser;
-      if (!user) {
-        alert("You are not authenticated. Please login again.");
-        navigate("/login");
-        return;
-      }
-
-      const token = await user.getIdToken(true);
-
-      const res = await api.post(
-        `/api/exam/${examId}/submit`,
-        { answers: answersRef.current },
-        { headers: { Authorization: `Bearer ${token}` } }
-      );
-
-      if (!mountedRef.current) return;
-      setResult(res.data);
-      setIsSubmitted(true);
-    } catch (err) {
-      console.error("Exam submission failed:", err);
-      if (mountedRef.current) {
-        alert(err?.response?.data?.message || "Submission failed");
-      }
-    } finally {
-      if (mountedRef.current) setSubmitting(false);
-    }
-  }, [examId, navigate, isSubmitted, submitting]);
-
-  useEffect(() => {
-    if (!exam || isSubmitted) return;
-    if (timeLeft <= 0) return;
-
-    const timer = setInterval(() => {
-      setTimeLeft((prev) => {
-        if (prev <= 1) {
-          // finalize and clear
-          clearInterval(timer);
-          // call stable submit function
-          submitExam().catch((e) => console.error("submit in timer failed", e));
-          return 0;
-        }
-        return prev - 1;
-      });
-    }, 1000);
-
-    return () => clearInterval(timer);
-    // only recreate interval when exam or isSubmitted changes
-  }, [exam, isSubmitted, submitExam, timeLeft]);
-
-  const formatTime = (seconds) => {
-    if (!Number.isFinite(seconds) || seconds < 0) return "0:00";
-    const h = Math.floor(seconds / 3600);
-    const m = Math.floor((seconds % 3600) / 60);
-    const s = seconds % 60;
-    if (h > 0) return `${h}:${m < 10 ? "0" : ""}${m}:${s < 10 ? "0" : ""}${s}`;
-    return `${m}:${s < 10 ? "0" : ""}${s}`;
-  };
-
-  const handleAnswer = useCallback((questionId, value) => {
-    setAnswers((prev) => {
-      const next = { ...prev, [questionId]: value };
-      answersRef.current = next;
-      return next;
-    });
-  }, []);
-
-  // warn if user tries to close or reload while exam in progress
-  useEffect(() => {
-    const handler = (e) => {
-      if (isSubmitted) return;
-      e.preventDefault();
-      // Chrome requires returnValue to be set
-      e.returnValue = "Are you sure you want to leave? Your answers may not be saved.";
-    };
-
-    window.addEventListener("beforeunload", handler);
-    return () => window.removeEventListener("beforeunload", handler);
-  }, [isSubmitted]);
-
-  return (
-    <ExamRunnerView
-      loading={loading}
-      exam={exam}
-      currentQIndex={currentQIndex}
-      setCurrentQIndex={setCurrentQIndex}
-      answers={answers}
-      handleAnswer={handleAnswer}
-      timeLeft={timeLeft}
-      isSubmitted={isSubmitted}
-      result={result}
-      handleSubmit={submitExam}
-      formatTime={formatTime}
-      navigate={navigate}
-      submitting={submitting}
-    />
-  );
-};
-
-export default ExamRunner;*/}
-
 import React, { useState, useEffect, useRef } from "react";
 import { useParams, useNavigate } from "react-router-dom";
 import { auth } from "../../../auth/firebase";
@@ -187,6 +5,8 @@ import ExamRunnerView from "./view.jsx";
 import api from "../../../api/axios";
 import { onAuthStateChanged } from "firebase/auth";
 import useExamSecurity from "../../../hooks/useExamSecurity";
+import { io } from "socket.io-client";
+
 
 
 const ExamRunner = () => {
@@ -200,6 +20,7 @@ const ExamRunner = () => {
   const [isSubmitted, setIsSubmitted] = useState(false);
   const [result, setResult] = useState(null);
   const [loading, setLoading] = useState(true);
+  const socketRef = useRef(null);
 
   // New state for drift-proof timer
   const [startTime, setStartTime] = useState(null);
@@ -220,7 +41,8 @@ const ExamRunner = () => {
       }
 
       try {
-        const token = await user.getIdToken();
+        // Use cached token to avoid Firebase quota issues
+        const token = await user.getIdToken(false);
 
         const res = await api.get(
           `/api/student/exams/${examId}`,
@@ -283,6 +105,86 @@ const ExamRunner = () => {
   }, [examId, navigate]);
 
   /* =========================
+   SOCKET CONNECTION
+========================= */
+useEffect(() => {
+  if (!exam || isSubmitted) return;
+
+  const connectSocket = async () => {
+    try {
+      // Use cached token for socket connection
+      const token = await auth.currentUser.getIdToken(false);
+
+      const socket = io("http://localhost:5000", {
+        auth: { token },
+        reconnection: true,
+        reconnectionDelay: 1000,
+        reconnectionDelayMax: 5000,
+        reconnectionAttempts: Infinity
+      });
+
+      socketRef.current = socket;
+
+      // Initial connection
+      socket.on("connect", () => {
+        console.log("🔌 Connected to server, socket ID:", socket.id);
+        console.log("📝 Emitting exam:start for examId:", examId);
+
+        socket.emit("exam:start", {
+          examId: examId
+        });
+      });
+
+      // Handle reconnection
+      socket.io.on("reconnect", (attempt) => {
+        console.log("✅ Reconnected after", attempt, "attempts");
+        console.log("📝 Re-emitting exam:start for examId:", examId);
+        
+        socket.emit("exam:start", {
+          examId: examId
+        });
+      });
+
+      // Handle disconnection
+      socket.on("disconnect", (reason) => {
+        console.warn("❌ Disconnected from server. Reason:", reason);
+        if (reason === "io server disconnect") {
+          // Server disconnected, need to reconnect manually
+          socket.connect();
+        }
+      });
+
+      // Handle connection error
+      socket.on("connect_error", (error) => {
+        console.error("🚫 Connection error:", error.message);
+      });
+
+      // Handle auto-submit event from server
+      socket.on("exam:autoSubmitted", (data) => {
+        console.log("🚨 Received exam:autoSubmitted event:", data);
+        alert("Exam auto-submitted due to disconnection.");
+        setIsExamLocked(true);
+        setIsSubmitted(true);
+      });
+
+    } catch (error) {
+      console.error("Socket connection error:", error);
+    }
+  };
+
+  connectSocket();
+
+  return () => {
+    if (socketRef.current) {
+      console.log("🔌 Disconnecting socket...");
+      socketRef.current.disconnect();
+    }
+  };
+
+}, [exam, examId, isSubmitted]);
+
+
+  /* =========================
      DRIFT-PROOF TIMER
   ========================= */
   useEffect(() => {
@@ -324,17 +226,59 @@ const ExamRunner = () => {
      ANSWER HANDLING
      (KEYED BY QUESTION_ID)
   ========================= */
-  const handleAnswer = (questionId, value) => {
-    if (isExamLocked || isSubmitted) return; // Prevent answers if locked
-    setAnswers((prev) => {
-      const next = {
-        ...prev,
-        [questionId]: value
-      };
-      answersRef.current = next;
-      return next;
+const handleAnswer = async (question, value) => {
+  if (isExamLocked || isSubmitted) return;
+
+  setAnswers(prev => ({
+    ...prev,
+    [question.id]: value
+  }));
+
+  try {
+    // Use cached token to avoid quota issues during answer saving
+    const token = await auth.currentUser.getIdToken(false);
+
+    if (question.type === "mcq") {
+      console.log("💾 Saving MCQ answer:", { questionId: question.id, optionId: value });
+      
+      const response = await api.post(
+        `/api/exams/${examId}/save-answer`,
+        {
+          questionId: question.id,
+          selectedOptionId: value
+        },
+        { headers: { Authorization: `Bearer ${token}` } }
+      );
+      
+      console.log("✅ MCQ answer saved:", response.data);
+    } else {
+      console.log("💾 Saving text answer:", { questionId: question.id, textLength: value?.length });
+      
+      const response = await api.post(
+        `/api/exams/${examId}/save-answer`,
+        {
+          questionId: question.id,
+          answerText: value
+        },
+        { headers: { Authorization: `Bearer ${token}` } }
+      );
+      
+      console.log("✅ Text answer saved:", response.data);
+    }
+  } catch (error) {
+    console.error("❌ Failed to save answer:", {
+      questionId: question.id,
+      error: error.message,
+      status: error.response?.status,
+      data: error.response?.data
     });
-  };
+    
+    // Don't block the UI, but log the error
+    // The answer is still stored locally in state
+  }
+};
+
+
 
   /* =========================
      SUBMIT EXAM (BACKEND)
@@ -343,13 +287,22 @@ const ExamRunner = () => {
     try {
       if (isSubmitted) return;
 
-      const token = await auth.currentUser.getIdToken(true);
+      // Use cached token to avoid Firebase quota issues
+      const token = await auth.currentUser.getIdToken(false);
+
+      console.log("📤 Submitting exam...", {
+        examId,
+        answersCount: Object.keys(answersRef.current).length,
+        answers: answersRef.current
+      });
 
       const res = await api.post(
         `/api/exam/${examId}/submit`,
         { answers: answersRef.current },
         { headers: { Authorization: `Bearer ${token}` } }
       );
+
+      console.log("✅ Exam submitted successfully:", res.data);
 
       setResult(res.data);
       setIsSubmitted(true);
@@ -359,10 +312,24 @@ const ExamRunner = () => {
       localStorage.removeItem(storageKey);
 
     } catch (err) {
-      console.error("Exam submission failed:", err);
+      console.error("❌ Exam submission failed:", {
+        message: err.message,
+        status: err.response?.status,
+        data: err.response?.data,
+        error: err
+      });
+
+      // Show user-friendly error message
+      const errorMessage = err.response?.data?.message || "Failed to submit exam. Please try again.";
+      
       // If it failed because already submitted, assume success state locally to prevent retries
       if (err.response?.status === 400 && err.response?.data?.message === "Exam already submitted") {
+        alert("This exam has already been submitted.");
         setIsSubmitted(true);
+      } else if (err.message?.includes('auth/quota-exceeded')) {
+        alert('Firebase quota exceeded. Please try again in a few minutes or contact support.');
+      } else {
+        alert(`Submission Error: ${errorMessage}`);
       }
     }
   };
