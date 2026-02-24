@@ -22,6 +22,8 @@ const ExamRunnerView = ({
   isSubmitted,
   result,
   handleSubmit,
+  handleRewrite,
+  canRewrite,
   formatTime,
   navigate,
   securityHandlers,
@@ -138,6 +140,15 @@ const ExamRunnerView = ({
                   View Certificate
                 </button>
               </div>
+
+              {canRewrite && (
+                <button
+                  className="w-full px-6 py-2.5 mt-4 border border-slate-300 rounded-lg text-slate-600 font-bold hover:bg-slate-100 transition-colors text-sm bg-slate-50"
+                  onClick={handleRewrite}
+                >
+                  Rewrite Exam
+                </button>
+              )}
             </div>
           ) : (
             <div className="space-y-8">
@@ -174,9 +185,9 @@ const ExamRunnerView = ({
                 </button>
                 <button
                   className="px-6 py-2.5 bg-rose-600 text-white rounded-lg font-bold hover:bg-rose-700 transition-all text-sm shadow-sm"
-                  onClick={() => window.location.reload()}
+                  onClick={canRewrite ? handleRewrite : () => window.location.reload()}
                 >
-                  Retake Exam
+                  {canRewrite ? "Rewrite Exam" : "Retake Exam"}
                 </button>
               </div>
             </div>

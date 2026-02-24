@@ -20,6 +20,7 @@ const ExamRunner = () => {
   const [isSubmitted, setIsSubmitted] = useState(false);
   const [result, setResult] = useState(null);
   const [loading, setLoading] = useState(true);
+  const [canRewrite, setCanRewrite] = useState(false);
   const socketRef = useRef(null);
 
   // New state for drift-proof timer
@@ -306,6 +307,7 @@ const handleAnswer = async (question, value) => {
 
       setResult(res.data);
       setIsSubmitted(true);
+      setCanRewrite(true);
 
       // Cleanup local storage on successful submit
       const storageKey = `exam_start_${examId}_${auth.currentUser.uid}`;
@@ -322,15 +324,52 @@ const handleAnswer = async (question, value) => {
       // Show user-friendly error message
       const errorMessage = err.response?.data?.message || "Failed to submit exam. Please try again.";
       
-      // If it failed because already submitted, assume success state locally to prevent retries
+      // If already submitted, allow them to rewrite
       if (err.response?.status === 400 && err.response?.data?.message === "Exam already submitted") {
-        alert("This exam has already been submitted.");
         setIsSubmitted(true);
+        setCanRewrite(true);
+        alert("Exam has been submitted. You can rewrite it if needed.");
       } else if (err.message?.includes('auth/quota-exceeded')) {
         alert('Firebase quota exceeded. Please try again in a few minutes or contact support.');
       } else {
         alert(`Submission Error: ${errorMessage}`);
       }
+    }
+  };
+
+  /* =========================
+     REWRITE EXAM
+  ========================= */
+  const handleRewrite = async () => {
+    try {
+      const token = await auth.currentUser.getIdToken(false);
+
+      // Call backend to reset answers and attempt status
+      await api.post(
+        `/api/exams/${examId}/rewrite`,
+        {},
+        { headers: { Authorization: `Bearer ${token}` } }
+      );
+
+      // Reset UI state
+      setIsSubmitted(false);
+      setResult(null);
+      setAnswers({});
+      setCurrentQIndex(0);
+      setCanRewrite(false);
+      
+      // Reset timer if exam has duration
+      if (exam?.duration > 0) {
+        const storageKey = `exam_start_${examId}_${auth.currentUser.uid}`;
+        const effectiveStart = Date.now();
+        localStorage.setItem(storageKey, effectiveStart.toString());
+        setStartTime(effectiveStart);
+      }
+
+      console.log("✅ Rewrite attempt created successfully");
+    } catch (err) {
+      console.error("❌ Failed to create rewrite attempt:", err);
+      alert("Failed to start rewrite. Please try again.");
     }
   };
 
@@ -373,6 +412,8 @@ const handleAnswer = async (question, value) => {
       isSubmitted={isSubmitted}
       result={result}
       handleSubmit={handleSubmit}
+      handleRewrite={handleRewrite}
+      canRewrite={canRewrite}
       formatTime={formatTime}
       navigate={navigate}
       securityHandlers={securityHandlers}
