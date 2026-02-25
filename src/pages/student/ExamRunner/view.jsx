@@ -94,6 +94,38 @@ const ExamRunnerView = ({
       </div>
     );
 
+  if (isSubmitted && !result) {
+    return (
+      <div className="flex items-center justify-center min-h-[80vh] bg-slate-50 font-sans">
+        <div className="bg-white p-12 rounded-lg shadow-sm border border-slate-200 w-full text-center space-y-4">
+          <div className="w-16 h-16 bg-indigo-50 text-indigo-600 rounded-full flex items-center justify-center mx-auto">
+            <FaCheckCircle size={32} />
+          </div>
+          <h2 className="text-2xl font-bold text-slate-900 tracking-tight">
+            Assessment Submitted
+          </h2>
+          <p className="text-slate-500">
+            Your exam was submitted successfully. Results will appear once grading completes.
+          </p>
+          <div className="grid grid-cols-2 gap-4 pt-2">
+            <button
+              className="px-6 py-2.5 border border-slate-200 rounded-lg text-slate-600 font-bold hover:bg-slate-50 hover:text-slate-800 transition-colors text-sm"
+              onClick={() => navigate("/student/dashboard")}
+            >
+              Return Home
+            </button>
+            <button
+              className="px-6 py-2.5 bg-indigo-600 text-white rounded-lg font-bold hover:bg-indigo-700 transition-all text-sm shadow-sm"
+              onClick={() => window.location.reload()}
+            >
+              Refresh Status
+            </button>
+          </div>
+        </div>
+      </div>
+    );
+  }
+
   if (isSubmitted && result) {
     return (
       <div className="flex items-center justify-center min-h-[80vh] bg-slate-50 font-sans">

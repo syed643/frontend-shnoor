@@ -25,7 +25,7 @@ const useExamSecurity = (onAutoSubmit, onWarning) => {
     const isHiddenRef = useRef(false);
 
     // Warning Thresholds
-    const MAX_VIOLATIONS = 3;
+    const MAX_VIOLATIONS = 5;
 
     // Persist callbacks
     const onAutoSubmitRef = useRef(onAutoSubmit);

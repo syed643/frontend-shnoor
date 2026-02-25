@@ -6,7 +6,7 @@ const SecurityViolationModal = ({
     isOpen,
     violationType,
     count,
-    maxViolations = 3,
+    maxViolations = 5,
     isTerminated = false,
     onResume
 }) => {

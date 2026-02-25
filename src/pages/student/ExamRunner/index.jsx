@@ -13,6 +13,15 @@ const ExamRunner = () => {
   const { examId } = useParams();
   const navigate = useNavigate();
 
+  const parseServerTimestamp = (value) => {
+    if (!value) return NaN;
+    if (typeof value === "string") {
+      const hasTimezone = /[zZ]|[+-]\d{2}:?\d{2}$/.test(value);
+      return new Date(hasTimezone ? value : `${value}Z`).getTime();
+    }
+    return new Date(value).getTime();
+  };
+
   const [exam, setExam] = useState(null);
   const [currentQIndex, setCurrentQIndex] = useState(0);
   const [answers, setAnswers] = useState({});
@@ -23,8 +32,9 @@ const ExamRunner = () => {
   const [canRewrite, setCanRewrite] = useState(false);
   const socketRef = useRef(null);
 
-  // New state for drift-proof timer
-  const [startTime, setStartTime] = useState(null);
+  // Server-authoritative timer state
+  const [endTimeMs, setEndTimeMs] = useState(null);
+  const [serverOffsetMs, setServerOffsetMs] = useState(0);
   const [isExamLocked, setIsExamLocked] = useState(false);
 
   const answersRef = useRef(answers);
@@ -55,31 +65,51 @@ const ExamRunner = () => {
         const examData = res.data;
         setExam(examData);
 
-        // Timer Logic Initialization
         if (examData.duration > 0) {
-          // 1. Try to get start time from backend (not currently available, but ready for future)
-          // 2. Fallback to localStorage
-          const storageKey = `exam_start_${examId}_${user.uid}`;
-          const storedStart = localStorage.getItem(storageKey);
+          const attemptRes = await api.get(
+            `/api/exams/${examId}/attempt`,
+            { headers: { Authorization: `Bearer ${token}` } }
+          );
 
-          let effectiveStart;
-          if (examData.started_at) {
-            effectiveStart = new Date(examData.started_at).getTime();
-          } else if (storedStart) {
-            effectiveStart = parseInt(storedStart, 10);
-          } else {
-            effectiveStart = Date.now();
-            localStorage.setItem(storageKey, effectiveStart.toString());
+          console.log("🔍 Attempt API Response:", attemptRes.data);
+
+          const serverTime = parseServerTimestamp(attemptRes.data.server_time);
+          const endTime = parseServerTimestamp(attemptRes.data.end_time);
+          const clientTime = Date.now();
+
+          if (!Number.isFinite(serverTime) || !Number.isFinite(endTime)) {
+            console.error("Invalid attempt timestamps:", attemptRes.data);
+            const fallbackEndTime = clientTime + (examData.duration * 60 * 1000);
+            setEndTimeMs(fallbackEndTime);
+            setServerOffsetMs(0);
+            setTimeLeft(examData.duration * 60);
+            setIsExamLocked(false);
+            console.warn("⚠️ Using fallback timer - timestamps will be less secure");
+            return;
           }
 
-          setStartTime(effectiveStart);
+          console.log("⏰ Time Debugging:", {
+            raw_server_time: attemptRes.data.server_time,
+            raw_end_time: attemptRes.data.end_time,
+            parsed_server_time: serverTime,
+            parsed_end_time: endTime,
+            client_time: clientTime,
+            server_offset: serverTime - clientTime,
+            duration_minutes: examData.duration,
+            remaining_seconds: Math.floor((endTime - serverTime) / 1000)
+          });
 
-          // Initial calculation for immediate UI feedback
-          const durationMs = examData.duration * 60 * 1000;
-          const targetEndTime = effectiveStart + durationMs;
-          const secondsRemaining = Math.floor((targetEndTime - Date.now()) / 1000);
+          setServerOffsetMs(serverTime - clientTime);
+          setEndTimeMs(endTime);
 
-          setTimeLeft(Math.max(0, secondsRemaining));
+          const remaining = Math.floor((endTime - serverTime) / 1000);
+          setTimeLeft(Math.max(0, remaining));
+
+          if (attemptRes.data.status === "submitted") {
+            setIsSubmitted(true);
+            setIsExamLocked(true);
+            fetchExamResult();
+          }
         }
 
       } catch (err) {
@@ -87,7 +117,13 @@ const ExamRunner = () => {
 
         const status = err.response?.status;
 
-        if (status === 403) {
+        if (status === 400 && err.response?.data?.alreadySubmitted) {
+          alert("This exam was already submitted (possibly auto-submitted due to disconnection).");
+          setIsSubmitted(true);
+          setIsExamLocked(true);
+          setLoading(false);
+          return;
+        } else if (status === 403) {
           alert("You are not enrolled in this exam.");
           navigate("/student/exams");
         } else if (status === 404) {
@@ -105,6 +141,41 @@ const ExamRunner = () => {
     return () => unsubscribe();
   }, [examId, navigate]);
 
+  const fetchExamResult = async () => {
+    try {
+      const token = await auth.currentUser.getIdToken(false);
+      const res = await api.get(`/api/exams/results/${examId}`, {
+        headers: { Authorization: `Bearer ${token}` }
+      });
+      setResult(res.data);
+    } catch (err) {
+      if (err.response?.status !== 404) {
+        console.error("Failed to fetch exam result:", err);
+      }
+    }
+  };
+
+  const checkExamStatus = async () => {
+    if (!exam || isSubmitted) return;
+
+    try {
+      const token = await auth.currentUser.getIdToken(false);
+      const res = await api.get(`/api/exams/${examId}/status`, {
+        headers: { Authorization: `Bearer ${token}` }
+      });
+
+      if (res.data.status === 'submitted') {
+        console.log("📊 API Check: Exam was auto-submitted");
+        setIsExamLocked(true);
+        setIsSubmitted(true);
+        fetchExamResult();
+        alert("Exam was auto-submitted due to disconnection.");
+      }
+    } catch (err) {
+      console.log("Could not check exam status:", err.message);
+    }
+  };
+
   /* =========================
    SOCKET CONNECTION
 ========================= */
@@ -121,12 +192,29 @@ useEffect(() => {
         reconnection: true,
         reconnectionDelay: 1000,
         reconnectionDelayMax: 5000,
-        reconnectionAttempts: Infinity
+        reconnectionAttempts: Infinity,
+        transports: ['websocket', 'polling'] // Try websocket first, fallback to polling
       });
 
       socketRef.current = socket;
 
-      // Initial connection
+      console.log("🔧 Setting up socket listeners for exam:", examId);
+
+      // Handle auto-submit event from server (SET THIS UP FIRST!)
+      socket.on("exam:autoSubmitted", (data) => {
+        console.log("🚨🚨🚨 RECEIVED exam:autoSubmitted event:", data);
+        console.log("Current state - isSubmitted:", isSubmitted, "isExamLocked:", isExamLocked);
+        
+        // Set states first
+        setIsExamLocked(true);
+        setIsSubmitted(true);
+        fetchExamResult();
+        
+        // Show alert to user immediately
+        alert(data.message || "Exam auto-submitted due to disconnection.");
+      });
+
+      // Initial connection AND reconnection (connect fires on both)
       socket.on("connect", () => {
         console.log("🔌 Connected to server, socket ID:", socket.id);
         console.log("📝 Emitting exam:start for examId:", examId);
@@ -134,21 +222,14 @@ useEffect(() => {
         socket.emit("exam:start", {
           examId: examId
         });
-      });
 
-      // Handle reconnection
-      socket.io.on("reconnect", (attempt) => {
-        console.log("✅ Reconnected after", attempt, "attempts");
-        console.log("📝 Re-emitting exam:start for examId:", examId);
-        
-        socket.emit("exam:start", {
-          examId: examId
-        });
+        checkExamStatus();
       });
 
       // Handle disconnection
       socket.on("disconnect", (reason) => {
         console.warn("❌ Disconnected from server. Reason:", reason);
+        console.warn("⏰ Grace timer should start now on backend");
         if (reason === "io server disconnect") {
           // Server disconnected, need to reconnect manually
           socket.connect();
@@ -160,12 +241,15 @@ useEffect(() => {
         console.error("🚫 Connection error:", error.message);
       });
 
-      // Handle auto-submit event from server
-      socket.on("exam:autoSubmitted", (data) => {
-        console.log("🚨 Received exam:autoSubmitted event:", data);
-        alert("Exam auto-submitted due to disconnection.");
-        setIsExamLocked(true);
-        setIsSubmitted(true);
+      // Log when reconnection is attempted
+      socket.io.on("reconnect_attempt", (attempt) => {
+        console.log("🔄 Reconnection attempt #", attempt);
+      });
+
+      // Log successful reconnection
+      socket.io.on("reconnect", (attempt) => {
+        console.log("✅✅✅ Successfully reconnected after", attempt, "attempts");
+        console.log("📝 exam:start will be emitted via 'connect' event");
       });
 
     } catch (error) {
@@ -186,30 +270,61 @@ useEffect(() => {
 
 
   /* =========================
+     VISIBILITY CHECK FOR AUTO-SUBMIT
+     (Fallback if socket event is missed)
+  ========================= */
+  useEffect(() => {
+    if (!exam || isSubmitted) return;
+
+    const handleVisibilityChange = () => {
+      if (!document.hidden) {
+        console.log("👀 Page became visible, checking exam status...");
+        checkExamStatus();
+      }
+    };
+
+    document.addEventListener('visibilitychange', handleVisibilityChange);
+    
+    return () => {
+      document.removeEventListener('visibilitychange', handleVisibilityChange);
+    };
+  }, [exam, examId, isSubmitted]);
+
+  /* =========================
      DRIFT-PROOF TIMER
   ========================= */
   useEffect(() => {
-    if (!exam || isSubmitted || exam.duration === 0 || !startTime || isExamLocked) return;
+    if (!exam || isSubmitted || exam.duration === 0 || !endTimeMs || isExamLocked) return;
 
-    const durationMs = exam.duration * 60 * 1000;
-    const targetEndTime = startTime + durationMs;
-
+    let tickCount = 0;
     const timer = setInterval(() => {
-      const now = Date.now();
-      const secondsRemaining = Math.floor((targetEndTime - now) / 1000);
+      const now = Date.now() + serverOffsetMs;
+      const secondsRemaining = Math.floor((endTimeMs - now) / 1000);
+
+      // Log first 3 ticks for debugging
+      if (tickCount < 3) {
+        console.log(`⏱️ Timer Tick ${tickCount + 1}:`, {
+          clientNow: Date.now(),
+          serverOffsetMs,
+          adjustedNow: now,
+          endTimeMs,
+          secondsRemaining
+        });
+        tickCount++;
+      }
 
       if (secondsRemaining <= 0) {
+        console.log("❌ Timer expired - locking exam");
         setTimeLeft(0);
-        setIsExamLocked(true); // Lock the exam locally
+        setIsExamLocked(true);
         clearInterval(timer);
-        handleSubmit(); // Trigger auto-submit
       } else {
         setTimeLeft(secondsRemaining);
       }
     }, 1000);
 
     return () => clearInterval(timer);
-  }, [exam, startTime, isSubmitted, isExamLocked]);
+  }, [exam, endTimeMs, serverOffsetMs, isSubmitted, isExamLocked]);
 
   const formatTime = (seconds) => {
     if (seconds < 0) seconds = 0;
@@ -298,7 +413,7 @@ const handleAnswer = async (question, value) => {
       });
 
       const res = await api.post(
-        `/api/exam/${examId}/submit`,
+        `/api/exams/${examId}/submit`,
         { answers: answersRef.current },
         { headers: { Authorization: `Bearer ${token}` } }
       );
@@ -308,10 +423,6 @@ const handleAnswer = async (question, value) => {
       setResult(res.data);
       setIsSubmitted(true);
       setCanRewrite(true);
-
-      // Cleanup local storage on successful submit
-      const storageKey = `exam_start_${examId}_${auth.currentUser.uid}`;
-      localStorage.removeItem(storageKey);
 
     } catch (err) {
       console.error("❌ Exam submission failed:", {
@@ -358,12 +469,18 @@ const handleAnswer = async (question, value) => {
       setCurrentQIndex(0);
       setCanRewrite(false);
       
-      // Reset timer if exam has duration
       if (exam?.duration > 0) {
-        const storageKey = `exam_start_${examId}_${auth.currentUser.uid}`;
-        const effectiveStart = Date.now();
-        localStorage.setItem(storageKey, effectiveStart.toString());
-        setStartTime(effectiveStart);
+        const token = await auth.currentUser.getIdToken(false);
+        const attemptRes = await api.get(
+          `/api/exams/${examId}/attempt`,
+          { headers: { Authorization: `Bearer ${token}` } }
+        );
+        const serverTime = new Date(attemptRes.data.server_time).getTime();
+        const endTime = new Date(attemptRes.data.end_time).getTime();
+        setServerOffsetMs(serverTime - Date.now());
+        setEndTimeMs(endTime);
+        const remaining = Math.floor((endTime - serverTime) / 1000);
+        setTimeLeft(Math.max(0, remaining));
       }
 
       console.log("✅ Rewrite attempt created successfully");

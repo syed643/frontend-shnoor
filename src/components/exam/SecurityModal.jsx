@@ -12,7 +12,7 @@ import { FaExclamationTriangle, FaLock } from 'react-icons/fa';
  * @param {number} maxViolations - Maximum allowed violations before auto-submit
  * @param {function} onResume - Callback to acknowledge warning and close modal
  */
-const SecurityModal = ({ isOpen, violationType, count, maxViolations = 3, onResume }) => {
+const SecurityModal = ({ isOpen, violationType, count, maxViolations = 5, onResume }) => {
     if (!isOpen) return null;
 
     const remainingAttempts = maxViolations - count;
